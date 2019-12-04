@@ -230,3 +230,9 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+
+# ignore appsettings
+**/appsettings.Development.json
+**/appsettings.json
+
+**/Properties/
