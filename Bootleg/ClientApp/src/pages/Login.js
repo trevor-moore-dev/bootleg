@@ -4,28 +4,19 @@ import {
 	TextField,
 	Box,
 	Button,
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
-	FormControl,
-	FormLabel,
-	RadioGroup,
-	Radio,
-	FormControlLabel
+	Grid,
+	Card,
+	CardContent,
+	Divider
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import useRequest from "../hooks/useRequest";
-import { useParams } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
+import { GoogleLogin } from "react-google-login";
 import config from "../config.json";
-import Avatar from "@material-ui/core/Avatar";
-import CheckIcon from "@material-ui/icons/Check";
-import CloseIcon from "@material-ui/icons/Close";
-import Slider from "@material-ui/core/Slider";
 
 const useStyles = makeStyles(theme => ({
 	form: {
-		width: 500,
 		marginTop: theme.spacing(2)
 	},
 	submit: {
@@ -39,16 +30,13 @@ const useStyles = makeStyles(theme => ({
 export default function Login() {
 	const classes = useStyles();
 	const [email, setEmail] = useState("");
-	const [name, setName] = useState("");
-	const [children, setChildren] = useState(0);
+	const [phone, setPhone] = useState("");
+	const [username, setUsername] = useState("");
+	const [password, setPassword] = useState("");
 	const [errors, setErrors] = useState([]);
-	const { get, post } = useRequest();
-	const [event, setUser] = useState({});
-	const { id } = useParams();
-	const [successOpen, setSuccessOpen] = useState(false);
-	const [failureOpen, setFailureOpen] = useState(false);
 	const [submitting, setSubmitting] = useState(false);
-	const [participantType, setParticipantType] = useState("1");
+	const { post } = useRequest();
+	const { login } = useAuth();
 
 	useEffect(() => {
 		//async function test() {
@@ -66,51 +54,51 @@ export default function Login() {
 	const handleEmailChange = e => {
 		setEmail(e.target.value);
 	};
-
-	const handleNameChange = e => {
-		setName(e.target.value);
+	const handlePhoneChange = e => {
+		setPhone(e.target.value);
 	};
-
-	const handleChildrenChange = (e, v) => {
-		setChildren(v);
+	const handleUsernameChange = e => {
+		setUsername(e.target.value);
+	};
+	const handlePasswordChange = e => {
+		setPassword(e.target.value);
 	};
 
 	const handleSubmit = async () => {
 		setErrors([]);
 		setSubmitting(true);
 		const response = await post(config.ADD_EMAIL_POST_URL, {
-			UserId: id,
+			//UserId: id,
 			Data: {
 				Email: email,
-				Name: name,
-				Children: children,
-				Type: parseInt(participantType, 10),
-				DateEntered: new Date()
+				//Name: name,
+				//Children: children,
+				//Type: parseInt(participantType, 10),
+				//DateEntered: new Date()
 			}
 		});
 		if (response.success) {
-			setSuccessOpen(true);
+			//setSuccessOpen(true);
 			setEmail("");
-			setName("");
-			setChildren(0);
-			setParticipantType("1");
+			//setName("");
+			//setChildren(0);
+			//setParticipantType("1");
 		} else {
 			setErrors(response.errors);
-			setFailureOpen(true);
+			//setFailureOpen(true);
 		}
 		setSubmitting(false);
 	};
 
-	const handleSuccessClose = () => {
-		setSuccessOpen(false);
-	};
-
-	const handleFailureClose = () => {
-		setFailureOpen(false);
-	};
-
-	const handleParticipantTypeChange = e => {
-		setParticipantType(e.target.value);
+	const responseGoogle = async googleResponse => {
+		if (googleResponse.tokenId) {
+			let response = await post(config.GOOGLE_AUTH_CALLBACK_URL, {
+				tokenId: googleResponse.tokenId
+			});
+			if (response.success) {
+				login(response.data[0]);
+			}
+		}
 	};
 
 	return (
@@ -120,118 +108,127 @@ export default function Login() {
 			justifyContent="center"
 			flexDirection="column"
 		>
-			<Typography variant="h4" gutterBottom>
-				{event.title} Sign Up
-      </Typography>
-			<Box display="flex" flexDirection="column" className={classes.form}>
-				{Boolean(errors["*"]) && (
-					<Typography color="error">{errors["*"]}</Typography>
-				)}
-				<TextField
-					autoFocus
-					label="Email Address *"
-					className={classes.textField}
-					value={email}
-					onChange={handleEmailChange}
-					margin="normal"
-					variant="outlined"
-					error={Boolean(errors["Data.Email"])}
-					helperText={errors["Data.Email"]}
-				/>
-				<TextField
-					label="Name *"
-					className={classes.textField}
-					value={name}
-					onChange={handleNameChange}
-					margin="normal"
-					variant="outlined"
-					error={Boolean(errors["Data.Name"])}
-					helperText={errors["Data.Name"]}
-				/>
-				<br />
-				<FormLabel component="legend">
-					Have Any Kids?
-        </FormLabel>
-				<Slider
-					defaultValue={0}
-					value={children}
-					onChange={handleChildrenChange}
-					aria-labelledby="discrete-slider"
-					valueLabelDisplay="auto"
-					step={1}
-					marks
-					min={0}
-					max={20}
-				/>
-				<FormControl component="fieldset" className={classes.formControl}>
-					<FormLabel
-						component="legend"
-						error={Boolean(errors["Data.Type"])}
-						helperText={errors["Data.Type"]}
-					>
-						Who are you?
-          </FormLabel>
-					<RadioGroup
-						aria-label="gender"
-						name="gender1"
-						value={participantType}
-						onChange={handleParticipantTypeChange}
-					>
-						<FormControlLabel value={"1"} control={<Radio />} label="Attendee" />
-						<FormControlLabel value={"0"} control={<Radio />} label="Volunteer" />
-						<FormControlLabel value={"2"} control={<Radio />} label="Donor" />
-						<FormControlLabel value={"3"} control={<Radio />} label="Other" />
-					</RadioGroup>
-				</FormControl>
-				<Button
-					color="primary"
-					variant="contained"
-					className={classes.submit}
-					onClick={handleSubmit}
-					disabled={submitting}
-				>
-					Submit
-        </Button>
-			</Box>
+			<Grid container spacing={3}>
+				<Grid item xs={12} sm={6}>
+					<Card className={classes.card}>
+						<CardContent>
+							<Box display="flex" flexDirection="column" className={classes.form}>
+								<Typography variant="h6" color="primary" align="center">Login</Typography>
+								{Boolean(errors["*"]) && (
+									<Typography color="error">{errors["*"]}</Typography>
+								)}
+								<TextField
+									label="Username or Email"
+									className={classes.textField}
+									value={username}
+									onChange={handleUsernameChange}
+									margin="normal"
+									variant="filled"
+									error={Boolean(errors["Data.Username"])}
+									helperText={errors["Data.Username"]}
+								/>
+								<TextField
+									label="Password"
+									type="password"
+									className={classes.textField}
+									value={password}
+									onChange={handlePasswordChange}
+									margin="normal"
+									variant="filled"
+									error={Boolean(errors["Data.Password"])}
+									helperText={errors["Data.Password"]}
+								/>
+								
+								<Button
+									color="primary"
+									variant="contained"
+									className={classes.submit}
+									onClick={handleSubmit}
+									disabled={submitting}
+								>
+									Login
+								</Button>
+							</Box>
+						</CardContent>
+					</Card>
+				</Grid>
+				<Grid item xs={12} sm={6}>
+					<Card className={classes.card}>
+						<CardContent>
+							<Box display="flex" flexDirection="column" className={classes.form}>
+								<Typography variant="h6" color="primary" align="center">Sign Up</Typography>
+								{Boolean(errors["*"]) && (
+									<Typography color="error">{errors["*"]}</Typography>
+								)}
+								<TextField
+									autoFocus
+									label="Email"
+									type="email"
+									className={classes.textField}
+									value={email}
+									onChange={handleEmailChange}
+									margin="normal"
+									variant="outlined"
+									error={Boolean(errors["Data.Email"])}
+									helperText={errors["Data.Email"]}
+								/>
+								<TextField
+									label="Phone"
+									className={classes.textField}
+									value={phone}
+									onChange={handlePhoneChange}
+									margin="normal"
+									variant="outlined"
+									error={Boolean(errors["Data.Phone"])}
+									helperText={errors["Data.Phone"]}
+								/>
+								<TextField
+									label="Username"
+									className={classes.textField}
+									value={username}
+									onChange={handleUsernameChange}
+									margin="normal"
+									variant="outlined"
+									error={Boolean(errors["Data.Username"])}
+									helperText={errors["Data.Username"]}
+								/>
+								<TextField
+									label="Password"
+									type="password"
+									className={classes.textField}
+									value={password}
+									onChange={handlePasswordChange}
+									margin="normal"
+									variant="outlined"
+									error={Boolean(errors["Data.Password"])}
+									helperText={errors["Data.Password"]}
+								/>
 
-			<Dialog
-				onClose={handleSuccessClose}
-				open={successOpen}
-				fullWidth
-				PaperProps={{ style: { maxWidth: 400 } }}
-			>
-				<DialogTitle align="center">
-					<Avatar style={{ backgroundColor: "#00cc00" }}>
-						<CheckIcon fontSize="large" />
-					</Avatar>
-					Thank you :)
-        </DialogTitle>
-				<DialogContent align="center"></DialogContent>
-				<DialogActions>
-					<Button onClick={handleSuccessClose} variant="contained">
-						Close
-          </Button>
-				</DialogActions>
-			</Dialog>
-			<Dialog
-				onClose={handleFailureClose}
-				open={failureOpen}
-				fullWidth
-				PaperProps={{ style: { maxWidth: 400 } }}
-			>
-				<DialogTitle align="center">
-					<Avatar style={{ backgroundColor: "#ff0000" }}>
-						<CloseIcon fontSize="large" />
-					</Avatar>
-					Failure: {errors["*"]}
-				</DialogTitle>
-				<DialogContent align="center"></DialogContent>
-				<DialogActions>
-					<Button onClick={handleFailureClose} variant="contained">
-						Close
-					</Button>
-				</DialogActions>
-			</Dialog>
+								<Button
+									color="primary"
+									variant="contained"
+									className={classes.submit}
+									onClick={handleSubmit}
+									disabled={submitting}
+								>
+									Sign Up
+								</Button>
+								<br />
+								<Divider variant="middle" />
+								<br/>
+								<div align="center">
+									<GoogleLogin
+									  clientId={config.GOOGLE_CLIENT_ID}
+									  buttonText="Google Login"
+									  onSuccess={responseGoogle}
+									  onFailure={responseGoogle}
+									/>
+								</div>
+							</Box>
+						</CardContent>
+					</Card>
+				</Grid>
+			</Grid>
 		</Box>
 	);
 }

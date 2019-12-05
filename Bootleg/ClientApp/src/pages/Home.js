@@ -2,7 +2,7 @@ import React from "react";
 import { Typography, Box } from "@material-ui/core";
 
 export default function Home() {
-	const brand = '<bootleg/>';
+	const brand = 'Hello! This is bootleg.';
   return (
     <Box
       display="flex"

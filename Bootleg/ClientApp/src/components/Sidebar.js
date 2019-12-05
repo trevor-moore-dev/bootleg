@@ -10,14 +10,8 @@ import HomeIcon from "@material-ui/icons/Home";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import { Link } from "react-router-dom";
-import Logo from "./Logo";
 import EqualizerIcon from "@material-ui/icons/Equalizer";
 import DataIcon from "@material-ui/icons/DataUsage";
-import HelpIcon from "@material-ui/icons/Help";
-import { Collapse } from "@material-ui/core";
-import ExpandLess from "@material-ui/icons/ExpandLess";
-import ExpandMore from "@material-ui/icons/ExpandMore";
-import ListIcon from "@material-ui/icons/FormatListBulleted";
 import CreateIcon from "@material-ui/icons/Create";
 import { useLocation } from "react-router";
 
@@ -31,8 +25,8 @@ const useStyles = makeStyles(theme => ({
   drawerPaper: {
     width: drawerWidth,
     border: "none",
-    backgroundColor: "rgb(40,40,40)",
-    color: "white"
+	backgroundColor: theme.palette.secondary.light,
+	color: theme.palette.primary.main
   },
   title: {
     paddingLeft: theme.spacing(1)
@@ -43,8 +37,8 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
     justifyContent: "space-between",
-    color: theme.palette.common.white,
-    backgroundColor: theme.palette.primary.light,
+	backgroundColor: theme.palette.secondary.light,
+	color: theme.palette.primary.main,
     boxShadow:
       "0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);"
   },
@@ -65,7 +59,7 @@ const useStyles = makeStyles(theme => ({
     marginLeft: 0
   },
   icon: {
-    color: "white"
+	  color: theme.palette.primary.light
   },
   nested: {
     paddingLeft: theme.spacing(4)
@@ -74,13 +68,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Sidebar({ open, handleDrawerOpen, handleDrawerClose }) {
   const classes = useStyles();
-
-  const [surveyOpen, setSurveyOpen] = useState(true);
   const location = useLocation();
-
-  const toggleSurveys = () => {
-    setSurveyOpen(!surveyOpen);
-  };
 
   return (
     <Drawer
@@ -98,77 +86,52 @@ export default function Sidebar({ open, handleDrawerOpen, handleDrawerClose }) {
 		</IconButton>
       </div>
       <Divider />
-      <List>
-        <ListItem
-          button
-          component={Link}
-          to="/"
-          selected={location.pathname === "/"}
-        >
-          <ListItemIcon className={classes.icon}>
-            <HomeIcon />
-          </ListItemIcon>
-          <ListItemText primary={"Home"} />
-        </ListItem>
-        <ListItem button onClick={toggleSurveys}>
-          <ListItemIcon className={classes.icon}>
-            <DataIcon />
-          </ListItemIcon>
-          <ListItemText primary={"Users"} />
-          {surveyOpen ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
-        <Collapse in={surveyOpen} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <ListItem
-              button
-              className={classes.nested}
-              component={Link}
-              to="/event/create"
-              selected={location.pathname === "/event/create"}
-            >
-              <ListItemIcon>
-                <CreateIcon className={classes.icon} />
-              </ListItemIcon>
-              <ListItemText primary="Create User" />
-            </ListItem>
-            <ListItem
-              button
-              className={classes.nested}
-              component={Link}
-              to="/event/view-events"
-              selected={location.pathname === "/event/view-events"}
-            >
-              <ListItemIcon>
-                <ListIcon className={classes.icon} />
-              </ListItemIcon>
-              <ListItemText primary="View Users" />
-            </ListItem>
-          </List>
-        </Collapse>
-
-        <ListItem
-          button
-          component={Link}
-		  to="/view-emails"
-		  selected={location.pathname === "/view-emails"}
-        >
-          <ListItemIcon className={classes.icon}>
-            <EqualizerIcon />
-          </ListItemIcon>
-          <ListItemText primary={"Emails"} />
-        </ListItem>
-        <ListItem
-          button
-          component={Link}
-          to="/help"
-          selected={location.pathname === "/help"}
-        >
-          <ListItemIcon className={classes.icon}>
-            <HelpIcon />
-          </ListItemIcon>
-          <ListItemText primary={"Help"} />
-        </ListItem>
-      </List>
+		<List>
+		<ListItem
+			button
+			component={Link}
+			to="/"
+			selected={location.pathname === "/"}
+		>
+			<ListItemIcon className={classes.icon}>
+				<HomeIcon />
+			</ListItemIcon>
+			<ListItemText primary={"Home"} />
+		</ListItem>
+		<ListItem
+			button
+			component={Link}
+			to="/"
+			selected={location.pathname === "/test1"}
+		>
+			<ListItemIcon className={classes.icon}>
+				<DataIcon />
+			</ListItemIcon>
+			<ListItemText primary={"Bootleg"} />
+		</ListItem>
+		<ListItem
+			button
+			component={Link}
+			to="/"
+			selected={location.pathname === "/test2"}
+		>
+			<ListItemIcon className={classes.icon}>
+				<EqualizerIcon />
+			</ListItemIcon>
+			<ListItemText primary={"Account"} />
+		</ListItem>
+		<ListItem
+			button
+			component={Link}
+			to="/"
+			selected={location.pathname === "/test3"}
+		>
+			<ListItemIcon className={classes.icon}>
+				<CreateIcon className={classes.icon} />
+			</ListItemIcon>
+			<ListItemText primary={"Messages"} />
+		</ListItem>
+		</List>
     </Drawer>
   );
 }

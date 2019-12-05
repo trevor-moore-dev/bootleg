@@ -11,16 +11,10 @@ namespace Bootleg.Models.Documents
 		public string Id { get; set; }
 		[Required]
 		[BsonRequired]
-		public string UserName { get; set; }
+		public string Username { get; set; }
 		[Required]
 		[BsonRequired]
 		public string Password { get; set; }
-		[Required]
-		[BsonRequired]
-		public string FirstName { get; set; }
-		[Required]
-		[BsonRequired]
-		public string LastName { get; set; }
 		[EmailAddress]
 		public string Email { get; set; }
 		[Phone]

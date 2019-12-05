@@ -8,38 +8,19 @@ import useAuth from "../hooks/useAuth";
 import Cookies from "js-cookie";
 import { Avatar, Box, Menu, MenuItem, Grid, IconButton, Button, Toolbar, AppBar } from "@material-ui/core";
 import DropDownArrow from "@material-ui/icons/ArrowDropDown";
+import '../resources/css/site.css';
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1
-  },
-  appBarShift: {
+	appBarShift: {
+	backgroundColor: 'white',
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen
     })
-  },
-  inputRoot: {
-    color: "inherit"
-  },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 7),
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      width: 120,
-      "&:focus": {
-        width: 200
-      }
-    }
-  },
-  button: {
-    marginLeft: theme.spacing(1),
-	marginRight: theme.spacing(1)
   }
 }));
 
@@ -71,7 +52,8 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 
   return (
 	  <div className={classes.root}>
-      <AppBar
+	  <AppBar
+		color="secondary"
         position="fixed"
         className={clsx(classes.appBar, {
           [classes.appBarShift]: open
@@ -81,14 +63,12 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 			<Grid
 			  justify="space-between"
 			  alignItems="center"
-			  justifyContent="center"
 			  container
 			>
 				<Grid item>
-					{!open ? (
+					{!open && authState.isAuthenticated ? (
 						<IconButton
 							edge="start"
-							className={classes.menuButton}
 							color="inherit"
 							aria-label="Menu"
 							onClick={handleDrawerOpen}
