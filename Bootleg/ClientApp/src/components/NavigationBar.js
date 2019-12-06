@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import MenuIcon from "@material-ui/icons/Menu";
 import clsx from "clsx";
 import Logo from "./Logo";
-import Login from "./Login";
 import useAuth from "../hooks/useAuth";
 import Cookies from "js-cookie";
 import { Avatar, Box, Menu, MenuItem, Grid, IconButton, Button, Toolbar, AppBar } from "@material-ui/core";

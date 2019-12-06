@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+﻿import React, { useState } from "react";
 import {
 	Typography,
 	TextField,
@@ -7,11 +7,17 @@ import {
 	Grid,
 	Card,
 	CardContent,
-	Divider
+	Divider,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogActions
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import useRequest from "../hooks/useRequest";
 import useAuth from "../hooks/useAuth";
+import Avatar from "@material-ui/core/Avatar";
+import CloseIcon from "@material-ui/icons/Close";
 import { GoogleLogin } from "react-google-login";
 import config from "../config.json";
 
@@ -30,62 +36,144 @@ const useStyles = makeStyles(theme => ({
 export default function Login() {
 	const classes = useStyles();
 	const [email, setEmail] = useState("");
+	const [emailValidationError, setEmailValidationError] = useState("");
 	const [phone, setPhone] = useState("");
+	const [phoneValidationError, setPhoneValidationError] = useState("");
 	const [username, setUsername] = useState("");
+	const [usernameValidationError, setUsernameValidationError] = useState("");
 	const [password, setPassword] = useState("");
+	const [passwordValidationError, setPasswordValidationError] = useState("");
+	const [loginUsername, setLoginUsername] = useState("");
+	const [loginUsernameValidationError, setLoginUsernameValidationError] = useState("");
+	const [loginPassword, setLoginPassword] = useState("");
+	const [loginPasswordValidationError, setLoginPasswordValidationError] = useState("");
 	const [errors, setErrors] = useState([]);
 	const [submitting, setSubmitting] = useState(false);
+	const [failureOpen, setFailureOpen] = useState(false);
 	const { post } = useRequest();
 	const { login } = useAuth();
 
-	useEffect(() => {
-		//async function test() {
-			//let response = await get(config.TEST_URL, { data: id });
-			//if (response.success) {
-				//setUser(response.data[0]);
-			//} else {
-				//setErrors(response.errors);
-			//}
-		//}
-		//test();
-		return () => { };
-	}, []);
-
 	const handleEmailChange = e => {
 		setEmail(e.target.value);
+		if (e.target.value) {
+			setEmailValidationError("");
+			setPhoneValidationError("");
+		}
 	};
 	const handlePhoneChange = e => {
 		setPhone(e.target.value);
+		if (e.target.value) {
+			setEmailValidationError("");
+			setPhoneValidationError("");
+		}
 	};
 	const handleUsernameChange = e => {
 		setUsername(e.target.value);
+		if (e.target.value) {
+			setUsernameValidationError("");
+		}
 	};
 	const handlePasswordChange = e => {
 		setPassword(e.target.value);
+		if (e.target.value) {
+			setPasswordValidationError("");
+		}
+	};
+	const handleLoginUsernameChange = e => {
+		setLoginUsername(e.target.value);
+		if (e.target.value) {
+			setLoginUsernameValidationError("");
+		}
+	};
+	const handleLoginPasswordChange = e => {
+		setLoginPassword(e.target.value);
+		if (e.target.value) {
+			setLoginPasswordValidationError("");
+		}
+	};
+	const handleFailureClose = () => {
+		setFailureOpen(false);
 	};
 
-	const handleSubmit = async () => {
+	const handleRegisterSubmit = async () => {
 		setErrors([]);
 		setSubmitting(true);
-		const response = await post(config.ADD_EMAIL_POST_URL, {
-			//UserId: id,
-			Data: {
-				Email: email,
-				//Name: name,
-				//Children: children,
-				//Type: parseInt(participantType, 10),
-				//DateEntered: new Date()
+		let isValid = true;
+		if (username === "") {
+			setUsernameValidationError("The Username field is required.");
+			isValid = false;
+		}
+		else if (username.length < 1 || username.length > 25) {
+			setUsernameValidationError("The Username field must have a minimum of 1 character, and a max of 25.");
+			isValid = false;
+		}
+		if (password === "") {
+			setPasswordValidationError("The Password field is required.");
+			isValid = false;
+		}
+		else if (password.length < 8 || password.length > 25) {
+			setPasswordValidationError("The Password field must have a minimum of 8 characters, and a max of 25.");
+			isValid = false;
+		}
+		if (phone === "" && email === "") {
+			setEmailValidationError("The Email field OR Phone field is required.");
+			setPhoneValidationError("The Email field OR Phone field is required.");
+			isValid = false;
+		}
+		if (isValid) {
+			const response = await post(config.AUTHENTICATION_REGISTER_USER_POST, {
+				Data: {
+					Email: email,
+					Phone: phone,
+					Username: username,
+					Password: password
+				}
+			});
+			if (response.success) {
+				login(response.data[0]);
 			}
-		});
-		if (response.success) {
-			//setSuccessOpen(true);
-			setEmail("");
-			//setName("");
-			//setChildren(0);
-			//setParticipantType("1");
-		} else {
-			setErrors(response.errors);
-			//setFailureOpen(true);
+			else {
+				setErrors(response.errors);
+				setFailureOpen(true);
+			}
+		}
+		setSubmitting(false);
+	};
+
+	const handleLoginSubmit = async () => {
+		setErrors([]);
+		setSubmitting(true);
+		let isValid = true;
+		if (loginUsername === "") {
+			setLoginUsernameValidationError("The Username field is required.");
+			isValid = false;
+		}
+		else if (loginUsername.length < 1 || loginUsername.length > 25) {
+			setLoginUsernameValidationError("The Username field must have a minimum of 1 character, and a max of 25.");
+			isValid = false;
+		}
+		if (loginPassword === "") {
+			setLoginPasswordValidationError("The Password field is required.");
+			isValid = false;
+		}
+		else if (loginPassword.length < 8 || loginPassword.length > 25) {
+			setLoginPasswordValidationError("The Password field must have a minimum of 8 characters, and a max of 25.");
+			isValid = false;
+		}
+		if (isValid) {
+			const response = await post(config.AUTHENTICATION_AUTHENTICATE_USER_POST, {
+				Data: {
+					Username: loginUsername,
+					Password: loginPassword
+				}
+			});
+			if (response.success) {
+				login(response.data[0]);
+			}
+			else {
+				setErrors(response.errors);
+				setFailureOpen(true);
+			}
 		}
 		setSubmitting(false);
 	};
@@ -93,10 +181,16 @@ export default function Login() {
 	const responseGoogle = async googleResponse => {
 		if (googleResponse.tokenId) {
 			let response = await post(config.GOOGLE_AUTH_CALLBACK_URL, {
-				tokenId: googleResponse.tokenId
+				Data: {
+					TokenId: googleResponse.tokenId
+				}
 			});
 			if (response.success) {
 				login(response.data[0]);
+			}
+			else {
+				setErrors(response.errors);
+				setFailureOpen(true);
 			}
 		}
 	};
@@ -114,36 +208,36 @@ export default function Login() {
 						<CardContent>
 							<Box display="flex" flexDirection="column" className={classes.form}>
 								<Typography variant="h6" color="primary" align="center">Login</Typography>
-								{Boolean(errors["*"]) && (
-									<Typography color="error">{errors["*"]}</Typography>
-								)}
 								<TextField
+									autoFocus
 									label="Username or Email"
 									className={classes.textField}
-									value={username}
-									onChange={handleUsernameChange}
+									value={loginUsername}
+									onChange={handleLoginUsernameChange}
 									margin="normal"
 									variant="filled"
-									error={Boolean(errors["Data.Username"])}
-									helperText={errors["Data.Username"]}
 								/>
+								<div style={{ color: "red", marginTop: "5px" }}>
+									{loginUsernameValidationError}
+								</div>
 								<TextField
 									label="Password"
 									type="password"
 									className={classes.textField}
-									value={password}
-									onChange={handlePasswordChange}
+									value={loginPassword}
+									onChange={handleLoginPasswordChange}
 									margin="normal"
 									variant="filled"
-									error={Boolean(errors["Data.Password"])}
-									helperText={errors["Data.Password"]}
 								/>
+								<div style={{ color: "red", marginTop: "5px" }}>
+									{loginPasswordValidationError}
+								</div>
 								
 								<Button
 									color="primary"
 									variant="contained"
 									className={classes.submit}
-									onClick={handleSubmit}
+									onClick={handleLoginSubmit}
 									disabled={submitting}
 								>
 									Login
@@ -157,11 +251,7 @@ export default function Login() {
 						<CardContent>
 							<Box display="flex" flexDirection="column" className={classes.form}>
 								<Typography variant="h6" color="primary" align="center">Sign Up</Typography>
-								{Boolean(errors["*"]) && (
-									<Typography color="error">{errors["*"]}</Typography>
-								)}
 								<TextField
-									autoFocus
 									label="Email"
 									type="email"
 									className={classes.textField}
@@ -169,9 +259,10 @@ export default function Login() {
 									onChange={handleEmailChange}
 									margin="normal"
 									variant="outlined"
-									error={Boolean(errors["Data.Email"])}
-									helperText={errors["Data.Email"]}
 								/>
+								<div style={{ color: "red", marginTop: "5px" }}>
+									{emailValidationError}
+								</div>
 								<TextField
 									label="Phone"
 									className={classes.textField}
@@ -179,9 +270,10 @@ export default function Login() {
 									onChange={handlePhoneChange}
 									margin="normal"
 									variant="outlined"
-									error={Boolean(errors["Data.Phone"])}
-									helperText={errors["Data.Phone"]}
 								/>
+								<div style={{ color: "red", marginTop: "5px" }}>
+									{phoneValidationError}
+								</div>
 								<TextField
 									label="Username"
 									className={classes.textField}
@@ -189,9 +281,10 @@ export default function Login() {
 									onChange={handleUsernameChange}
 									margin="normal"
 									variant="outlined"
-									error={Boolean(errors["Data.Username"])}
-									helperText={errors["Data.Username"]}
 								/>
+								<div style={{ color: "red", marginTop: "5px" }}>
+									{usernameValidationError}
+								</div>
 								<TextField
 									label="Password"
 									type="password"
@@ -200,22 +293,25 @@ export default function Login() {
 									onChange={handlePasswordChange}
 									margin="normal"
 									variant="outlined"
-									error={Boolean(errors["Data.Password"])}
-									helperText={errors["Data.Password"]}
 								/>
+								<div style={{ color: "red", marginTop: "5px" }}>
+									{passwordValidationError}
+								</div>
 
 								<Button
 									color="primary"
 									variant="contained"
 									className={classes.submit}
-									onClick={handleSubmit}
+									onClick={handleRegisterSubmit}
 									disabled={submitting}
 								>
 									Sign Up
 								</Button>
+
 								<br />
 								<Divider variant="middle" />
-								<br/>
+								<br />
+
 								<div align="center">
 									<GoogleLogin
 									  clientId={config.GOOGLE_CLIENT_ID}
@@ -229,6 +325,32 @@ export default function Login() {
 					</Card>
 				</Grid>
 			</Grid>
+			<Dialog
+				onClose={handleFailureClose}
+				open={failureOpen}
+				fullWidth
+				PaperProps={{ style: { maxWidth: 450 } }}
+			>
+				<DialogTitle align="center">
+					<Avatar style={{ backgroundColor: "#ff0000" }}>
+						<CloseIcon fontSize="large" />
+					</Avatar>
+					<div style={{ textAlign: "left !important" }}>
+						Error(s) occurred:<br />
+						{errors["Data.Username"] ? [errors["Data.Username"],<br />] : ""}
+						{errors["Data.Password"] ? [errors["Data.Password"],<br />] : ""}
+						{errors["Data.Email"] ? [errors["Data.Email"],<br />] : ""}
+						{errors["Data.Phone"] ? [errors["Data.Phone"],<br />] : ""}
+						{errors["*"] ? [errors["*"],<br />] : ""}
+					</div>
+				</DialogTitle>
+				<DialogContent align="center"></DialogContent>
+				<DialogActions>
+					<Button onClick={handleFailureClose} variant="contained">
+						Close
+					</Button>
+				</DialogActions>
+			</Dialog>
 		</Box>
 	);
 }

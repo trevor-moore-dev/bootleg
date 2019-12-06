@@ -43,8 +43,7 @@ export default function useAuth() {
       token: token,
       payload: jwt_decode(token)
     });
-    //Cookies.set("Authorization-Token", token);
-    //cookie gets set from server
+    // Cookies get set from server.
   };
 
   const logout = () => {
