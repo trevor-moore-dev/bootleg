@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Template() {
   const classes = useStyles();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const { authState, getToken } = useAuth();
   const [value, setValue] = React.useState('recents');
 
@@ -73,7 +73,6 @@ export default function Template() {
 				/>
 				<Sidebar
 				  open={open}
-				  handleDrawerOpen={handleDrawerOpen}
 				  handleDrawerClose={handleDrawerClose}
 				/>
 				<div className={classes.toolbar} />

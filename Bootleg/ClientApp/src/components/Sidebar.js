@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Sidebar({ open, handleDrawerOpen, handleDrawerClose }) {
+export default function Sidebar({ open, handleDrawerClose }) {
   const classes = useStyles();
   const location = useLocation();
 

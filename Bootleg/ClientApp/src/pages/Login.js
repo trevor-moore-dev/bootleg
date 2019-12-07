@@ -123,8 +123,8 @@ export default function Login() {
 		if (isValid) {
 			const response = await post(config.AUTHENTICATION_REGISTER_USER_POST, {
 				Data: {
-					Email: email,
-					Phone: phone,
+					Email: email ? email : null,
+					Phone: phone ? phone : null,
 					Username: username,
 					Password: password
 				}

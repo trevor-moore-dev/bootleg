@@ -6,15 +6,16 @@ namespace Bootleg.Helpers
 {
 	public class SecurityHelper
 	{
-		public static string EncryptPassword(string password, byte[] salt)
+        private static readonly char[] Punctuations = "!@#$%^&*()_-+=[{]};:>|./?".ToCharArray();
+
+        public static string EncryptPassword(string password, byte[] salt)
 		{
-            string hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+            return Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: password,
                 salt: salt,
                 prf: KeyDerivationPrf.HMACSHA1,
                 iterationCount: 10000,
                 numBytesRequested: 256 / 8));
-            return hash;
         }
 
         public static byte[] GenerateSalt()
@@ -26,5 +27,73 @@ namespace Bootleg.Helpers
             }
             return salt;
         }
-	}
+
+        public static string GenerateRandomPassword(int length = 12, int numberOfNonAlphanumericCharacters = 3)
+        {
+            if (length < 1 || length > 128)
+            {
+                throw new ArgumentException(nameof(length));
+            }
+
+            if (numberOfNonAlphanumericCharacters > length || numberOfNonAlphanumericCharacters < 0)
+            {
+                throw new ArgumentException(nameof(numberOfNonAlphanumericCharacters));
+            }
+
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                var byteBuffer = new byte[length];
+
+                rng.GetBytes(byteBuffer);
+
+                var count = 0;
+                var characterBuffer = new char[length];
+
+                for (var iter = 0; iter < length; iter++)
+                {
+                    var i = byteBuffer[iter] % 87;
+
+                    if (i < 10)
+                    {
+                        characterBuffer[iter] = (char)('0' + i);
+                    }
+                    else if (i < 36)
+                    {
+                        characterBuffer[iter] = (char)('A' + i - 10);
+                    }
+                    else if (i < 62)
+                    {
+                        characterBuffer[iter] = (char)('a' + i - 36);
+                    }
+                    else
+                    {
+                        characterBuffer[iter] = Punctuations[i - 62];
+                        count++;
+                    }
+                }
+
+                if (count >= numberOfNonAlphanumericCharacters)
+                {
+                    return new string(characterBuffer);
+                }
+
+                int j;
+                var rand = new Random();
+
+                for (j = 0; j < numberOfNonAlphanumericCharacters - count; j++)
+                {
+                    int k;
+                    do
+                    {
+                        k = rand.Next(0, length);
+                    }
+                    while (!char.IsLetterOrDigit(characterBuffer[k]));
+
+                    characterBuffer[k] = Punctuations[rand.Next(0, Punctuations.Length)];
+                }
+
+                return new string(characterBuffer);
+            }
+        }
+    }
 }

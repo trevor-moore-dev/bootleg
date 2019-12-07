@@ -22,6 +22,6 @@ namespace Bootleg.Models.Documents
 		[Phone]
 		public string Phone { get; set; }
 		[BsonRequired]
-		public string Salt { get; set; }
+		public byte[] Salt { get; set; }
 	}
 }

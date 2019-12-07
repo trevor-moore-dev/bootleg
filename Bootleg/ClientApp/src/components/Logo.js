@@ -4,14 +4,16 @@ import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import BootlegLogo from "../resources/images/BootlegLogo.PNG";
 
+/**
+ * [theme.breakpoints.down("sm")]: {
+		display: "none"
+	  }
+ * */
 const useStyles = makeStyles(theme => ({
   root: {
     textDecoration: "none",
     color: "white",
-	  marginRight: theme.spacing(2),
-	  [theme.breakpoints.down("sm")]: {
-		display: "none"
-	  }
+	marginRight: theme.spacing(2)
   },
   logo: {
 	height: 35,

@@ -13,6 +13,7 @@ using System.Linq;
 using System.Security.Claims;
 using Bootleg.Models.Documents;
 using Bootleg.Services.Data.Interfaces;
+using Bootleg.Extensions;
 
 namespace Bootleg.Services.Business.Interfaces
 {
@@ -30,6 +31,28 @@ namespace Bootleg.Services.Business.Interfaces
 			try
 			{
 				var payload = await GoogleJsonWebSignature.ValidateAsync(token.TokenId, new GoogleJsonWebSignature.ValidationSettings());
+				var users = await _userDAO.GetAll();
+
+				// If Google login is already in the db, then we don't need to add them again:
+				if (!users.Data.Any(u => u.Email.EqualsIgnoreCase(payload.Email)))
+				{
+					// Email this to user so that they can login with it and change it later:
+					var temporaryPassword = SecurityHelper.GenerateRandomPassword();
+					var salt = SecurityHelper.GenerateSalt();
+					var securePassword = SecurityHelper.EncryptPassword(temporaryPassword, salt);
+
+					var user = new User()
+					{
+						Email = payload.Email,
+						Username = payload.Email,
+						Phone = string.Empty,
+						Password = securePassword,
+						Salt = salt
+					};
+
+					await _userDAO.Add(user);
+				}
+
 				var jwt = TokenHelper.GenerateToken(payload.Email, AppSettingsModel.AppSettings.JwtSecret, string.Empty);
 
 				CookieHelper.AddCookie(response, "Authorization-Token", jwt);
@@ -93,10 +116,10 @@ namespace Bootleg.Services.Business.Interfaces
 			{
 				var users = await _userDAO.GetAll();
 				var userMatch = users.Data.FirstOrDefault(u =>
-					(!string.IsNullOrEmpty(u.Email) && u.Email.Equals(user.Username, StringComparison.OrdinalIgnoreCase)) ||
-					(!string.IsNullOrEmpty(u.Username) && u.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase)));
+					(u.Email.EqualsIgnoreCase(user.Username)) ||
+					(!string.IsNullOrEmpty(u.Username) && u.Username.Equals(user.Username)));
 				
-				if (userMatch != null && userMatch.Password.Equals(SecurityHelper.EncryptPassword(user.Password, Encoding.ASCII.GetBytes(userMatch.Salt))))
+				if (userMatch != null && userMatch.Password.Equals(SecurityHelper.EncryptPassword(user.Password, userMatch.Salt)))
 				{
 					var jwt = TokenHelper.GenerateToken(user.Username, AppSettingsModel.AppSettings.JwtSecret, string.Empty);
 
@@ -129,11 +152,11 @@ namespace Bootleg.Services.Business.Interfaces
 				{
 					throw new Exception("Email OR Phone is required.");
 				}
-				if (users.Data.Any(u => !string.IsNullOrEmpty(u.Email) && u.Email.Equals(user.Email, StringComparison.OrdinalIgnoreCase)))
+				if (users.Data.Any(u => u.Email.EqualsIgnoreCase(user.Email)))
 				{
 					throw new Exception("Email is already in use. Please try again.");
 				}
-				else if (users.Data.Any(u => !string.IsNullOrEmpty(u.Username) && u.Username.Equals(user.Username, StringComparison.OrdinalIgnoreCase)))
+				else if (users.Data.Any(u => u.Username.EqualsIgnoreCase(user.Username)))
 				{
 					throw new Exception("Username is already taken. Please try again.");
 				}
@@ -143,10 +166,10 @@ namespace Bootleg.Services.Business.Interfaces
 					var securePassword = SecurityHelper.EncryptPassword(user.Password, salt);
 
 					user.Password = securePassword;
-					user.Salt = Encoding.ASCII.GetString(salt);
+					user.Salt = salt;
 
 					await _userDAO.Add(user);
-					var jwt = TokenHelper.GenerateToken(user.Email, AppSettingsModel.AppSettings.JwtSecret, string.Empty);
+					var jwt = TokenHelper.GenerateToken(user.Email ?? user.Phone, AppSettingsModel.AppSettings.JwtSecret, string.Empty);
 
 					CookieHelper.AddCookie(response, "Authorization-Token", jwt);
 
