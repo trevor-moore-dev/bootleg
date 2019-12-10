@@ -1,3 +1,9 @@
+
+// Trevor Moore
+// CST-451
+// 12/9/2019
+// This is my own work (this file is also auto-generated).
+
 // This optional code is used to register a service worker.
 // register() is not called by default.
 

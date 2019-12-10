@@ -15,8 +15,15 @@ import DataIcon from "@material-ui/icons/DataUsage";
 import CreateIcon from "@material-ui/icons/Create";
 import { useLocation } from "react-router";
 
+// Trevor Moore
+// CST-451
+// 12/9/2019
+// Coded in collaboration with Jordan Riley at OpportunityHack 2019. Class is "boiler plate" / standard / reusable code.
+
+// Define our drawer width:
 const drawerWidth = 240;
 
+// Create CSS styles:
 const useStyles = makeStyles(theme => ({
   drawer: {
     width: drawerWidth,
@@ -25,8 +32,8 @@ const useStyles = makeStyles(theme => ({
   drawerPaper: {
     width: drawerWidth,
     border: "none",
-	backgroundColor: theme.palette.secondary.light,
-	color: theme.palette.primary.main
+    backgroundColor: theme.palette.secondary.light,
+    color: theme.palette.primary.main
   },
   title: {
     paddingLeft: theme.spacing(1)
@@ -37,8 +44,8 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
     justifyContent: "space-between",
-	backgroundColor: theme.palette.secondary.light,
-	color: theme.palette.primary.main,
+    backgroundColor: theme.palette.secondary.light,
+    color: theme.palette.primary.main,
     boxShadow:
       "0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);"
   },
@@ -59,17 +66,20 @@ const useStyles = makeStyles(theme => ({
     marginLeft: 0
   },
   icon: {
-	  color: theme.palette.primary.light
+    color: theme.palette.primary.light
   },
   nested: {
     paddingLeft: theme.spacing(4)
   }
 }));
 
+// Sidebar component for rendering our sidebar:
 export default function Sidebar({ open, handleDrawerClose }) {
+  // Create our styles to use and the location for getting the current url:
   const classes = useStyles();
   const location = useLocation();
 
+  // Render our markup:
   return (
     <Drawer
       className={classes.drawer}
@@ -80,58 +90,58 @@ export default function Sidebar({ open, handleDrawerClose }) {
         paper: classes.drawerPaper
       }}
     >
-	  <div className={classes.drawerHeader}>
-		<IconButton onClick={handleDrawerClose}>
-		  <ChevronLeftIcon className={classes.icon} />
-		</IconButton>
+      <div className={classes.drawerHeader}>
+        <IconButton onClick={handleDrawerClose}>
+          <ChevronLeftIcon className={classes.icon} />
+        </IconButton>
       </div>
       <Divider />
-		<List>
-		<ListItem
-			button
-			component={Link}
-			to="/"
-			selected={location.pathname === "/"}
-		>
-			<ListItemIcon className={classes.icon}>
-				<HomeIcon />
-			</ListItemIcon>
-			<ListItemText primary={"Home"} />
-		</ListItem>
-		<ListItem
-			button
-			component={Link}
-			to="/"
-			selected={location.pathname === "/test1"}
-		>
-			<ListItemIcon className={classes.icon}>
-				<DataIcon />
-			</ListItemIcon>
-			<ListItemText primary={"Bootleg"} />
-		</ListItem>
-		<ListItem
-			button
-			component={Link}
-			to="/"
-			selected={location.pathname === "/test2"}
-		>
-			<ListItemIcon className={classes.icon}>
-				<EqualizerIcon />
-			</ListItemIcon>
-			<ListItemText primary={"Account"} />
-		</ListItem>
-		<ListItem
-			button
-			component={Link}
-			to="/"
-			selected={location.pathname === "/test3"}
-		>
-			<ListItemIcon className={classes.icon}>
-				<CreateIcon className={classes.icon} />
-			</ListItemIcon>
-			<ListItemText primary={"Messages"} />
-		</ListItem>
-		</List>
+      <List>
+        <ListItem
+          button
+          component={Link}
+          to="/"
+          selected={location.pathname === "/"}
+        >
+          <ListItemIcon className={classes.icon}>
+            <HomeIcon />
+          </ListItemIcon>
+          <ListItemText primary={"Home"} />
+        </ListItem>
+        <ListItem
+          button
+          component={Link}
+          to="/"
+          selected={location.pathname === "/test1"}
+        >
+          <ListItemIcon className={classes.icon}>
+            <DataIcon />
+          </ListItemIcon>
+          <ListItemText primary={"Bootleg"} />
+        </ListItem>
+        <ListItem
+          button
+          component={Link}
+          to="/"
+          selected={location.pathname === "/test2"}
+        >
+          <ListItemIcon className={classes.icon}>
+            <EqualizerIcon />
+          </ListItemIcon>
+          <ListItemText primary={"Account"} />
+        </ListItem>
+        <ListItem
+          button
+          component={Link}
+          to="/"
+          selected={location.pathname === "/test3"}
+        >
+          <ListItemIcon className={classes.icon}>
+            <CreateIcon className={classes.icon} />
+          </ListItemIcon>
+          <ListItemText primary={"Messages"} />
+        </ListItem>
+      </List>
     </Drawer>
   );
 }
