@@ -20,27 +20,43 @@ using Bootleg.Models.Documents;
 using Bootleg.Models.DTO;
 using System.Collections.Generic;
 
+// Trevor Moore
+// CST-451
+// 12/9/2019
+// This is my own work.
+
 namespace Bootleg
 {
+	/// <summary>
+	/// Auto-generated Startup class that gets executed during container startup.
+	/// </summary>
 	public class Startup
 	{
+		/// <summary>
+		/// Auto-generated constructor for Startup class.
+		/// </summary>
+		/// <param name="env">Env of type IWebHostEnvironment.</param>
 		public Startup(IWebHostEnvironment env)
 		{
+			// Create our configuration builder using our app settings file.
 			var builder = new ConfigurationBuilder()
 				.SetBasePath(env.ContentRootPath)
 				.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
 				.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
 				.AddEnvironmentVariables();
+			// Set our configuration and current evironment:
 			Configuration = builder.Build();
 			CurrentEnvironment = env;
 		}
-
 		public IConfiguration Configuration { get; }
 		private IWebHostEnvironment CurrentEnvironment { get; set; }
-
-		// This method gets called by the runtime. Use this method to add services to the container.
+		/// <summary>
+		/// Auto-generated ConfigureServices() method that gets called by the runtime. Use this method to add services to the container.
+		/// </summary>
+		/// <param name="services">Services of type IServiceCollection</param>
 		public void ConfigureServices(IServiceCollection services)
 		{
+			// Add CORS to our services:
 			services.AddCors(options =>
 			{
 				options.AddDefaultPolicy(
@@ -52,15 +68,17 @@ namespace Bootleg
 						policy.AllowCredentials();
 					});
 			});
-
+			// Add controllers with views to our services, specifiying to use our ModelState Validator Attribute:
             services.AddControllersWithViews(options =>
             {
                 options.Filters.Add(typeof(ValidateModelStateAttribute));
-            }).AddNewtonsoftJson(options =>
+            })
+			// Add Newtonsoft Json for input/output formatting/serializing:
+			.AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
-
+			// Add Authentication and a JWT Bearer that will use our secret key for decrypting tokens:
             services.AddAuthentication()
 				.AddJwtBearer(cfg =>
 				{
@@ -77,20 +95,20 @@ namespace Bootleg
 						ValidateIssuerSigningKey = true
 					};
 				});
-
+			// Set Cookie policy rules:
 			services.Configure<CookiePolicyOptions>(options =>
 			{
 				options.CheckConsentNeeded = context => true;
 				options.MinimumSameSitePolicy = SameSiteMode.None;
 			});
-
+			// Inject dependencies here:
+			// Inject our PredictionEnginePool:
 			services.AddPredictionEnginePool<PredictionInput, PredictionOutput>()
 				.FromFile(modelName: "MLModel", filePath: Configuration["MLModels:SentimentMLModelFilePath"], watchForChanges: true);
-
-			// Inject dependencies here:
 			// Change development environment here (connection string to db or anything else necessary):
 			if (CurrentEnvironment.IsDevelopment())
 			{
+				// Inject our DAO as a Singleton using our DEV parameters:
 				services.AddSingleton<IDAO<User, DTO<List<User>>>>(service => new UserDAO(
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
@@ -98,36 +116,42 @@ namespace Bootleg
 			}
 			else
 			{
+				// Inject our DAO as a Singleton using our LIVE parameters:
 				services.AddSingleton<IDAO<User, DTO<List<User>>>>(service => new UserDAO(
 					Configuration["ConnectionStrings:HerokuMongoDBConnection"],
 					Configuration["ConnectionStrings:HerokuMongoDBDatabase"],
 					Configuration["ConnectionStrings:HerokuMongoDBCollection"]));
 			}
-
+			// Inject our Authentication service as a Singleton:
 			services.AddSingleton<IAuthenticationService, AuthenticationService>();
+			// Inject our Prediction service as a Singleton:
 			services.AddSingleton<IPredictionService, PredictionService>();
-
 			// In production, the React files will be served from this directory:
 			services.AddSpaStaticFiles(configuration =>
 			{
 				configuration.RootPath = "ClientApp/build";
 			});
 		}
-
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		/// <summary>
+		/// Auto-generated Configure() method that gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		/// </summary>
+		/// <param name="app">App of type IApplicationBuilder.</param>
+		/// <param name="env">Environment of type IWebHostEnvironment.</param>
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
+			// If DEV environment use the DEV exception page:
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
 			}
+			// Else use the Error page:
 			else
 			{
 				app.UseExceptionHandler("/Error");
 				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
-
+			// Add https redirection, static file serving, SPA static files, CORS, routing, authentication, authorization, and cookie policy to our app:
 			app.UseHttpsRedirection();
 			app.UseStaticFiles();
 			app.UseSpaStaticFiles();
@@ -136,14 +160,14 @@ namespace Bootleg
 			app.UseAuthentication();
 			app.UseAuthorization();
 			app.UseCookiePolicy();
-
+			// Specify to use endpoints on our app with route pattern:
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllerRoute(
 					name: "default",
 					pattern: "{controller}/{action=Index}/{id?}");
 			});
-
+			// Specify to use SPA and source path:
 			app.UseSpa(spa =>
 			{
 				spa.Options.SourcePath = "ClientApp";

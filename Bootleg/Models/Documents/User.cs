@@ -2,8 +2,16 @@
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 
+// Trevor Moore
+// CST-451
+// 12/9/2019
+// This is my own work.
+
 namespace Bootleg.Models.Documents
 {
+	/// <summary>
+	/// User class that will be stored as a document in the database.
+	/// </summary>
 	public class User
 	{
 		[BsonId]
