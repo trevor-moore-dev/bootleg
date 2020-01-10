@@ -5,9 +5,10 @@ import clsx from "clsx";
 import Logo from "./Logo";
 import useAuth from "../hooks/useAuth";
 import Cookies from "js-cookie";
-import { Avatar, Box, Menu, MenuItem, Grid, IconButton, Button, Toolbar, AppBar } from "@material-ui/core";
+import { Avatar, Box, Menu, MenuItem, Grid, IconButton, Toolbar, AppBar, Switch } from "@material-ui/core";
 import DropDownArrow from "@material-ui/icons/ArrowDropDown";
 import '../resources/css/site.css';
+import { useTheme } from "../containers/ThemeContext";
 
 // Trevor Moore
 // CST-451
@@ -20,7 +21,7 @@ const drawerWidth = 240;
 // Create CSS styles:
 const useStyles = makeStyles(theme => ({
 	appBarShift: {
-		backgroundColor: 'white',
+		backgroundColor: theme.background,
 		width: `calc(100% - ${drawerWidth}px)`,
 		marginLeft: drawerWidth,
 		transition: theme.transitions.create(["margin", "width"], {
@@ -33,6 +34,7 @@ const useStyles = makeStyles(theme => ({
 // Nav Bar component for the top of the web app:
 export default function NavigationBar({ handleDrawerOpen, open }) {
 	// Create our styles and declare our state properties:
+	const themeState = useTheme();
 	const classes = useStyles();
 	const { logout, authState } = useAuth();
 	const [avatarUrl, setAvatarUrl] = useState("");
@@ -89,6 +91,11 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 									<MenuIcon />
 								</IconButton>
 							) : (<></>)}
+							<Switch
+								checked={themeState.isDark}
+								onChange={() => themeState.toggle()}
+								color="default"
+							/>
 						</Grid>
 						<Grid item>
 							<Logo />
