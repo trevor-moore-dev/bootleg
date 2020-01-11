@@ -8,7 +8,7 @@ import Cookies from "js-cookie";
 import { Avatar, Box, Menu, MenuItem, Grid, IconButton, Toolbar, AppBar, Switch } from "@material-ui/core";
 import DropDownArrow from "@material-ui/icons/ArrowDropDown";
 import '../resources/css/site.css';
-import { useTheme } from "../containers/ThemeContext";
+import ToggleTheme from '../components/ToggleTheme';
 
 // Trevor Moore
 // CST-451
@@ -34,7 +34,6 @@ const useStyles = makeStyles(theme => ({
 // Nav Bar component for the top of the web app:
 export default function NavigationBar({ handleDrawerOpen, open }) {
 	// Create our styles and declare our state properties:
-	const themeState = useTheme();
 	const classes = useStyles();
 	const { logout, authState } = useAuth();
 	const [avatarUrl, setAvatarUrl] = useState("");
@@ -91,11 +90,7 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 									<MenuIcon />
 								</IconButton>
 							) : (<></>)}
-							<Switch
-								checked={themeState.isDark}
-								onChange={() => themeState.toggle()}
-								color="default"
-							/>
+							<ToggleTheme />
 						</Grid>
 						<Grid item>
 							<Logo />

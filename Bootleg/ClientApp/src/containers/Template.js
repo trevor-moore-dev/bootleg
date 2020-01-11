@@ -42,11 +42,6 @@ const useStyles = makeStyles(theme => ({
 	toolbar: theme.mixins.toolbar,
 	root: {
 		padding: theme.spacing(2)
-	},
-	stickToBottom: {
-		width: '100%',
-		position: 'fixed',
-		bottom: 0,
 	}
 }));
 
@@ -122,7 +117,7 @@ export default function Template() {
 								<Login />
 							</div>
 						</main>
-						<BottomNavigation value={value} onChange={handleChange} className={classes.stickToBottom}>
+						<BottomNavigation value={value} onChange={handleChange}>
 							<BottomNavigationAction label="" value="recents" icon={<RestoreIcon />} />
 							<BottomNavigationAction label="" value="favorites" icon={<FavoriteIcon />} />
 							<BottomNavigationAction label="" value="nearby" icon={<LocationOnIcon />} />

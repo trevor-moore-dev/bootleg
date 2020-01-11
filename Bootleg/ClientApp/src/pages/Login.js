@@ -26,23 +26,9 @@ import config from "../config.json";
 // 12/9/2019
 // This is my own work.
 
-// Create CSS styles:
-const useStyles = makeStyles(theme => ({
-	form: {
-		marginTop: theme.spacing(2)
-	},
-	submit: {
-		marginTop: theme.spacing(2)
-	},
-	formControl: {
-		marginTop: theme.spacing(2)
-	}
-}));
-
 // Login component for rendering our login and register markup:
 export default function Login() {
-	// Create our styles and declare our state properties with the useState Hooks API:
-	const classes = useStyles();
+	// Create our state properties with the useState Hooks API:
 	const [email, setEmail] = useState("");
 	const [emailValidationError, setEmailValidationError] = useState("");
 	const [phone, setPhone] = useState("");
@@ -266,14 +252,13 @@ export default function Login() {
 		>
 			<Grid container spacing={3}>
 				<Grid item xs={12} sm={6}>
-					<Card className={classes.card}>
+					<Card>
 						<CardContent>
-							<Box display="flex" flexDirection="column" className={classes.form}>
-								<Typography variant="h6" color="primary" align="center">Login</Typography>
+							<Box display="flex" flexDirection="column">
+								<Typography variant="h6" align="center">Login</Typography>
 								<TextField
 									autoFocus
 									label="Username or Email"
-									className={classes.textField}
 									value={loginUsername}
 									onChange={handleLoginUsernameChange}
 									margin="normal"
@@ -285,7 +270,6 @@ export default function Login() {
 								<TextField
 									label="Password"
 									type="password"
-									className={classes.textField}
 									value={loginPassword}
 									onChange={handleLoginPasswordChange}
 									margin="normal"
@@ -296,9 +280,7 @@ export default function Login() {
 								</div>
 
 								<Button
-									color="primary"
 									variant="contained"
-									className={classes.submit}
 									onClick={handleLoginSubmit}
 									disabled={submitting}
 								>
@@ -309,14 +291,13 @@ export default function Login() {
 					</Card>
 				</Grid>
 				<Grid item xs={12} sm={6}>
-					<Card className={classes.card}>
+					<Card>
 						<CardContent>
-							<Box display="flex" flexDirection="column" className={classes.form}>
-								<Typography variant="h6" color="primary" align="center">Sign Up</Typography>
+							<Box display="flex" flexDirection="column">
+								<Typography variant="h6" align="center">Sign Up</Typography>
 								<TextField
 									label="Email"
 									type="email"
-									className={classes.textField}
 									value={email}
 									onChange={handleEmailChange}
 									margin="normal"
@@ -327,7 +308,6 @@ export default function Login() {
 								</div>
 								<TextField
 									label="Phone"
-									className={classes.textField}
 									value={phone}
 									onChange={handlePhoneChange}
 									margin="normal"
@@ -338,7 +318,6 @@ export default function Login() {
 								</div>
 								<TextField
 									label="Username"
-									className={classes.textField}
 									value={username}
 									onChange={handleUsernameChange}
 									margin="normal"
@@ -350,7 +329,6 @@ export default function Login() {
 								<TextField
 									label="Password"
 									type="password"
-									className={classes.textField}
 									value={password}
 									onChange={handlePasswordChange}
 									margin="normal"
@@ -361,9 +339,7 @@ export default function Login() {
 								</div>
 
 								<Button
-									color="primary"
 									variant="contained"
-									className={classes.submit}
 									onClick={handleRegisterSubmit}
 									disabled={submitting}
 								>
