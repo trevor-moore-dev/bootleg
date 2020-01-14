@@ -3,13 +3,18 @@ import { createMuiTheme } from "@material-ui/core/styles";
 // Trevor Moore
 // CST-451
 // 12/9/2019
-// Coded in collaboration with Jordan Riley at OpportunityHack 2019. Class is "boiler plate" / standard / reusable code.
+// This is my own work.
 
 // Create dark & light mode CSS site-wide themes:
 export const lightTheme = createMuiTheme({
   background: "#F8F8F9",
   gradient: "linear-gradient(#091236, #1E215D)",
   text: "rgb(60,60,60)",
+  general: {
+    dark: "rgb(255,255,255)",
+    medium: "rgb(147,112,219)",
+    light: "#363537"
+  },
   palette: {
     primary: {
       light: "rgb(60,60,60)",
@@ -69,6 +74,11 @@ export const darkTheme = createMuiTheme({
   background: "#363537",
   gradient: "linear-gradient(#DE4DAA, #F6D327)",
   text: "rgb(255,255,255)",
+  general: {
+    dark: "#363537",
+    medium: "rgb(147,112,219)",
+    light: "rgb(255,255,255)"
+  },
   button: {
     text: "rgb(255,255,255)",
     background: "rgb(147,112,219)"

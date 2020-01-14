@@ -33,6 +33,9 @@ const useStyles = makeStyles(theme => ({
 		justifyContent: "center",
 		alignItems: "center",
 		display: "flex"
+	},
+	text: {
+		color: theme.text
 	}
 }));
 
@@ -129,7 +132,7 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 											horizontal: "center"
 										}}
 									>
-										<MenuItem onClick={handleLogout}>Logout</MenuItem>
+										<MenuItem onClick={handleLogout} className={classes.text}>Logout</MenuItem>
 									</Menu>
 								</>
 							) : (<></>)}

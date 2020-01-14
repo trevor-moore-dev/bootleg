@@ -96,7 +96,7 @@ export default function Template() {
 							<Routes />
 						</div>
 					</main>
-					<BottomNavigation value={value} onChange={handleChange} className={classes.stickToBottom}>
+					<BottomNavigation value={value} onChange={handleChange}>
 						<BottomNavigationAction label="" value="home" icon={<HomeIcon />} />
 						<BottomNavigationAction label="" value="search" icon={<SearchIcon />} />
 						<BottomNavigationAction label="" value="newpost" icon={<AddCircleOutlineIcon />} />

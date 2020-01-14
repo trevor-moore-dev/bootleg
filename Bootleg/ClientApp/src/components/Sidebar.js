@@ -67,7 +67,10 @@ const useStyles = makeStyles(theme => ({
     marginLeft: 0
   },
   icon: {
-    color: theme.palette.primary.light
+      color: theme.general.medium
+  },
+  chevron: {
+    color: theme.general.light
   },
   nested: {
     paddingLeft: theme.spacing(4)
@@ -92,8 +95,8 @@ export default function Sidebar({ open, handleDrawerClose }) {
       }}
     >
       <div className={classes.drawerHeader}>
-        <IconButton onClick={handleDrawerClose}>
-          <ChevronLeftIcon className={classes.icon} />
+        <IconButton onClick={handleDrawerClose} className={classes.chevron}>
+          <ChevronLeftIcon />
         </IconButton>
       </div>
       <Divider />
