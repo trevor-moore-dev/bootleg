@@ -8,10 +8,12 @@ import useAuth from "../hooks/useAuth";
 import Login from "../pages/Login";
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
-import FolderIcon from '@material-ui/icons/Folder';
-import RestoreIcon from '@material-ui/icons/Restore';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
+import MailIcon from '@material-ui/icons/Mail';
+import HomeIcon from '@material-ui/icons/Home';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import SearchIcon from '@material-ui/icons/Search';
+import InfoIcon from '@material-ui/icons/Info';
 
 // Trevor Moore
 // CST-451
@@ -51,7 +53,7 @@ export default function Template() {
 	const classes = useStyles();
 	const [open, setOpen] = useState(false);
 	const { authState, getToken } = useAuth();
-	const [value, setValue] = React.useState('recents');
+	const [value, setValue] = React.useState('home');
 
 	// Method for handling when buttons are clicked on the bottom navigation bar:
 	const handleChange = (event, newValue) => {
@@ -95,10 +97,11 @@ export default function Template() {
 						</div>
 					</main>
 					<BottomNavigation value={value} onChange={handleChange} className={classes.stickToBottom}>
-						<BottomNavigationAction label="" value="recents" icon={<RestoreIcon />} />
-						<BottomNavigationAction label="" value="favorites" icon={<FavoriteIcon />} />
-						<BottomNavigationAction label="" value="nearby" icon={<LocationOnIcon />} />
-						<BottomNavigationAction label="" value="folder" icon={<FolderIcon />} />
+						<BottomNavigationAction label="" value="home" icon={<HomeIcon />} />
+						<BottomNavigationAction label="" value="search" icon={<SearchIcon />} />
+						<BottomNavigationAction label="" value="newpost" icon={<AddCircleOutlineIcon />} />
+						<BottomNavigationAction label="" value="messages" icon={<MailIcon />} />
+						<BottomNavigationAction label="" value="account" icon={<AccountCircleIcon />} />
 					</BottomNavigation>
 				</>
 			) : (
@@ -118,10 +121,8 @@ export default function Template() {
 							</div>
 						</main>
 						<BottomNavigation value={value} onChange={handleChange}>
-							<BottomNavigationAction label="" value="recents" icon={<RestoreIcon />} />
-							<BottomNavigationAction label="" value="favorites" icon={<FavoriteIcon />} />
-							<BottomNavigationAction label="" value="nearby" icon={<LocationOnIcon />} />
-							<BottomNavigationAction label="" value="folder" icon={<FolderIcon />} />
+							<BottomNavigationAction label="" value="home" icon={<HomeIcon />} />
+							<BottomNavigationAction label="" value="info" icon={<InfoIcon />} />
 						</BottomNavigation>
 					</>
 				)}

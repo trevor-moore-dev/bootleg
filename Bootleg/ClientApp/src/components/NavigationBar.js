@@ -28,6 +28,11 @@ const useStyles = makeStyles(theme => ({
 			easing: theme.transitions.easing.easeOut,
 			duration: theme.transitions.duration.enteringScreen
 		})
+	},
+	menuItem: {
+		justifyContent: "center",
+		alignItems: "center",
+		display: "flex"
 	}
 }));
 
@@ -79,18 +84,20 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 						alignItems="center"
 						container
 					>
-						<Grid item>
+						<Grid item className={classes.menuItem}>
 							{!open && authState.isAuthenticated ? (
-								<IconButton
-									edge="start"
-									color="inherit"
-									aria-label="Menu"
-									onClick={handleDrawerOpen}
-								>
-									<MenuIcon />
-								</IconButton>
-							) : (<></>)}
-							<ToggleTheme />
+								<>
+									<IconButton
+										edge="start"
+										color="inherit"
+										aria-label="Menu"
+										onClick={handleDrawerOpen}
+									>
+										<MenuIcon />
+									</IconButton>
+									<ToggleTheme />
+								</>
+							) : (<><ToggleTheme /></>)}
 						</Grid>
 						<Grid item>
 							<Logo />
@@ -125,9 +132,7 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 										<MenuItem onClick={handleLogout}>Logout</MenuItem>
 									</Menu>
 								</>
-							) : (
-									<></>
-								)}
+							) : (<></>)}
 						</Grid>
 					</Grid>
 				</Toolbar>

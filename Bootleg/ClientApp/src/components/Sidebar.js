@@ -6,13 +6,14 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import HomeIcon from "@material-ui/icons/Home";
+import MailIcon from '@material-ui/icons/Mail';
+import HomeIcon from '@material-ui/icons/Home';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import SearchIcon from '@material-ui/icons/Search';
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import { Link } from "react-router-dom";
-import EqualizerIcon from "@material-ui/icons/Equalizer";
-import DataIcon from "@material-ui/icons/DataUsage";
-import CreateIcon from "@material-ui/icons/Create";
 import { useLocation } from "react-router";
 
 // Trevor Moore
@@ -115,9 +116,9 @@ export default function Sidebar({ open, handleDrawerClose }) {
           selected={location.pathname === "/test1"}
         >
           <ListItemIcon className={classes.icon}>
-            <DataIcon />
+            <SearchIcon />
           </ListItemIcon>
-          <ListItemText primary={"Bootleg"} />
+          <ListItemText primary={"Explore"} />
         </ListItem>
         <ListItem
           button
@@ -126,9 +127,9 @@ export default function Sidebar({ open, handleDrawerClose }) {
           selected={location.pathname === "/test2"}
         >
           <ListItemIcon className={classes.icon}>
-            <EqualizerIcon />
+            <AddCircleOutlineIcon />
           </ListItemIcon>
-          <ListItemText primary={"Account"} />
+          <ListItemText primary={"Create Post"} />
         </ListItem>
         <ListItem
           button
@@ -137,9 +138,20 @@ export default function Sidebar({ open, handleDrawerClose }) {
           selected={location.pathname === "/test3"}
         >
           <ListItemIcon className={classes.icon}>
-            <CreateIcon className={classes.icon} />
+            <MailIcon />
           </ListItemIcon>
           <ListItemText primary={"Messages"} />
+        </ListItem>
+        <ListItem
+            button
+            component={Link}
+            to="/"
+            selected={location.pathname === "/test4"}
+        >
+            <ListItemIcon className={classes.icon}>
+              <AccountCircleIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Account"} />
         </ListItem>
       </List>
     </Drawer>
