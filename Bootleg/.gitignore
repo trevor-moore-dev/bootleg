@@ -234,5 +234,7 @@ _Pvt_Extensions
 # ignore appsettings
 **/appsettings.Development.json
 **/appsettings.json
+/appsettings.Development.json
+/appsettings.json
 
 **/Properties/
