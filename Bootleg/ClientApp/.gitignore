@@ -22,13 +22,5 @@ yarn-error.log*
 
 # config
 /src/config.json
-**/package.json
-**/package-lock.json
-/package.json
-/package-lock.json
-!*/package.json
-!*/package-lock.json
 package.json
 package-lock.json
-!/package.json
-!/package-lock.json
