@@ -24,3 +24,14 @@ yarn-error.log*
 /src/config.json
 /package.json
 /package-lock.json
+
+**/package.json
+**/package-lock.json
+/package.json
+/package-lock.json
+!*/package.json
+!*/package-lock.json
+package.json
+package-lock.json
+!/package.json
+!/package-lock.json
