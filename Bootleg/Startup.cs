@@ -19,6 +19,7 @@ using Bootleg.Services.Business.Interfaces;
 using Bootleg.Models.Documents;
 using Bootleg.Models.DTO;
 using System.Collections.Generic;
+using Bootleg.Services.Business;
 
 // Trevor Moore
 // CST-451
@@ -113,6 +114,9 @@ namespace Bootleg
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
 					Configuration["ConnectionStrings:LocalMongoDBCollection"]));
+				services.AddSingleton<IBlobService, BlobService>(service => new BlobService(
+					Configuration["ConnectionStrings:AzureBlobStorageConnection"],
+					Configuration["ConnectionStrings:BlobStorageContainer"]));
 			}
 			else
 			{
@@ -121,6 +125,9 @@ namespace Bootleg
 					Configuration["ConnectionStrings:HerokuMongoDBConnection"],
 					Configuration["ConnectionStrings:HerokuMongoDBDatabase"],
 					Configuration["ConnectionStrings:HerokuMongoDBCollection"]));
+				services.AddSingleton<IBlobService, BlobService>(service => new BlobService(
+					Configuration["ConnectionStrings:AzureBlobStorageConnection"],
+					Configuration["ConnectionStrings:BlobStorageContainer"]));
 			}
 			// Inject our Authentication service as a Singleton:
 			services.AddSingleton<IAuthenticationService, AuthenticationService>();

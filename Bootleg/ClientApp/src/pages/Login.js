@@ -13,7 +13,6 @@ import {
 	DialogContent,
 	DialogActions
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
 import useRequest from "../hooks/useRequest";
 import useAuth from "../hooks/useAuth";
 import Avatar from "@material-ui/core/Avatar";

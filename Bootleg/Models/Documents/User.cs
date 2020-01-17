@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 // Trevor Moore
@@ -31,5 +32,14 @@ namespace Bootleg.Models.Documents
 		public string Phone { get; set; }
 		[BsonRequired]
 		public byte[] Salt { get; set; }
+		public string Bio { get; set; }
+		public string ProfilePic { get; set; }
+		public List<string> Following { get; set; }
+		public List<string> Followers { get; set; }
+		public List<string> PostedContent { get; set; }
+		public List<string> SavedContent { get; set; }
+		public List<string> LikedContent { get; set; }
+		public List<string> DislikedContent { get; set; }
+		public List<string> DirectMessages { get; set; }
 	}
 }
