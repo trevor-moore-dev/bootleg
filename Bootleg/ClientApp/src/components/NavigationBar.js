@@ -153,19 +153,19 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 							<MailIcon />
 						</Badge>
 					</IconButton>
-					<p>Messages</p>
+					<p color="secondary">Messages</p>
 				</MenuItem>
 				<MenuItem>
 					<IconButton color="inherit">
 						<AccountCircle />
 					</IconButton>
-					<p>Account</p>
+					<p color="secondary">Account</p>
 				</MenuItem>
 				<MenuItem onClick={() => themeState.toggle()}>
 					<IconButton color="inherit">
 						{themeState.isDark ? <Brightness5Icon /> : <Brightness4Icon />}
 					</IconButton>
-					<p>{themeState.isDark ? 'Light Mode' : 'Dark Mode'}</p>
+					<p color="secondary">{themeState.isDark ? 'Light Mode' : 'Dark Mode'}</p>
 				</MenuItem>
 			</Menu>
 		</div>

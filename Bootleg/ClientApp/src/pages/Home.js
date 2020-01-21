@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
-import useRequest from '../hooks/useRequest';
 import config from '../config.json';
+import useRequest from '../hooks/useRequest';
 import {
 	Typography,
 	Box,
@@ -24,10 +24,8 @@ const useStyles = makeStyles(theme => ({
 // Home component for rendering the home page:
 export default function Home() {
 	const classes = useStyles();
-	const { get, post } = useRequest();
-	const brand = 'Hello! This is bootleg.';
-	const [file, setFile] = useState({});
 	const [uploads, setUploads] = useState([]);
+	const { get, post } = useRequest();
 
 	useEffect(() => {
 		async function getUploads() {
@@ -44,43 +42,6 @@ export default function Home() {
 		return () => { };
 	}, []);
 
-	const handleFileChange = e => {
-		setFile(e.target.files[0]);
-	};
-
-	// Function for handling when the user submits the register form:
-	const uploadFile = async () => {
-
-		//const response = await post(config.CONTENT_UPLOAD_CONTENT_POST, {
-		//Data: file
-		//});
-		let form = new FormData();
-
-		form.append('file', file);
-
-		let response = await post(config.CONTENT_UPLOAD_CONTENT_POST, form)
-			.catch((ex) => {
-				console.error(ex);
-			});
-		/**
-		await Axios.post(config.CONTENT_UPLOAD_CONTENT_POST, formData)
-			.then(res => {
-				response = res.data;
-			})
-			// Catch any errors and format them:
-			.catch(error => {
-				alert(error);
-			});
-			**/
-		// If Request was successful:
-		if (response.success) {
-			alert('success :)');
-		}
-
-
-	};
-
-
 	return (
 		<Box
 			display='flex'
@@ -88,22 +49,6 @@ export default function Home() {
 			alignItems='center'
 			justifyContent='center'
 		>
-			<Typography variant='h4' gutterBottom>
-				{brand}
-			</Typography>
-			<Card>
-				<CardContent>
-					<Box display='flex' flexDirection='column'>
-						<input type='file' onChange={handleFileChange} />
-						<Button
-							variant='contained'
-							onClick={uploadFile}
-						>
-							Upload
-					  	</Button>
-					</Box>
-				</CardContent>
-			</Card>
 			{uploads.map(uri => (
 				<Card key={uri}>
 					<CardContent>

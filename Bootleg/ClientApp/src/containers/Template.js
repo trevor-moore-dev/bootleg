@@ -1,11 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import NavigationBar from "../components/NavigationBar";
+import ContentUpload from "../components/ContentUpload";
 import Routes from "./Routes";
 import { makeStyles } from "@material-ui/core/styles";
 import useAuth from "../hooks/useAuth";
 import Login from "../pages/Login";
-import Fab from '@material-ui/core/Fab';
 import EditIcon from '@material-ui/icons/Edit';
+import CloseIcon from '@material-ui/icons/Close';
+import {
+	Fab,
+	Typography,
+	IconButton,
+	Snackbar,
+	SnackbarContent,
+	Button,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogContentText,
+	DialogTitle,
+	FormControl,
+	FormControlLabel,
+	InputLabel,
+	MenuItem,
+	Select,
+	Switch
+} from '@material-ui/core';
 
 // Trevor Moore
 // CST-451
@@ -15,17 +35,6 @@ import EditIcon from '@material-ui/icons/Edit';
 // Create CSS styles:
 const useStyles = makeStyles(theme => ({
 	toolbar: theme.mixins.toolbar,
-	fab: {
-		margin: theme.spacing(1),
-		position: "fixed",
-		bottom: theme.spacing(2),
-		right: theme.spacing(3),
-		color: theme.button.text,
-		backgroundColor: theme.button.background,
-		"&:hover": {
-			backgroundColor: theme.button.hover
-		}
-	},
 	root: {
 		padding: theme.spacing(2)
 	}
@@ -52,10 +61,7 @@ export default function Template() {
 							<Routes />
 						</div>
 					</main>
-					{/** Snackbar or Dialog here for post input */}
-					<Fab className={classes.fab}>
-						<EditIcon />
-					</Fab>
+					<ContentUpload />
 				</>
 			) : (
 					<>

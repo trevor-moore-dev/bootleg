@@ -186,6 +186,11 @@ export const darkTheme = createMuiTheme({
       root: {
         justifyContent: "center"
       }
+    },
+    MuiSnackbar: {
+      anchorOriginBottomCenter: {
+
+      }
     }
   }
 });
