@@ -15,6 +15,11 @@ export const lightTheme = createMuiTheme({
     medium: "rgb(147,112,219)",
     light: "#363537"
   },
+  button: {
+    text: "rgb(255,255,255)",
+    background: "rgb(147,112,219)",
+    hover: "rgb(113,80,181)"
+  },
   palette: {
     primary: {
       light: "rgb(60,60,60)",
@@ -32,14 +37,6 @@ export const lightTheme = createMuiTheme({
     MuiSwitch: {
       thumb: {
         color: "#363537"
-      }
-    },
-    MuiBottomNavigation: {
-      root: {
-        width: '100%',
-        position: 'fixed',
-        bottom: 0,
-        backgroundColor: "rgb(255,255,255)",
       }
     },
     MuiInputLabel: {
@@ -66,6 +63,11 @@ export const lightTheme = createMuiTheme({
       root: {
         backgroundColor: "rgb(255,255,255)"
       }
+    },
+    MuiToolbar: {
+      root: {
+        justifyContent: "center"
+      }
     }
   }
 });
@@ -81,7 +83,8 @@ export const darkTheme = createMuiTheme({
   },
   button: {
     text: "rgb(255,255,255)",
-    background: "rgb(147,112,219)"
+    background: "rgb(147,112,219)",
+    hover: "rgb(113,80,181)"
   },
   palette: {
     primary: {
@@ -106,26 +109,6 @@ export const darkTheme = createMuiTheme({
       },
       track: {
         backgroundColor: "rgb(255,255,255)"
-      }
-    },
-    MuiBottomNavigation: {
-      root: {
-        width: '100%',
-        position: 'fixed',
-        bottom: 0,
-        backgroundColor: "#363537",
-      }
-    },
-    MuiBottomNavigationAction: {
-      root: {
-        color: "rgb(255,255,255)",
-        '&$selected': {
-          color: "rgb(255,255,255)"
-        },
-        selected: {},
-      },
-      iconOnly: {
-        color: "rgb(147,112,219)"
       }
     },
     MuiTextField: {
@@ -197,6 +180,11 @@ export const darkTheme = createMuiTheme({
     MuiPaper: {
       root: {
         backgroundColor: "#363537"
+      }
+    },
+    MuiToolbar: {
+      root: {
+        justifyContent: "center"
       }
     }
   }

@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function ToggleTheme() {
     const themeState = useTheme();
-    const classes = useStyles(themeState.isDark);
+    const classes = useStyles();
     return (
         <button
             className={classes.toggleTheme}

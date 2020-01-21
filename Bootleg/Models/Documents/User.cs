@@ -33,13 +33,13 @@ namespace Bootleg.Models.Documents
 		[BsonRequired]
 		public byte[] Salt { get; set; }
 		public string Bio { get; set; }
-		public string ProfilePic { get; set; }
-		public List<string> Following { get; set; }
-		public List<string> Followers { get; set; }
-		public List<string> PostedContent { get; set; }
-		public List<string> SavedContent { get; set; }
-		public List<string> LikedContent { get; set; }
-		public List<string> DislikedContent { get; set; }
-		public List<string> DirectMessages { get; set; }
+		public string ProfilePicUri { get; set; }
+		public List<string> FollowingIds { get; set; }
+		public List<string> FollowerIds { get; set; }
+		public List<string> PostedContentIds { get; set; }
+		public List<string> SavedContentIds { get; set; }
+		public List<string> LikedContentIds { get; set; }
+		public List<string> DislikedContentIds { get; set; }
+		public List<string> DirectMessageIds { get; set; }
 	}
 }

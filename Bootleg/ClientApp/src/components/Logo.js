@@ -7,7 +7,7 @@ import BootlegLogo from "../resources/images/BootlegLogo.PNG";
 // Trevor Moore
 // CST-451
 // 12/9/2019
-// Coded in collaboration with Jordan Riley at OpportunityHack 2019. Class is "boiler plate" / standard / reusable code.
+// This is my own work.
 
 /**
  * Use this later for breakpoint CSS:
@@ -20,8 +20,7 @@ import BootlegLogo from "../resources/images/BootlegLogo.PNG";
 const useStyles = makeStyles(theme => ({
   root: {
     textDecoration: "none",
-    color: "white",
-    marginRight: theme.spacing(2)
+    color: "white"
   },
   logo: {
     height: 35,

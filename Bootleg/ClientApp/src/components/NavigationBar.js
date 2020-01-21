@@ -1,41 +1,74 @@
-﻿import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import MenuIcon from "@material-ui/icons/Menu";
-import clsx from "clsx";
+﻿import React from "react";
+import { makeStyles, fade } from "@material-ui/core/styles";
 import Logo from "./Logo";
 import useAuth from "../hooks/useAuth";
-import Cookies from "js-cookie";
-import { Avatar, Box, Menu, MenuItem, Grid, IconButton, Toolbar, AppBar, Switch } from "@material-ui/core";
-import DropDownArrow from "@material-ui/icons/ArrowDropDown";
+import { Menu, MenuItem, IconButton, Toolbar, AppBar } from "@material-ui/core";
 import '../resources/css/site.css';
+import clsx from "clsx";
 import ToggleTheme from '../components/ToggleTheme';
+import InputBase from '@material-ui/core/InputBase';
+import Badge from '@material-ui/core/Badge';
+import SearchIcon from '@material-ui/icons/Search';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import MailIcon from '@material-ui/icons/Mail';
+import MoreIcon from '@material-ui/icons/MoreVert';
+import { useTheme } from "../containers/ThemeContext";
+import Brightness4Icon from '@material-ui/icons/Brightness4';
+import Brightness5Icon from '@material-ui/icons/Brightness5';
 
 // Trevor Moore
 // CST-451
 // 12/9/2019
-// Coded in collaboration with Jordan Riley at OpportunityHack 2019. Class is "boiler plate" / standard / reusable code.
-
-// Define the width for the drawer:
-const drawerWidth = 240;
+// This is my own work.
 
 // Create CSS styles:
 const useStyles = makeStyles(theme => ({
-	appBarShift: {
-		backgroundColor: theme.background,
-		width: `calc(100% - ${drawerWidth}px)`,
-		marginLeft: drawerWidth,
-		transition: theme.transitions.create(["margin", "width"], {
-			easing: theme.transitions.easing.easeOut,
-			duration: theme.transitions.duration.enteringScreen
-		})
+	search: {
+		position: 'relative',
+		borderRadius: theme.shape.borderRadius,
+		backgroundColor: fade(theme.palette.common.white, 0.15),
+		'&:hover': {
+			backgroundColor: fade(theme.palette.common.white, 0.25),
+		},
+		marginLeft: 0,
+		width: '100%',
+		[theme.breakpoints.up('sm')]: {
+			marginLeft: theme.spacing(4),
+			marginRight: theme.spacing(4),
+			width: 'auto',
+		},
 	},
-	menuItem: {
-		justifyContent: "center",
-		alignItems: "center",
-		display: "flex"
+	searchIcon: {
+		width: theme.spacing(7),
+		height: '100%',
+		position: 'absolute',
+		pointerEvents: 'none',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
-	text: {
-		color: theme.text
+	inputRoot: {
+		color: theme.palette.secondary.main,
+	},
+	inputInput: {
+		padding: theme.spacing(1, 1, 1, 7),
+		transition: theme.transitions.create('width'),
+		width: '100%',
+		[theme.breakpoints.up('md')]: {
+			width: 200,
+		},
+	},
+	sectionDesktop: {
+		display: 'none',
+		[theme.breakpoints.up('md')]: {
+			display: 'flex',
+		},
+	},
+	sectionMobile: {
+		display: 'flex',
+		[theme.breakpoints.up('md')]: {
+			display: 'none',
+		},
 	}
 }));
 
@@ -43,32 +76,23 @@ const useStyles = makeStyles(theme => ({
 export default function NavigationBar({ handleDrawerOpen, open }) {
 	// Create our styles and declare our state properties:
 	const classes = useStyles();
+	const themeState = useTheme();
 	const { logout, authState } = useAuth();
-	const [avatarUrl, setAvatarUrl] = useState("");
 	const [anchorEl, setAnchorEl] = React.useState(null);
-
-	// Use the useEffect() Hook API to run after Render has committed to the screen:
-	useEffect(() => {
-		let avatar = Cookies.get("Avatar-Url");
-		if (avatar) setAvatarUrl(avatar);
-		else setAvatarUrl("");
-	}, [authState]);
-
-	// Method for handling when the menu closes:
-	const handleClose = () => {
-		setAnchorEl(null);
-	};
-
-	// Method for handling when the menu is clicked:
-	const handleClick = event => {
-		setAnchorEl(event.currentTarget);
-	};
+	const isMenuOpen = Boolean(anchorEl);
 
 	// Method for handling when the user clicks 'Logout':
 	const handleLogout = () => {
-		// Logout the user and close the menu:
+		// Logout the user:
 		logout();
-		handleClose();
+	};
+
+	const handleMenuClose = () => {
+		setAnchorEl(null);
+	};
+
+	const handleMenuOpen = event => {
+		setAnchorEl(event.currentTarget);
 	};
 
 	// Render our nav bar:
@@ -77,69 +101,73 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 			<AppBar
 				color="secondary"
 				position="fixed"
-				className={clsx(classes.appBar, {
-					[classes.appBarShift]: open
-				})}
+				className={clsx(classes.appBar)}
 			>
-				<Toolbar>
-					<Grid
-						justify="space-between"
-						alignItems="center"
-						container
-					>
-						<Grid item className={classes.menuItem}>
-							{!open && authState.isAuthenticated ? (
-								<>
-									<IconButton
-										edge="start"
-										color="inherit"
-										aria-label="Menu"
-										onClick={handleDrawerOpen}
-									>
-										<MenuIcon />
-									</IconButton>
-									<ToggleTheme />
-								</>
-							) : (<><ToggleTheme /></>)}
-						</Grid>
-						<Grid item>
-							<Logo />
-						</Grid>
-						<Grid item>
-							{authState.isAuthenticated ? (
-								<>
-									<Box display="flex" alignItems="center" onClick={handleClick}>
-										<Avatar
-											alt="Profile"
-											src={avatarUrl}
-											className={classes.avatar}
-										/>
-										<DropDownArrow />
-									</Box>
-									<Menu
-										id="simple-menu"
-										anchorEl={anchorEl}
-										keepMounted
-										open={Boolean(anchorEl)}
-										onClose={handleClose}
-										getContentAnchorEl={null}
-										anchorOrigin={{
-											vertical: "bottom",
-											horizontal: "center"
-										}}
-										transformOrigin={{
-											vertical: "top",
-											horizontal: "center"
-										}}
-									>
-										<MenuItem onClick={handleLogout} className={classes.text}>Logout</MenuItem>
-									</Menu>
-								</>
-							) : (<></>)}
-						</Grid>
-					</Grid>
+				<Toolbar disableGutters={true}>
+					<div className={classes.sectionDesktop}>
+						<ToggleTheme />
+					</div>
+					<Logo />
+					<div className={classes.search}>
+						<div className={classes.searchIcon}>
+							<SearchIcon />
+						</div>
+						<InputBase
+							placeholder="Search"
+							classes={{
+								root: classes.inputRoot,
+								input: classes.inputInput,
+							}}
+						/>
+					</div>
+					<div className={classes.sectionDesktop}>
+						<IconButton color="inherit">
+							<Badge badgeContent={4} color="secondary">
+								<MailIcon />
+							</Badge>
+						</IconButton>
+						<IconButton color="inherit">
+							<AccountCircle />
+						</IconButton>
+					</div>
+					<div className={classes.sectionMobile}>
+						<IconButton
+							onClick={handleMenuOpen}
+							color="inherit"
+						>
+							<MoreIcon />
+						</IconButton>
+					</div>
 				</Toolbar>
 			</AppBar>
+			<Menu
+				anchorEl={anchorEl}
+				anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+				transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+				open={isMenuOpen}
+				onClose={handleMenuClose}
+			>
+				<MenuItem>
+					<IconButton color="inherit">
+						<Badge badgeContent={4} color="secondary">
+							<MailIcon />
+						</Badge>
+					</IconButton>
+					<p>Messages</p>
+				</MenuItem>
+				<MenuItem>
+					<IconButton color="inherit">
+						<AccountCircle />
+					</IconButton>
+					<p>Account</p>
+				</MenuItem>
+				<MenuItem onClick={() => themeState.toggle()}>
+					<IconButton color="inherit">
+						{themeState.isDark ? <Brightness5Icon /> : <Brightness4Icon />}
+					</IconButton>
+					<p>{themeState.isDark ? 'Light Mode' : 'Dark Mode'}</p>
+				</MenuItem>
+			</Menu>
 		</div>
 	);
 }
