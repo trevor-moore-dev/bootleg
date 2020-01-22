@@ -49,12 +49,21 @@ namespace Bootleg.Services.Business.Interfaces
 			// Surround with try/catch:
 			try
 			{
+				var jwt = string.Empty;
 				// Validate the Google token. This will throw an exception if it isn't valid:
 				var payload = await GoogleJsonWebSignature.ValidateAsync(token.TokenId, new GoogleJsonWebSignature.ValidationSettings());
 				// Get all users from the database using dao:
 				var users = await _userDAO.GetAll();
-				// If Google login is already in the db, then we don't need to add them again:
-				if (!users.Data.Any(u => u.Email.EqualsIgnoreCase(payload.Email)))
+				// Find a user match in the database with the same email (case insensitive):
+				var userMatch = users.Data.FirstOrDefault(u => u.Email.EqualsIgnoreCase(payload.Email));
+
+				// If the match isn't null:
+				if (userMatch != null)
+				{
+					// Generate a JWT to login the user:
+					jwt = TokenHelper.GenerateToken(userMatch.Username, AppSettingsModel.AppSettings.JwtSecret, userMatch.Id);
+				}
+				else
 				{
 					// TODO: Email this to user so that they can login with it and change it later.
 					// Generate random temporary password:
@@ -74,9 +83,10 @@ namespace Bootleg.Services.Business.Interfaces
 					};
 					// Add User to the database:
 					await _userDAO.Add(user);
+					// Generate a JWT so that the user can login:
+					jwt = TokenHelper.GenerateToken(payload.Email, AppSettingsModel.AppSettings.JwtSecret, user.Id);
+
 				}
-				// Generate a JWT so that the user can login:
-				var jwt = TokenHelper.GenerateToken(payload.Email, AppSettingsModel.AppSettings.JwtSecret, string.Empty);
 				// Add the token to a cookie, and add their Avatar image to a cookie:
 				CookieHelper.AddCookie(response, "Authorization-Token", jwt);
 				CookieHelper.AddCookie(response, "Avatar-Url", payload.Picture);
@@ -172,7 +182,7 @@ namespace Bootleg.Services.Business.Interfaces
 				if (userMatch != null && userMatch.Password.Equals(SecurityHelper.EncryptPassword(user.Password, userMatch.Salt)))
 				{
 					// Generate a JWT to login the user:
-					var jwt = TokenHelper.GenerateToken(user.Username, AppSettingsModel.AppSettings.JwtSecret, string.Empty);
+					var jwt = TokenHelper.GenerateToken(userMatch.Username, AppSettingsModel.AppSettings.JwtSecret, userMatch.Id);
 					// Add the JWT to a cookie:
 					CookieHelper.AddCookie(response, "Authorization-Token", jwt);
 					// Return successful with the JWT:
@@ -243,7 +253,7 @@ namespace Bootleg.Services.Business.Interfaces
 					// Add User to the database:
 					await _userDAO.Add(user);
 					// Generate JWT to login the user:
-					var jwt = TokenHelper.GenerateToken(user.Email ?? user.Phone, AppSettingsModel.AppSettings.JwtSecret, string.Empty);
+					var jwt = TokenHelper.GenerateToken(user.Email ?? user.Phone, AppSettingsModel.AppSettings.JwtSecret, user.Id);
 					// Add the JWT to a cookie:
 					CookieHelper.AddCookie(response, "Authorization-Token", jwt);
 					// Return successful with the JWT:

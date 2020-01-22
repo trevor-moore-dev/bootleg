@@ -113,7 +113,11 @@ namespace Bootleg
 				services.AddSingleton<IDAO<User, DTO<List<User>>>>(service => new UserDAO(
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
-					Configuration["ConnectionStrings:LocalMongoDBCollection"]));
+					Configuration["ConnectionStrings:LocalMongoDBCollectionOne"]));
+				services.AddSingleton<IDAO<Content, DTO<List<Content>>>>(service => new ContentDAO(
+					Configuration["ConnectionStrings:LocalMongoDBConnection"],
+					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
+					Configuration["ConnectionStrings:LocalMongoDBCollectionTwo"]));
 				services.AddSingleton<IBlobService, BlobService>(service => new BlobService(
 					Configuration["ConnectionStrings:AzureBlobStorageConnection"],
 					Configuration["ConnectionStrings:BlobStorageContainer"]));
@@ -121,16 +125,23 @@ namespace Bootleg
 			else
 			{
 				// Inject our DAO as a Singleton using our LIVE parameters:
+				// TO CHANGE THESE:
 				services.AddSingleton<IDAO<User, DTO<List<User>>>>(service => new UserDAO(
 					Configuration["ConnectionStrings:HerokuMongoDBConnection"],
 					Configuration["ConnectionStrings:HerokuMongoDBDatabase"],
 					Configuration["ConnectionStrings:HerokuMongoDBCollection"]));
+				services.AddSingleton<IDAO<Content, DTO<List<Content>>>>(service => new ContentDAO(
+					Configuration["ConnectionStrings:LocalMongoDBConnection"],
+					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
+					Configuration["ConnectionStrings:LocalMongoDBCollectionOne"]));
 				services.AddSingleton<IBlobService, BlobService>(service => new BlobService(
 					Configuration["ConnectionStrings:AzureBlobStorageConnection"],
 					Configuration["ConnectionStrings:BlobStorageContainer"]));
 			}
 			// Inject our Authentication service as a Singleton:
 			services.AddSingleton<IAuthenticationService, AuthenticationService>();
+			// Inject our Content service as a Singleton:
+			services.AddSingleton<IContentService, ContentService>();
 			// Inject our Prediction service as a Singleton:
 			services.AddSingleton<IPredictionService, PredictionService>();
 			// In production, the React files will be served from this directory:

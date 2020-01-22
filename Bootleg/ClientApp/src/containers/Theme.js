@@ -187,9 +187,14 @@ export const darkTheme = createMuiTheme({
         justifyContent: "center"
       }
     },
-    MuiSnackbar: {
-      anchorOriginBottomCenter: {
-
+    MuiIconButton: {
+      colorPrimary: {
+        color: "rgb(147,112,219)"
+      }
+    },
+    MuiSnackbarContent: {
+      message: {
+        width: "100%"
       }
     }
   }

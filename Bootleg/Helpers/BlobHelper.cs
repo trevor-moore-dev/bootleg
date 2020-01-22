@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bootleg.Extensions;
+using System;
 using System.IO;
 
 // Trevor Moore
@@ -20,6 +21,22 @@ namespace Bootleg.Helpers
 
             // this is the randomly generated file name that we will store in the db to associate with a user's post, etc.
             return uri;
+        }
+        /// <summary> 
+        /// string GetRandomBlobName(string filename): Generates a unique random file name to be uploaded  
+        /// </summary> 
+        public static bool BlobIsImage(string filename)
+        {
+            string ext = Path.GetExtension(filename);
+
+            if (ext.EqualsIgnoreCase(".jpg") || ext.EqualsIgnoreCase(".jpeg") || ext.EqualsIgnoreCase(".img") || ext.EqualsIgnoreCase(".png"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

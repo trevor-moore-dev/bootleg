@@ -47,10 +47,7 @@ const useStyles = makeStyles(theme => ({
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
-	inputRoot: {
-		color: theme.palette.secondary.main,
-	},
-	inputInput: {
+	searchInput: {
 		padding: theme.spacing(1, 1, 1, 7),
 		transition: theme.transitions.create('width'),
 		width: '100%',
@@ -69,6 +66,9 @@ const useStyles = makeStyles(theme => ({
 		[theme.breakpoints.up('md')]: {
 			display: 'none',
 		},
+	},
+	text: {
+		color: theme.text
 	}
 }));
 
@@ -114,10 +114,7 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 						</div>
 						<InputBase
 							placeholder="Search"
-							classes={{
-								root: classes.inputRoot,
-								input: classes.inputInput,
-							}}
+							classes={{ input: classes.searchInput }}
 						/>
 					</div>
 					<div className={classes.sectionDesktop}>
@@ -148,24 +145,24 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 				onClose={handleMenuClose}
 			>
 				<MenuItem>
-					<IconButton color="inherit">
-						<Badge badgeContent={4} color="secondary">
+					<IconButton color='primary'>
+						<Badge badgeContent={4}>
 							<MailIcon />
 						</Badge>
 					</IconButton>
-					<p color="secondary">Messages</p>
+					<p className={classes.text}>Messages</p>
 				</MenuItem>
 				<MenuItem>
-					<IconButton color="inherit">
+					<IconButton color='primary'>
 						<AccountCircle />
 					</IconButton>
-					<p color="secondary">Account</p>
+					<p className={classes.text}>Account</p>
 				</MenuItem>
 				<MenuItem onClick={() => themeState.toggle()}>
-					<IconButton color="inherit">
+					<IconButton color='primary'>
 						{themeState.isDark ? <Brightness5Icon /> : <Brightness4Icon />}
 					</IconButton>
-					<p color="secondary">{themeState.isDark ? 'Light Mode' : 'Dark Mode'}</p>
+					<p className={classes.text}>{themeState.isDark ? 'Light Mode' : 'Dark Mode'}</p>
 				</MenuItem>
 			</Menu>
 		</div>

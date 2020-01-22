@@ -32,7 +32,7 @@ namespace Bootleg.Services.Business
             }
         }
 
-        public async Task<DTO<Uri>> UploadBlob(IFormFile formFile)
+        public async Task<Uri> UploadBlob(IFormFile formFile)
         {
             Uri uploadedUri = null;
 
@@ -47,11 +47,7 @@ namespace Bootleg.Services.Business
                     uploadedUri = cloudBlockBlob.Uri;
                 }
 
-                return new DTO<Uri>()
-                {
-                    Success = true,
-                    Data = uploadedUri
-                };
+                return uploadedUri;
             }
             catch(Exception e)
             {
