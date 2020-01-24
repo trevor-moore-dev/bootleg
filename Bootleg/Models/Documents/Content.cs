@@ -1,6 +1,7 @@
 ﻿using Bootleg.Models.Enums;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,7 +14,7 @@ namespace Bootleg.Models.Documents
 		public string Id { get; set; }
 		[BsonRequired]
 		public string UserId { get; set; }
-		public string DatePostedUTC { get; set; }
+		public DateTime DatePostedUTC { get; set; }
 		public string UserName { get; set; }
 		public string UserProfilePicUri { get; set; }
 		[Required]

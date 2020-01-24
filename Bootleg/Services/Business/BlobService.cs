@@ -1,5 +1,4 @@
 ﻿using Bootleg.Helpers;
-using Bootleg.Models;
 using Bootleg.Models.Documents;
 using Bootleg.Models.DTO;
 using Bootleg.Services.Business.Interfaces;

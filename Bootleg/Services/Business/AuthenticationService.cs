@@ -28,12 +28,12 @@ namespace Bootleg.Services.Business.Interfaces
 	public class AuthenticationService : IAuthenticationService
 	{
 		// Private readonly data access object to be injected:
-		private readonly IDAO<User, DTO<List<User>>> _userDAO;
+		private readonly IDAO<User> _userDAO;
 		/// <summary>
 		/// Constructor that will instantiate our dependencies that get injected by the container.
 		/// </summary>
 		/// <param name="userDAO">DAO to be injected.</param>
-		public AuthenticationService(IDAO<User, DTO<List<User>>> userDAO)
+		public AuthenticationService(IDAO<User> userDAO)
 		{
 			// Set our dependency:
 			this._userDAO = userDAO;
@@ -55,7 +55,7 @@ namespace Bootleg.Services.Business.Interfaces
 				// Get all users from the database using dao:
 				var users = await _userDAO.GetAll();
 				// Find a user match in the database with the same email (case insensitive):
-				var userMatch = users.Data.FirstOrDefault(u => u.Email.EqualsIgnoreCase(payload.Email));
+				var userMatch = users.FirstOrDefault(u => u.Email.EqualsIgnoreCase(payload.Email));
 
 				// If the match isn't null:
 				if (userMatch != null)
@@ -174,7 +174,7 @@ namespace Bootleg.Services.Business.Interfaces
 				// Get all users from the database using dao:
 				var users = await _userDAO.GetAll();
 				// Find a user match in the database with the same exact username (case sensitive) or the same email (case insensitive):
-				var userMatch = users.Data.FirstOrDefault(u =>
+				var userMatch = users.FirstOrDefault(u =>
 					(u.Email.EqualsIgnoreCase(user.Username)) ||
 					(!string.IsNullOrEmpty(u.Username) && u.Username.Equals(user.Username)));
 				
@@ -228,13 +228,13 @@ namespace Bootleg.Services.Business.Interfaces
 					throw new Exception("Email OR Phone is required.");
 				}
 				// Validate that the new email is not existent in the database:
-				if (users.Data.Any(u => u.Email.EqualsIgnoreCase(user.Email)))
+				if (users.Any(u => u.Email.EqualsIgnoreCase(user.Email)))
 				{
 					// Throw exception if it is:
 					throw new Exception("Email is already in use. Please try again.");
 				}
 				// Validate that username is not existent in the database:
-				else if (users.Data.Any(u => u.Username.EqualsIgnoreCase(user.Username)))
+				else if (users.Any(u => u.Username.EqualsIgnoreCase(user.Username)))
 				{
 					// Throw exception if it is:
 					throw new Exception("Username is already taken. Please try again.");

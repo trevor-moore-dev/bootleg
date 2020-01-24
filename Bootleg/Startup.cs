@@ -106,15 +106,17 @@ namespace Bootleg
 			// Inject our PredictionEnginePool:
 			services.AddPredictionEnginePool<PredictionInput, PredictionOutput>()
 				.FromFile(modelName: "MLModel", filePath: Configuration["MLModels:SentimentMLModelFilePath"], watchForChanges: true);
+			// Add SignalR for web sockets:
+			services.AddSignalR();
 			// Change development environment here (connection string to db or anything else necessary):
 			if (CurrentEnvironment.IsDevelopment())
 			{
-				// Inject our DAO as a Singleton using our DEV parameters:
-				services.AddSingleton<IDAO<User, DTO<List<User>>>>(service => new UserDAO(
+				// Inject our DAOs as Singletons using our DEV parameters:
+				services.AddSingleton<IDAO<User>>(service => new UserDAO(
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
 					Configuration["ConnectionStrings:LocalMongoDBCollectionOne"]));
-				services.AddSingleton<IDAO<Content, DTO<List<Content>>>>(service => new ContentDAO(
+				services.AddSingleton<IDAO<Content>>(service => new ContentDAO(
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
 					Configuration["ConnectionStrings:LocalMongoDBCollectionTwo"]));
@@ -122,12 +124,12 @@ namespace Bootleg
 			else
 			{
 				// Inject our DAO as a Singleton using our LIVE parameters:
-				// TO CHANGE THESE:
-				services.AddSingleton<IDAO<User, DTO<List<User>>>>(service => new UserDAO(
+				// TO DOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO NEED TO CHANGE THESE:
+				services.AddSingleton<IDAO<User>>(service => new UserDAO(
 					Configuration["ConnectionStrings:HerokuMongoDBConnection"],
 					Configuration["ConnectionStrings:HerokuMongoDBDatabase"],
 					Configuration["ConnectionStrings:HerokuMongoDBCollection"]));
-				services.AddSingleton<IDAO<Content, DTO<List<Content>>>>(service => new ContentDAO(
+				services.AddSingleton<IDAO<Content>>(service => new ContentDAO(
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
 					Configuration["ConnectionStrings:LocalMongoDBCollectionOne"]));
@@ -138,6 +140,7 @@ namespace Bootleg
 				Configuration["ConnectionStrings:BlobStorageContainer"]));
 			// Inject our Authentication service as a Singleton:
 			services.AddSingleton<IAuthenticationService, AuthenticationService>();
+			// Inject our User service as a Singleton:
 			services.AddSingleton<IUserService, UserService>();
 			// Inject our Content service as a Singleton:
 			services.AddSingleton<IContentService, ContentService>();
@@ -183,6 +186,7 @@ namespace Bootleg
 				endpoints.MapControllerRoute(
 					name: "default",
 					pattern: "{controller}/{action=Index}/{id?}");
+				//TO DOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO endpoints.MapHub<SantaHub>("/SantaHub");
 			});
 			// Specify to use SPA and source path:
 			app.UseSpa(spa =>

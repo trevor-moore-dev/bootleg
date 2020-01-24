@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
+import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
+import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import config from '../config.json';
 import useRequest from '../hooks/useRequest';
@@ -76,7 +76,7 @@ export default function Home() {
 							<Avatar className={classes.avatar} alt="B" src={content.userProfilePicUri} />
 						}
 						action={
-							<IconButton>
+							<IconButton color="inherit">
 								<MoreVertIcon />
 							</IconButton>
 						}
@@ -105,11 +105,11 @@ export default function Home() {
 						<p className={classes.text}>{content.contentBody}</p>
 					</CardContent>
 					<CardActions disableSpacing>
-						<IconButton aria-label="add to favorites">
-							<FavoriteIcon />
+						<IconButton color="primary">
+							<ThumbUpAltIcon />
 						</IconButton>
-						<IconButton aria-label="share">
-							<ShareIcon />
+						<IconButton color="primary">
+							<ThumbDownAltIcon />
 						</IconButton>
 					</CardActions>
 

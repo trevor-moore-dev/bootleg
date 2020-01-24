@@ -13,15 +13,17 @@ namespace Bootleg.Services.Business
 	public class ContentService : IContentService
 	{
 		// Private readonly data access object to be injected:
-		private readonly IDAO<Content, DTO<List<Content>>> _contentDAO;
+		private readonly IDAO<Content> _contentDAO;
+		private readonly IDAO<User> _userDAO;
 		/// <summary>
 		/// Constructor that will instantiate our dependencies that get injected by the container.
 		/// </summary>
 		/// <param name="contentDAO">DAO to be injected.</param>
-		public ContentService(IDAO<Content, DTO<List<Content>>> contentDAO)
+		public ContentService(IDAO<Content> contentDAO, IDAO<User> userDAO)
 		{
-			// Set our dependency:
-			this._contentDAO = contentDAO;
+			// Set our dependencies:
+			_contentDAO = contentDAO;
+			_userDAO = userDAO;
 		}
 		/// <summary>
 		/// Method for adding content to the db.
@@ -36,7 +38,7 @@ namespace Bootleg.Services.Business
 				content.UserId = user.Id;
 				content.UserName = user.Username;
 				content.UserProfilePicUri = user.ProfilePicUri ?? string.Empty;
-				content.DatePostedUTC = DateTime.UtcNow.ToString();
+				content.DatePostedUTC = DateTime.UtcNow;
 				// Add User to the database:
 				await _contentDAO.Add(content);
 
@@ -68,21 +70,32 @@ namespace Bootleg.Services.Business
 		/// <summary>
 		/// Method for adding content to the db.
 		/// </summary>
-		/// <param name="content">content as type of Content.</param>
+		/// <param name="user">content as type of Content.</param>
 		/// <returns>DTO encapsulating a list of strings of validated token.</returns>
-		public async Task<DTO<List<Content>>> GetAllContent(string userId)
+		public async Task<DTO<List<Content>>> GetAllContent(User user)
 		{
 			// Surround with try/catch:
 			try
 			{
-				var asdf = await _contentDAO.GetAll();
+				var contentIds = new List<string>();
 
-				var result = asdf.Data.Where(x => x.UserId.Equals(userId)).ToList();
+				var followingUsers = await _userDAO.GetAllFromIndexes(user.FollowingIds ?? new List<string>());
+
+				foreach (var followingUser in followingUsers)
+				{
+					// Add content ids of the people current user is following:
+					contentIds.AddRange(followingUser.PostedContentIds ?? new List<string>());
+				}
+				// Add the content ids of the current user's post so they can see what they posted in their feed:
+				contentIds.AddRange(user.PostedContentIds ?? new List<string>());
+
+				var contentList = await _contentDAO.GetAllFromIndexes(contentIds);
+				var orderedList = contentList.OrderByDescending(x => x.DatePostedUTC).Take(100).ToList();
 
 				// Return successful with the JWT:
 				return new DTO<List<Content>>()
 				{
-					Data = result,
+					Data = orderedList,
 					Success = true
 				};
 			}

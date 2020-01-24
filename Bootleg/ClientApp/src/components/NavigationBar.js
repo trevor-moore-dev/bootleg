@@ -11,6 +11,7 @@ import Badge from '@material-ui/core/Badge';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
+import ExploreIcon from '@material-ui/icons/Explore';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { useTheme } from "../containers/ThemeContext";
 import Brightness4Icon from '@material-ui/icons/Brightness4';
@@ -104,9 +105,6 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 				className={clsx(classes.appBar)}
 			>
 				<Toolbar disableGutters={true}>
-					<div className={classes.sectionDesktop}>
-						<ToggleTheme />
-					</div>
 					<Logo />
 					<div className={classes.search}>
 						<div className={classes.searchIcon}>
@@ -119,6 +117,9 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 					</div>
 					<div className={classes.sectionDesktop}>
 						<IconButton color="inherit">
+							<ExploreIcon />
+						</IconButton>
+						<IconButton color="inherit">
 							<Badge badgeContent={4} color="secondary">
 								<MailIcon />
 							</Badge>
@@ -126,6 +127,9 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 						<IconButton color="inherit">
 							<AccountCircle />
 						</IconButton>
+					</div>
+					<div className={classes.sectionDesktop}>
+						<ToggleTheme />
 					</div>
 					<div className={classes.sectionMobile}>
 						<IconButton
@@ -144,6 +148,12 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 				open={isMenuOpen}
 				onClose={handleMenuClose}
 			>
+				<MenuItem>
+					<IconButton color='primary'>
+						<ExploreIcon />
+					</IconButton>
+					<p className={classes.text}>Explore</p>
+				</MenuItem>
 				<MenuItem>
 					<IconButton color='primary'>
 						<Badge badgeContent={4}>

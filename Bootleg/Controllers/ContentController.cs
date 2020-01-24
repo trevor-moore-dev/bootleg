@@ -2,11 +2,9 @@
 using Bootleg.Models;
 using Bootleg.Models.Documents;
 using Bootleg.Models.DTO;
-using Bootleg.Models.Enums;
 using Bootleg.Services.Business.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -82,7 +80,9 @@ namespace Bootleg.Controllers
             {
                 // Return the result of the AuthenticateGoogleToken() method of our service:
                 var authenticate = _authenticationService.AuthenticateToken(token, AppSettingsModel.AppSettings.JwtSecret);
-                return await _contentService.GetAllContent(authenticate.Data[1]);
+                var user = await _userService.GetUser(authenticate.Data[1]);
+                var currentUser = user.Data.FirstOrDefault();
+                return await _contentService.GetAllContent(currentUser);
             }
             // Catch any exceptions:
             catch (Exception ex)

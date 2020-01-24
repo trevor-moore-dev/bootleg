@@ -11,12 +11,12 @@ namespace Bootleg.Services.Business
 	public class UserService :IUserService
 	{
 		// Private readonly data access object to be injected:
-		private readonly IDAO<User, DTO<List<User>>> _userDAO;
+		private readonly IDAO<User> _userDAO;
 		/// <summary>
 		/// Constructor that will instantiate our dependencies that get injected by the container.
 		/// </summary>
 		/// <param name="userDAO">DAO to be injected.</param>
-		public UserService(IDAO<User, DTO<List<User>>> userDAO)
+		public UserService(IDAO<User> userDAO)
 		{
 			// Set our dependency:
 			this._userDAO = userDAO;
@@ -26,7 +26,11 @@ namespace Bootleg.Services.Business
 			try
 			{
 				var result = await _userDAO.GetAll();
-				return result;
+				return new DTO<List<User>>()
+				{
+					Data = result,
+					Success = true
+				};
 			}
 			catch (Exception e)
 			{
@@ -39,7 +43,11 @@ namespace Bootleg.Services.Business
 			try
 			{
 				var result = await _userDAO.Get(userID);
-				return result;
+				return new DTO<List<User>>()
+				{
+					Data = new List<User>() { result },
+					Success = true
+				};
 			}
 			catch (Exception e)
 			{
@@ -52,7 +60,11 @@ namespace Bootleg.Services.Business
 			try
 			{
 				var result = await _userDAO.Update(currentUser.Id, currentUser);
-				return result;
+				return new DTO<List<User>>()
+				{
+					Data = new List<User>() { result },
+					Success = true
+				};
 			}
 			catch (Exception e)
 			{
@@ -64,8 +76,11 @@ namespace Bootleg.Services.Business
 		{
 			try
 			{
-				var result = await _userDAO.Delete(userID);
-				return result;
+				await _userDAO.Delete(userID);
+				return new DTO<List<User>>()
+				{
+					Success = true
+				};
 			}
 			catch (Exception e)
 			{

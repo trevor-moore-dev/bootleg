@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 // Trevor Moore
 // CST-451
@@ -10,37 +11,43 @@ namespace Bootleg.Services.Data.Interfaces
 	/// <summary>
 	/// Interface for defining the contract of every data access object.
 	/// </summary>
-	public interface IDAO<O, D>
+	public interface IDAO<O>
 	{
 		/// <summary>
 		/// Method for getting all data.
 		/// </summary>
-		/// <returns>Generic object.</returns>
-		Task<D> GetAll();
+		/// <returns>List of generic objects.</returns>
+		Task<List<O>> GetAll();
+		/// <summary>
+		/// Method for getting all documents of the indexes passed in.
+		/// </summary>
+		/// <param name="idxs"></param>
+		/// <returns>List of generic objects.</returns>
+		Task<List<O>> GetAllFromIndexes(List<string> idxs);
 		/// <summary>
 		/// Method that will get a document from the database.
 		/// </summary>
 		/// <param name="idx">Index of object of type string.</param>
 		/// <returns>Generic object.</returns>
-		Task<D> Get(string idx);
+		Task<O> Get(string idx);
 		/// <summary>
 		/// Method that will add the document to the database.
 		/// </summary>
 		/// <param name="obj">Object to be added of type generic.</param>
 		/// <returns>Generic object.</returns>
-		Task<D> Add(O obj);
+		Task<O> Add(O obj);
 		/// <summary>
 		/// Method that will update the document in the database.
 		/// </summary>
 		/// <param name="idx">Index of object of type string.</param>
 		/// <param name="obj">Object to be updated of type generic.</param>
 		/// <returns>Generic object.</returns>
-		Task<D> Update(string idx, O obj);
+		Task<O> Update(string idx, O obj);
 		/// <summary>
 		/// Method that will delete the document from the database.
 		/// </summary>
 		/// <param name="idx">Index of object of type string.</param>
 		/// <returns>Generic object.</returns>
-		Task<D> Delete(string idx);
+		Task Delete(string idx);
 	}
 }

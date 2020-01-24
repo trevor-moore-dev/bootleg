@@ -1,6 +1,5 @@
 ﻿using Bootleg.Helpers;
 using Bootleg.Models.Documents;
-using Bootleg.Models.DTO;
 using Bootleg.Services.Data.Interfaces;
 using MongoDB.Driver;
 using System;
@@ -12,7 +11,7 @@ namespace Bootleg.Services.Data
 	/// <summary>
 	/// User DAO for handling all data access concerning the User documents in the database. Implements the IDAO interface.
 	/// </summary>
-	public class ContentDAO : IDAO<Content, DTO<List<Content>>>
+	public class ContentDAO : IDAO<Content>
 	{
 		// Private readonly MongoCollection of users:
 		private readonly IMongoCollection<Content> _content;
@@ -47,7 +46,7 @@ namespace Bootleg.Services.Data
 		/// Method for getting all data.
 		/// </summary>
 		/// <returns>DTO encapsulating a List of type User.</returns>
-		public async Task<DTO<List<Content>>> GetAll()
+		public async Task<List<Content>> GetAll()
 		{
 			// Surround with try/catch:
 			try
@@ -57,11 +56,33 @@ namespace Bootleg.Services.Data
 				// Convert to list:
 				var contentList = await content.ToListAsync();
 				// Return DTO with encapsulated data:
-				return new DTO<List<Content>>()
-				{
-					Data = contentList,
-					Success = true
-				};
+				return contentList;
+			}
+			// Catch any exceptions:
+			catch (Exception e)
+			{
+				// Log the exception:
+				LoggerHelper.Log(e);
+				// Throw the exception:
+				throw e;
+			}
+		}
+		/// <summary>
+		/// Method for getting all data.
+		/// </summary>
+		/// <returns>DTO encapsulating a List of type User.</returns>
+		public async Task<List<Content>> GetAllFromIndexes(List<string> indexes)
+		{
+			// Surround with try/catch:
+			try
+			{
+				var filterDefinition = new FilterDefinitionBuilder<Content>();
+				var filter = filterDefinition.In(x => x.Id, indexes);
+				var content = await _content.FindAsync(filter);
+				// Convert to list:
+				var contentList = await content.ToListAsync();
+				// Return DTO with encapsulated data:
+				return contentList;
 			}
 			// Catch any exceptions:
 			catch (Exception e)
@@ -77,7 +98,7 @@ namespace Bootleg.Services.Data
 		/// </summary>
 		/// <param name="index">Index of object of type string.</param>
 		/// <returns>DTO encapsulating a List of type User.</returns>
-		public async Task<DTO<List<Content>>> Get(string index)
+		public async Task<Content> Get(string index)
 		{
 			// Surround with try/catch:
 			try
@@ -87,11 +108,7 @@ namespace Bootleg.Services.Data
 				// Grab the first or default of the result:
 				var foundContent = await content.FirstOrDefaultAsync();
 				// Return DTO with encapsulated data:
-				return new DTO<List<Content>>()
-				{
-					Data = new List<Content>() { foundContent },
-					Success = true
-				};
+				return foundContent;
 			}
 			// Catch any exceptions:
 			catch (Exception e)
@@ -107,7 +124,7 @@ namespace Bootleg.Services.Data
 		/// </summary>
 		/// <param name="newContent">Object to be added of type generic.</param>
 		/// <returns>DTO encapsulating a List of type User.</returns>
-		public async Task<DTO<List<Content>>> Add(Content newContent)
+		public async Task<Content> Add(Content newContent)
 		{
 			// Surround with try/catch:
 			try
@@ -115,11 +132,7 @@ namespace Bootleg.Services.Data
 				// Insert User into the collection:
 				await _content.InsertOneAsync(newContent);
 				// Return DTO with encapsulated data:
-				return new DTO<List<Content>>()
-				{
-					Data = new List<Content>() { newContent },
-					Success = true
-				};
+				return newContent;
 			}
 			// Catch any exceptions:
 			catch (Exception e)
@@ -136,19 +149,15 @@ namespace Bootleg.Services.Data
 		/// <param name="index">Index of object of type string.</param>
 		/// <param name="updatedContent">Object to be updated of type generic.</param>
 		/// <returns>DTO encapsulating a List of type User.</returns>
-		public async Task<DTO<List<Content>>> Update(string index, Content updatedContent)
+		public async Task<Content> Update(string index, Content updatedContent)
 		{
 			// Surround with try/catch:
 			try
 			{
 				// Replace the user in the collection that matches the id passed in with the specified updated user:
-				await _content.ReplaceOneAsync(x => x.Id.Equals(index), updatedContent);
+				await _content.FindOneAndReplaceAsync(x => x.Id.Equals(index), updatedContent);
 				// Return DTO with encapsulated data:
-				return new DTO<List<Content>>()
-				{
-					Data = new List<Content>() { updatedContent },
-					Success = true
-				};
+				return updatedContent;
 			}
 			// Catch any exceptions:
 			catch (Exception e)
@@ -164,18 +173,13 @@ namespace Bootleg.Services.Data
 		/// </summary>
 		/// <param name="index">Index of object of type string.</param>
 		/// <returns>DTO encapsulating a List of type User.</returns>
-		public async Task<DTO<List<Content>>> Delete(string index)
+		public async Task Delete(string index)
 		{
 			// Surround with try/catch:
 			try
 			{
 				// Delete the user in the collection that matches the id:
-				await _content.DeleteOneAsync(x => x.Id.Equals(index));
-				// Return DTO with encapsulated data:
-				return new DTO<List<Content>>()
-				{
-					Success = true
-				};
+				await _content.FindOneAndDeleteAsync(x => x.Id.Equals(index));
 			}
 			// Catch any exceptions:
 			catch (Exception e)

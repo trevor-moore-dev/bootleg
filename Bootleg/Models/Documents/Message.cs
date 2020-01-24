@@ -1,5 +1,6 @@
 ﻿using Bootleg.Models.Enums;
 using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Bootleg.Models.Documents
@@ -9,7 +10,7 @@ namespace Bootleg.Models.Documents
 		[BsonRequired]
 		public string UserId { get; set; }
 		public string ContentId { get; set; }
-		public string DatePostedUTC { get; set; }
+		public DateTime DatePostedUTC { get; set; }
 		[Required]
 		[BsonRequired]
 		[StringLength(200, MinimumLength = 1, ErrorMessage = "Please enter a message.")]

@@ -70,8 +70,13 @@ const useStyles = makeStyles(theme => ({
             mouse: "pointer"
         },
     },
+    filePickerButton: {
+        marginLeft: "10px",
+        marginRight: "10px"
+    },
     postInput: {
-        width: "100%"
+        width: "100%",
+        marginLeft: "15px"
     },
     uploadButton: {
         backgroundColor: theme.general.medium,
@@ -156,7 +161,7 @@ export default function ContentUpload() {
                                     onChange={handleFileChange}
                                     className={classes.fileUpload}
                                 >
-                                    <IconButton color="inherit">
+                                    <IconButton color="inherit" className={classes.filePickerButton}>
                                         <AddPhotoAlternateIcon />
                                     </IconButton>
                                 </FilePicker>
