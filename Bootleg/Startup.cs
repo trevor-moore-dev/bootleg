@@ -118,9 +118,6 @@ namespace Bootleg
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
 					Configuration["ConnectionStrings:LocalMongoDBCollectionTwo"]));
-				services.AddSingleton<IBlobService, BlobService>(service => new BlobService(
-					Configuration["ConnectionStrings:AzureBlobStorageConnection"],
-					Configuration["ConnectionStrings:BlobStorageContainer"]));
 			}
 			else
 			{
@@ -134,12 +131,14 @@ namespace Bootleg
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
 					Configuration["ConnectionStrings:LocalMongoDBCollectionOne"]));
-				services.AddSingleton<IBlobService, BlobService>(service => new BlobService(
-					Configuration["ConnectionStrings:AzureBlobStorageConnection"],
-					Configuration["ConnectionStrings:BlobStorageContainer"]));
 			}
+			// Inject our Blob service as a Singleton:
+			services.AddSingleton<IBlobService, BlobService>(service => new BlobService(
+				Configuration["ConnectionStrings:AzureBlobStorageConnection"],
+				Configuration["ConnectionStrings:BlobStorageContainer"]));
 			// Inject our Authentication service as a Singleton:
 			services.AddSingleton<IAuthenticationService, AuthenticationService>();
+			services.AddSingleton<IUserService, UserService>();
 			// Inject our Content service as a Singleton:
 			services.AddSingleton<IContentService, ContentService>();
 			// Inject our Prediction service as a Singleton:

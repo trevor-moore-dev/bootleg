@@ -14,6 +14,8 @@ namespace Bootleg.Models.Documents
 		[BsonRequired]
 		public string UserId { get; set; }
 		public string DatePostedUTC { get; set; }
+		public string UserName { get; set; }
+		public string UserProfilePicUri { get; set; }
 		[Required]
 		[BsonRequired]
 		[StringLength(200, MinimumLength = 1, ErrorMessage = "Content body must have a minimum of 1 character, and a max of 200.")]

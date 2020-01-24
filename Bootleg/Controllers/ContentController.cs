@@ -23,62 +23,39 @@ namespace Bootleg.Controllers
     [ApiController]
     public class ContentController : ControllerBase
     {
-        // Private readonly authentication service that will get injected.
         private readonly IBlobService _blobService;
-        // Private readonly content service that will get injected.
         private readonly IContentService _contentService;
         private readonly IAuthenticationService _authenticationService;
+        private readonly IUserService _userService;
         /// <summary>
         /// Constructor that will instantiate our dependencies.
         /// </summary>
         /// <param name="_blobService">Service to be injected by the container.</param>
-        public ContentController(IBlobService _blobService, IContentService _contentService, IAuthenticationService _authenticationService)
+        public ContentController(IBlobService _blobService, IContentService _contentService, IAuthenticationService _authenticationService, IUserService _userService)
         {
             // Set our instances of our services.
             this._blobService = _blobService;
             this._contentService = _contentService;
             this._authenticationService = _authenticationService;
+            this._userService = _userService;
         }
         [HttpPost("UploadContent")]
         [DisableRequestSizeLimit]
-        public async Task<DTO<Uri>> UploadContent(IFormCollection form)
+        public async Task<DTO<bool>> UploadContent()
         {
-            // Surround with try/catch:
             try
             {
-                var content = new Content();
-                Uri mediaUri = null;
-                bool isImage = false;
+                var response = await _blobService.UploadContentBlob(Request.Form);
+                var authenticate = _authenticationService.AuthenticateToken(response.Item2, AppSettingsModel.AppSettings.JwtSecret);
+                var user = await _userService.GetUser(authenticate.Data[1]);
+                var currentUser = user.Data.FirstOrDefault();
+                var content = await _contentService.AddContentForUser(response.Item1, currentUser);
+                await _userService.UpdateUser(content.Data.Item2);
 
-                if (form.Any() && form.Keys.Contains("token"))
+                return new DTO<bool>()
                 {
-                    var authenticate = _authenticationService.AuthenticateToken(form["token"], AppSettingsModel.AppSettings.JwtSecret);
-                    content.UserId = authenticate.Data[1];
-
-                    if (form.Keys.Contains("contentBody"))
-                    {
-                        content.ContentBody = form["contentBody"];
-                    }
-                    if (form.Files.Count > 0)
-                    {
-                        mediaUri = await _blobService.UploadBlob(form.Files[0]);
-                        content.MediaUri = mediaUri.ToString();
-                        content.MediaType = BlobHelper.BlobIsImage(form.Files[0].FileName) ? MediaType.Image : MediaType.Video;
-                    }
-                    await _contentService.AddContent(content);
-                    return new DTO<Uri>()
-                    {
-                        Success = true
-                    };
-                }
-                else
-                {
-                    throw new Exception("Could not find user.");
-                }
-
-
-
-
+                    Success = true
+                };
             }
             // Catch any exceptions:
             catch (Exception ex)
@@ -86,7 +63,7 @@ namespace Bootleg.Controllers
                 // Log the exception:
                 LoggerHelper.Log(ex);
                 // Return the error and set success to false, encapsulated in a DTO:
-                return new DTO<Uri>()
+                return new DTO<bool>()
                 {
                     Errors = new Dictionary<string, List<string>>()
                     {
@@ -98,14 +75,14 @@ namespace Bootleg.Controllers
         }
 
         [HttpGet("GetAllContent")]
-        [AllowAnonymous]
-        public async Task<DTO<List<Uri>>> GetAllContent()
+        public async Task<DTO<List<Content>>> GetAllContent(string token)
         {
             // Surround with try/catch:
             try
             {
                 // Return the result of the AuthenticateGoogleToken() method of our service:
-                return await _blobService.GetAllBlobs();
+                var authenticate = _authenticationService.AuthenticateToken(token, AppSettingsModel.AppSettings.JwtSecret);
+                return await _contentService.GetAllContent(authenticate.Data[1]);
             }
             // Catch any exceptions:
             catch (Exception ex)
@@ -113,7 +90,7 @@ namespace Bootleg.Controllers
                 // Log the exception:
                 LoggerHelper.Log(ex);
                 // Return the error and set success to false, encapsulated in a DTO:
-                return new DTO<List<Uri>>()
+                return new DTO<List<Content>>()
                 {
                     Errors = new Dictionary<string, List<string>>()
                     {

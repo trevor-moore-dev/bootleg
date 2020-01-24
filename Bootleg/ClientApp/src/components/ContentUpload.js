@@ -2,31 +2,19 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import EditIcon from '@material-ui/icons/Edit';
 import CloseIcon from '@material-ui/icons/Close';
-import useRequest from '../hooks/useRequest';
+import Axios from "axios";
 import config from '../config.json';
 import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
 import AddIcon from '@material-ui/icons/Add';
 import { FilePicker } from "react-file-picker";
+import useAuth from "../hooks/useAuth";
 import {
     Fab,
-    Typography,
     IconButton,
     Snackbar,
     SnackbarContent,
-    Button,
     Box,
-    TextField,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    FormControl,
-    FormControlLabel,
-    InputLabel,
-    MenuItem,
-    Select,
-    Switch
+    TextField
 } from '@material-ui/core';
 
 // Trevor Moore
@@ -65,7 +53,7 @@ const useStyles = makeStyles(theme => ({
     },
     closeButton: {
         position: 'absolute',
-        right: theme.spacing(0.5),
+        left: theme.spacing(0.5),
         top: theme.spacing(0.5),
         color: theme.palette.grey[500],
         padding: 0
@@ -101,12 +89,10 @@ export default function ContentUpload() {
     const [contentBody, setContentBody] = useState("");
     const [open, setOpen] = useState(false);
     const [file, setFile] = useState({});
-    const { get, post } = useRequest();
-    const { getToken } = useAuth();
-    const token = getToken();
+    const { authState } = useAuth();
 
-    const handleFileChange = e => {
-        setFile(e.target.files[0]);
+    const handleFileChange = file => {
+        setFile(file);
     };
 
     const handleContentBodyChange = e => {
@@ -115,18 +101,21 @@ export default function ContentUpload() {
 
     // Function for handling when the user submits the register form:
     const uploadPost = async () => {
-        let form = new FormData();
-        let headers = { Authorization: "Bearer " + token };
-
-        form.append('file', file);
-        form.append('contentBody', contentBody);
-        form.append('token', token)
-
-        let response = await post(config.CONTENT_UPLOAD_CONTENT_POST, form, headers)
-            .catch((ex) => {
-                console.error(ex);
+        let formData = new FormData();
+        if (file) {
+            formData.append('file', file);
+        }
+        formData.append('contentBody', contentBody);
+        formData.append('token', authState.token);
+        let response = await Axios.post(
+            config.CONTENT_UPLOAD_CONTENT_POST,
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: "Bearer " + authState.token
+                }
             });
-        // If Request was successful:
         if (response.success) {
             alert('success :)');
         }
@@ -184,39 +173,6 @@ export default function ContentUpload() {
                         </IconButton>}
                 />
             </Snackbar>
-
-
-
-
-
-            {/**<Dialog
-						fullWidth={true}
-						maxWidth={'md'}
-						open={open}
-						style={{
-							zIndex: 2000,
-							bottom: 0,
-						}}
-					>
-						<DialogTitle>
-							Create a post
-							<IconButton className={classes.closeButton} onClick={handleClose}>
-								<CloseIcon />
-							</IconButton>
-						</DialogTitle>
-						<DialogContent>
-							<DialogContentText>
-								Here is where form input will be:
-          					</DialogContentText>
-
-							<form className={classes.form} noValidate>
-								<FormControl className={classes.formControl}>
-
-								</FormControl>
-							</form>
-
-						</DialogContent>
-					</Dialog>**/}
         </>
     );
 }

@@ -1,4 +1,6 @@
 ﻿using Bootleg.Helpers;
+using Bootleg.Models;
+using Bootleg.Models.Documents;
 using Bootleg.Models.DTO;
 using Bootleg.Services.Business.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -6,6 +8,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Bootleg.Services.Business
@@ -32,24 +35,54 @@ namespace Bootleg.Services.Business
             }
         }
 
-        public async Task<Uri> UploadBlob(IFormFile formFile)
+        public async Task<Tuple<Content, string>> UploadContentBlob(IFormCollection form)
         {
-            Uri uploadedUri = null;
-
             try
             {
-                if (formFile.Length > 0)
-                {
-                    using var stream = formFile.OpenReadStream();
-                    var filenameReference = BlobHelper.GetRandomBlobName(formFile.FileName);
-                    var cloudBlockBlob = _blobContainer.GetBlockBlobReference(filenameReference);
-                    await cloudBlockBlob.UploadFromStreamAsync(stream);
-                    uploadedUri = cloudBlockBlob.Uri;
-                }
+                var content = new Content();
 
-                return uploadedUri;
+                if (form.Any() && form.Keys.Contains("token"))
+                {
+                    if (form.Files.Count > 0 && form.Files[0].Length > 0)
+                    {
+                        var blob = await UploadBlob(form.Files[0]);
+                        content.MediaUri = blob.Item1.Uri.ToString();
+                        content.BlobReference = blob.Item2;
+                        content.MediaType = BlobHelper.GetMediaType(form.Files[0].FileName);
+                    }
+
+                    if (form.Keys.Contains("contentBody"))
+                    {
+                        content.ContentBody = form["contentBody"];
+                    }
+
+                    return new Tuple<Content, string>(content, form["token"]);
+                }
+                else
+                {
+                    throw new Exception("Request did not contain a token.");
+                }
             }
             catch(Exception e)
+            {
+                // Log the exception:
+                LoggerHelper.Log(e);
+                // Throw the exception:
+                throw e;
+            }
+        }
+
+        public async Task<Tuple<CloudBlockBlob, string>> UploadBlob(IFormFile file)
+        {
+            try
+            {
+                using var stream = file.OpenReadStream();
+                var filenameReference = BlobHelper.GetRandomBlobName(file.FileName);
+                var cloudBlockBlob = _blobContainer.GetBlockBlobReference(filenameReference);
+                await cloudBlockBlob.UploadFromStreamAsync(stream);
+                return new Tuple<CloudBlockBlob, string>(cloudBlockBlob, filenameReference);
+            }
+            catch (Exception e)
             {
                 // Log the exception:
                 LoggerHelper.Log(e);

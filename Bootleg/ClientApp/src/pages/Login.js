@@ -205,18 +205,23 @@ export default function Login() {
 			});
 			// If Request was successful:
 			if (response.success) {
+				// Set submitting to false:
+				setSubmitting(false);
 				// Dispatch the login:
 				login(response.data[0]);
 			}
 			// Else:
 			else {
 				// Set the response errors and set failureOpen to true:
+				setSubmitting(false);
 				setErrors(response.errors);
 				setFailureOpen(true);
 			}
 		}
-		// Set submitting to false:
-		setSubmitting(false);
+		else {
+			// Set submitting to false:
+			setSubmitting(false);
+		}
 	};
 	// Callback function which will execute after Google OAuth responds with a token:
 	const responseGoogle = async googleResponse => {

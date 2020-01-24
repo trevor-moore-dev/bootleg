@@ -28,16 +28,31 @@ namespace Bootleg.Services.Business
 		/// </summary>
 		/// <param name="content">content as type of Content.</param>
 		/// <returns>DTO encapsulating a list of strings of validated token.</returns>
-		public async Task<DTO<List<string>>> AddContent(Content content)
+		public async Task<DTO<Tuple<Content, User>>> AddContentForUser(Content content, User user)
 		{
 			// Surround with try/catch:
 			try
 			{
+				content.UserId = user.Id;
+				content.UserName = user.Username;
+				content.UserProfilePicUri = user.ProfilePicUri ?? string.Empty;
+				content.DatePostedUTC = DateTime.UtcNow.ToString();
 				// Add User to the database:
 				await _contentDAO.Add(content);
-				// Return successful with the JWT:
-				return new DTO<List<string>>()
+
+				if (user.PostedContentIds == null)
 				{
+					user.PostedContentIds = new List<string>() { content.Id };
+				}
+				else
+				{
+					user.PostedContentIds.Add(content.Id);
+				}
+
+				// Return successful with the JWT:
+				return new DTO<Tuple<Content, User>>()
+				{
+					Data = new Tuple<Content, User>(content, user),
 					Success = true
 				};
 			}

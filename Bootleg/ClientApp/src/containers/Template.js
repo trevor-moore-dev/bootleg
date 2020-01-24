@@ -5,27 +5,6 @@ import Routes from "./Routes";
 import { makeStyles } from "@material-ui/core/styles";
 import useAuth from "../hooks/useAuth";
 import Login from "../pages/Login";
-import EditIcon from '@material-ui/icons/Edit';
-import CloseIcon from '@material-ui/icons/Close';
-import {
-	Fab,
-	Typography,
-	IconButton,
-	Snackbar,
-	SnackbarContent,
-	Button,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogContentText,
-	DialogTitle,
-	FormControl,
-	FormControlLabel,
-	InputLabel,
-	MenuItem,
-	Select,
-	Switch
-} from '@material-ui/core';
 
 // Trevor Moore
 // CST-451
@@ -44,10 +23,7 @@ const useStyles = makeStyles(theme => ({
 export default function Template() {
 	// Create our styles and declare our state properties with the useState Hooks API:
 	const classes = useStyles();
-	const { authState, getToken } = useAuth();
-
-	// Get the authorization token from the cookies if its there:
-	getToken();
+	const { authState } = useAuth();
 
 	// Render our markup:
 	return (

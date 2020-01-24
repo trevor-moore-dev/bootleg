@@ -68,6 +68,16 @@ export const lightTheme = createMuiTheme({
       root: {
         justifyContent: "center"
       }
+    },
+    MuiSnackbarContent: {
+      message: {
+        width: "100%"
+      }
+    },
+    MuiCardHeader: {
+      subheader: {
+        color: "rgb(60,60,60)"
+      }
     }
   }
 });
@@ -195,6 +205,11 @@ export const darkTheme = createMuiTheme({
     MuiSnackbarContent: {
       message: {
         width: "100%"
+      }
+    },
+    MuiCardHeader: {
+      subheader: {
+        color: "rgb(255,255,255)"
       }
     }
   }

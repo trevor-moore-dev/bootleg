@@ -1,4 +1,5 @@
 ﻿using Bootleg.Extensions;
+using Bootleg.Models.Enums;
 using System;
 using System.IO;
 
@@ -25,17 +26,17 @@ namespace Bootleg.Helpers
         /// <summary> 
         /// string GetRandomBlobName(string filename): Generates a unique random file name to be uploaded  
         /// </summary> 
-        public static bool BlobIsImage(string filename)
+        public static MediaType GetMediaType(string filename)
         {
             string ext = Path.GetExtension(filename);
 
             if (ext.EqualsIgnoreCase(".jpg") || ext.EqualsIgnoreCase(".jpeg") || ext.EqualsIgnoreCase(".img") || ext.EqualsIgnoreCase(".png"))
             {
-                return true;
+                return MediaType.Image;
             }
             else
             {
-                return false;
+                return MediaType.Video;
             }
         }
     }
