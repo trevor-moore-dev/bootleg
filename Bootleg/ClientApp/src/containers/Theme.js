@@ -76,7 +76,7 @@ export const lightTheme = createMuiTheme({
     },
     MuiCardHeader: {
       subheader: {
-        color: "rgb(60,60,60)"
+        color: "#A9A9A9"
       }
     }
   }
@@ -209,7 +209,7 @@ export const darkTheme = createMuiTheme({
     },
     MuiCardHeader: {
       subheader: {
-        color: "rgb(255,255,255)"
+        color: "#A9A9A9"
       }
     }
   }

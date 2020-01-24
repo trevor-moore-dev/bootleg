@@ -32,6 +32,13 @@ const useStyles = makeStyles(theme => ({
 	},
 	text: {
 		color: theme.text
+	},
+	video: {
+		outline: "none",
+		width: "100%"
+	},
+	img: {
+		width: "100%"
 	}
 }));
 
@@ -82,9 +89,9 @@ export default function Home() {
 							className={classes.media}
 						>
 							{content.mediaType == 0 ? (
-								<img src={content.mediaUri} alt="B" width="100%" />
+								<img src={content.mediaUri} alt="Content couldn't load :(" className={classes.img} />
 							) : (
-									<video width="100%" loop controls autoPlay>
+									<video className={classes.video} loop controls autoPlay>
 										<source src={content.mediaUri} type="video/mp4" />
 										<source src={content.mediaUri} type="video/webm" />
 										<source src={content.mediaUri} type="video/ogg" />
