@@ -2,12 +2,20 @@
 import { makeStyles, fade } from "@material-ui/core/styles";
 import Logo from "./Logo";
 import useAuth from "../hooks/useAuth";
-import { Menu, MenuItem, IconButton, Toolbar, AppBar } from "@material-ui/core";
+import { Link as RouterLink } from 'react-router-dom';
+import {
+	Menu,
+	MenuItem,
+	IconButton,
+	Toolbar,
+	AppBar,
+	Link,
+	Badge,
+	InputBase
+} from "@material-ui/core";
 import '../resources/css/site.css';
 import clsx from "clsx";
 import ToggleTheme from '../components/ToggleTheme';
-import InputBase from '@material-ui/core/InputBase';
-import Badge from '@material-ui/core/Badge';
 import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
@@ -70,11 +78,14 @@ const useStyles = makeStyles(theme => ({
 	},
 	text: {
 		color: theme.text
+	},
+	iconButtons: {
+		color: theme.general.light
 	}
 }));
 
 // Nav Bar component for the top of the web app:
-export default function NavigationBar({ handleDrawerOpen, open }) {
+export default function NavigationBar() {
 	// Create our styles and declare our state properties:
 	const classes = useStyles();
 	const themeState = useTheme();
@@ -116,29 +127,41 @@ export default function NavigationBar({ handleDrawerOpen, open }) {
 						/>
 					</div>
 					<div className={classes.sectionDesktop}>
-						<IconButton color="inherit">
-							<ExploreIcon />
-						</IconButton>
-						<IconButton color="inherit">
-							<Badge badgeContent={4} color="secondary">
-								<MailIcon />
-							</Badge>
-						</IconButton>
-						<IconButton color="inherit">
-							<AccountCircle />
-						</IconButton>
+						<Link
+							component={RouterLink}
+							to="/explore">
+							<IconButton className={classes.iconButtons}>
+								<ExploreIcon />
+							</IconButton>
+						</Link>
+						<Link
+							component={RouterLink}
+							to="/messages">
+							<IconButton className={classes.iconButtons}>
+								<Badge badgeContent={4} color='secondary'>
+									<MailIcon />
+								</Badge>
+							</IconButton>
+						</Link>
+						<Link
+							component={RouterLink}
+							//to={`/account/${authState.user.id}`}>
+							to="/account">
+							<IconButton className={classes.iconButtons}>
+								<AccountCircle />
+							</IconButton>
+						</Link>
 					</div>
 					<div className={classes.sectionDesktop}>
 						<ToggleTheme />
 					</div>
-					<div className={classes.sectionMobile}>
-						<IconButton
-							onClick={handleMenuOpen}
-							color="inherit"
-						>
-							<MoreIcon />
-						</IconButton>
-					</div>
+					<IconButton
+						className={classes.sectionMobile}
+						onClick={handleMenuOpen}
+						color="inherit"
+					>
+						<MoreIcon />
+					</IconButton>
 				</Toolbar>
 			</AppBar>
 			<Menu

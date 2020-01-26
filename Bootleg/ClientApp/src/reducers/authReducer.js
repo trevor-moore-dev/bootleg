@@ -8,7 +8,10 @@
 const initialState = {
   isAuthenticated: false,
   token: "",
-  user: {},
+  user: {
+    email: "",
+    id: ""
+  },
   checkedForAuth: false
 };
 
@@ -23,7 +26,10 @@ const authReducer = (state, action) => {
       // Return the updated state with the dispatch values:
       return {
         ...state,
-        user: action.payload,
+        user: {
+          email: action.payload.sub,
+          id: action.payload.azp
+        },
         isAuthenticated: true,
         token: action.token
       };

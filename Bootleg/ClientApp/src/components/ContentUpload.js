@@ -42,14 +42,12 @@ const useStyles = makeStyles(theme => ({
     snackbarContent: {
         color: theme.text,
         backgroundColor: theme.palette.secondary.main,
-        [theme.breakpoints.up('md')]: {
-            width: '100%',
-        },
+        width: '100%',
     },
     snackbar: {
         [theme.breakpoints.up('md')]: {
-            width: '50%',
-        },
+            width: '50%'
+        }
     },
     closeButton: {
         position: 'absolute',

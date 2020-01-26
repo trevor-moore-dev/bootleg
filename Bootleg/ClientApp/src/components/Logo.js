@@ -3,6 +3,7 @@ import { Typography } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import BootlegLogo from "../resources/images/BootlegLogo.PNG";
+import LazyLoad from 'react-lazyload';
 
 // Trevor Moore
 // CST-451
@@ -37,7 +38,9 @@ export default function Logo({ className }) {
   return (
     <div className={className}>
       <Typography variant="h6" component={Link} to="/" className={classes.root}>
-        <img src={BootlegLogo} alt="bootleg" className={classes.logo} />
+        <LazyLoad>
+          <img src={BootlegLogo} alt="bootleg" className={classes.logo} />
+        </LazyLoad>
       </Typography>
     </div>
   );

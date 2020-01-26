@@ -15,7 +15,8 @@ import Login from "../pages/Login";
 const useStyles = makeStyles(theme => ({
 	toolbar: theme.mixins.toolbar,
 	root: {
-		padding: theme.spacing(2)
+		paddingLeft: theme.spacing(2),
+		paddingRight: theme.spacing(2)
 	}
 }));
 

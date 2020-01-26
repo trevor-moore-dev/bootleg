@@ -182,7 +182,7 @@ namespace Bootleg.Services.Business.Interfaces
 				if (userMatch != null && userMatch.Password.Equals(SecurityHelper.EncryptPassword(user.Password, userMatch.Salt)))
 				{
 					// Generate a JWT to login the user:
-					var jwt = TokenHelper.GenerateToken(userMatch.Username, AppSettingsModel.AppSettings.JwtSecret, userMatch.Id);
+					var jwt = TokenHelper.GenerateToken(userMatch.Email ?? userMatch.Username, AppSettingsModel.AppSettings.JwtSecret, userMatch.Id);
 					// Add the JWT to a cookie:
 					CookieHelper.AddCookie(response, "Authorization-Token", jwt);
 					// Return successful with the JWT:
@@ -253,7 +253,7 @@ namespace Bootleg.Services.Business.Interfaces
 					// Add User to the database:
 					await _userDAO.Add(user);
 					// Generate JWT to login the user:
-					var jwt = TokenHelper.GenerateToken(user.Email ?? user.Phone, AppSettingsModel.AppSettings.JwtSecret, user.Id);
+					var jwt = TokenHelper.GenerateToken(user.Email ?? user.Username, AppSettingsModel.AppSettings.JwtSecret, user.Id);
 					// Add the JWT to a cookie:
 					CookieHelper.AddCookie(response, "Authorization-Token", jwt);
 					// Return successful with the JWT:
