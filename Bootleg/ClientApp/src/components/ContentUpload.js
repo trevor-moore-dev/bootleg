@@ -109,7 +109,7 @@ export default function ContentUpload() {
             formData.append('file', file);
         }
         formData.append('contentBody', contentBody);
-        formData.append('token', authState.token);
+        formData.append('userId', authState.user.id);
         let response = await Axios.post(
             config.CONTENT_UPLOAD_CONTENT_POST,
             formData,

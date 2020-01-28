@@ -34,6 +34,7 @@ namespace Bootleg.Models.Documents
 		public byte[] Salt { get; set; }
 		public string Bio { get; set; }
 		public string ProfilePicUri { get; set; }
+		public string BlobReference { get; set; }
 		public List<string> FollowingIds { get; set; }
 		public List<string> FollowerIds { get; set; }
 		public List<string> PostedContentIds { get; set; }

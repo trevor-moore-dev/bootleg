@@ -10,13 +10,6 @@ import LazyLoad from 'react-lazyload';
 // 12/9/2019
 // This is my own work.
 
-/**
- * Use this later for breakpoint CSS:
- * [theme.breakpoints.down("sm")]: {
- *		display: "none"
- * }
- **/
-
 // Create CSS styles:
 const useStyles = makeStyles(theme => ({
   root: {

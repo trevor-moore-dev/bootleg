@@ -2,13 +2,14 @@
 using Bootleg.Models.DTO;
 using Bootleg.Services.Business.Interfaces;
 using Bootleg.Services.Data.Interfaces;
+using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Bootleg.Services.Business
 {
-	public class UserService :IUserService
+	public class UserService : IUserService
 	{
 		// Private readonly data access object to be injected:
 		private readonly IDAO<User> _userDAO;
@@ -38,14 +39,14 @@ namespace Bootleg.Services.Business
 			}
 		}
 
-		public async Task<DTO<List<User>>> GetUser(string userID)
+		public async Task<DTO<User>> GetUser(string userID)
 		{
 			try
 			{
 				var result = await _userDAO.Get(userID);
-				return new DTO<List<User>>()
+				return new DTO<User>()
 				{
-					Data = new List<User>() { result },
+					Data = result,
 					Success = true
 				};
 			}
@@ -55,14 +56,28 @@ namespace Bootleg.Services.Business
 			}
 		}
 
-		public async Task<DTO<List<User>>> UpdateUser(User currentUser)
+		public async Task<DTO<User>> UpdateUser(User currentUser, Tuple<CloudBlockBlob, string> blobReference = null)
 		{
 			try
 			{
-				var result = await _userDAO.Update(currentUser.Id, currentUser);
-				return new DTO<List<User>>()
+				if (blobReference != null)
 				{
-					Data = new List<User>() { result },
+					if (blobReference.Item1 != null)
+					{
+						currentUser.ProfilePicUri = blobReference.Item1.Uri.ToString();
+					}
+
+					if (blobReference.Item2 != null)
+					{
+						currentUser.BlobReference = blobReference.Item2;
+					}
+				}
+
+				var result = await _userDAO.Update(currentUser.Id, currentUser);
+
+				return new DTO<User>()
+				{
+					Data = result,
 					Success = true
 				};
 			}
@@ -72,12 +87,12 @@ namespace Bootleg.Services.Business
 			}
 		}
 
-		public async Task<DTO<List<User>>> DeleteEvent(string userID)
+		public async Task<DTO<User>> DeleteUser(string userID)
 		{
 			try
 			{
 				await _userDAO.Delete(userID);
-				return new DTO<List<User>>()
+				return new DTO<User>()
 				{
 					Success = true
 				};

@@ -34,28 +34,28 @@ namespace Bootleg.Services.Business
             }
         }
 
-        public async Task<Tuple<Content, string>> UploadContentBlob(IFormCollection form)
+        public async Task<Content> UploadContentBlob(HttpRequest request)
         {
             try
             {
                 var content = new Content();
 
-                if (form.Any() && form.Keys.Contains("token"))
+                if (request.Form.Any())
                 {
-                    if (form.Files.Count > 0 && form.Files[0].Length > 0)
+                    if (request.Form.Files.Count > 0 && request.Form.Files[0].Length > 0)
                     {
-                        var blob = await UploadBlob(form.Files[0]);
+                        var blob = await UploadBlob(request);
                         content.MediaUri = blob.Item1.Uri.ToString();
                         content.BlobReference = blob.Item2;
-                        content.MediaType = BlobHelper.GetMediaType(form.Files[0].FileName);
+                        content.MediaType = BlobHelper.GetMediaType(request.Form.Files[0].FileName);
                     }
 
-                    if (form.Keys.Contains("contentBody"))
+                    if (request.Form.Keys.Contains("contentBody"))
                     {
-                        content.ContentBody = form["contentBody"];
+                        content.ContentBody = request.Form["contentBody"];
                     }
 
-                    return new Tuple<Content, string>(content, form["token"]);
+                    return content;
                 }
                 else
                 {
@@ -71,15 +71,22 @@ namespace Bootleg.Services.Business
             }
         }
 
-        public async Task<Tuple<CloudBlockBlob, string>> UploadBlob(IFormFile file)
+        public async Task<Tuple<CloudBlockBlob, string>> UploadBlob(HttpRequest request)
         {
             try
             {
-                using var stream = file.OpenReadStream();
-                var filenameReference = BlobHelper.GetRandomBlobName(file.FileName);
-                var cloudBlockBlob = _blobContainer.GetBlockBlobReference(filenameReference);
-                await cloudBlockBlob.UploadFromStreamAsync(stream);
-                return new Tuple<CloudBlockBlob, string>(cloudBlockBlob, filenameReference);
+                if (request.Form.Files.Count > 0 && request.Form.Files[0].Length > 0)
+                {
+                    using var stream = request.Form.Files[0].OpenReadStream();
+                    var filenameReference = BlobHelper.GetRandomBlobName(request.Form.Files[0].FileName);
+                    var cloudBlockBlob = _blobContainer.GetBlockBlobReference(filenameReference);
+                    await cloudBlockBlob.UploadFromStreamAsync(stream);
+                    return new Tuple<CloudBlockBlob, string>(cloudBlockBlob, filenameReference);
+                }
+                else
+                {
+                    return new Tuple<CloudBlockBlob, string>(null, null);
+                }
             }
             catch (Exception e)
             {

@@ -136,11 +136,11 @@ export default function Home() {
 									className={classes.media}
 								>
 									{content.mediaType == 0 ? (
-										<LazyLoad height={200}>
+										<LazyLoad>
 											<img src={content.mediaUri} alt="Image couldn't load :(" className={classes.img} />
 										</LazyLoad>
 									) : (
-											<LazyLoad height={200}>
+											<LazyLoad>
 												<video className={classes.video} loop controls autoPlay>
 													<source src={content.mediaUri} type="video/mp4" />
 													<source src={content.mediaUri} type="video/webm" />

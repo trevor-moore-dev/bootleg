@@ -23,18 +23,16 @@ namespace Bootleg.Controllers
     {
         private readonly IBlobService _blobService;
         private readonly IContentService _contentService;
-        private readonly IAuthenticationService _authenticationService;
         private readonly IUserService _userService;
         /// <summary>
         /// Constructor that will instantiate our dependencies.
         /// </summary>
         /// <param name="_blobService">Service to be injected by the container.</param>
-        public ContentController(IBlobService _blobService, IContentService _contentService, IAuthenticationService _authenticationService, IUserService _userService)
+        public ContentController(IBlobService _blobService, IContentService _contentService, IUserService _userService)
         {
             // Set our instances of our services.
             this._blobService = _blobService;
             this._contentService = _contentService;
-            this._authenticationService = _authenticationService;
             this._userService = _userService;
         }
         [HttpPost("UploadContent")]
@@ -43,11 +41,9 @@ namespace Bootleg.Controllers
         {
             try
             {
-                var response = await _blobService.UploadContentBlob(Request.Form);
-                var authenticate = _authenticationService.AuthenticateToken(response.Item2, AppSettingsModel.AppSettings.JwtSecret);
-                var user = await _userService.GetUser(authenticate.Data[1]);
-                var currentUser = user.Data.FirstOrDefault();
-                var content = await _contentService.AddContentForUser(response.Item1, currentUser);
+                var response = await _blobService.UploadContentBlob(Request);
+                var user = await _userService.GetUser(Request.Form["userId"]);
+                var content = await _contentService.AddContentForUser(response, user.Data);
                 await _userService.UpdateUser(content.Data.Item2);
 
                 return new DTO<bool>()
@@ -79,8 +75,7 @@ namespace Bootleg.Controllers
             try
             {
                 var user = await _userService.GetUser(userId);
-                var currentUser = user.Data.FirstOrDefault();
-                return await _contentService.GetAllContent(currentUser);
+                return await _contentService.GetAllContent(user.Data);
             }
             // Catch any exceptions:
             catch (Exception ex)
