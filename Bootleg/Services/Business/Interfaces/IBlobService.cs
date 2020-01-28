@@ -12,8 +12,9 @@ namespace Bootleg.Services.Business.Interfaces
 	{
 		Task<Content> UploadContentBlob(HttpRequest request);
 		Task<Tuple<CloudBlockBlob, string>> UploadBlob(HttpRequest request);
+		Task<User> UpdateUserProfilePic(User user, HttpRequest request);
 		Task<DTO<List<Uri>>> GetAllBlobs();
 		Task<DTO<Uri>> GetBlob(string blobReference);
-		Task<DTO<Uri>> DeleteBlob(string blobReference);
+		Task<DTO<bool>> DeleteBlob(string blobReference);
 	}
 }

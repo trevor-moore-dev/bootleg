@@ -71,22 +71,43 @@ namespace Bootleg.Services.Business
             }
         }
 
-        public async Task<Tuple<CloudBlockBlob, string>> UploadBlob(HttpRequest request)
+        public async Task<User> UpdateUserProfilePic(User user, HttpRequest request)
         {
             try
             {
                 if (request.Form.Files.Count > 0 && request.Form.Files[0].Length > 0)
                 {
-                    using var stream = request.Form.Files[0].OpenReadStream();
-                    var filenameReference = BlobHelper.GetRandomBlobName(request.Form.Files[0].FileName);
-                    var cloudBlockBlob = _blobContainer.GetBlockBlobReference(filenameReference);
-                    await cloudBlockBlob.UploadFromStreamAsync(stream);
-                    return new Tuple<CloudBlockBlob, string>(cloudBlockBlob, filenameReference);
+                    var blob = await UploadBlob(request);
+
+                    if (!string.IsNullOrEmpty(user.BlobReference))
+                    {
+                        await DeleteBlob(user.BlobReference);
+                    }
+
+                    user.ProfilePicUri = blob.Item1.Uri.ToString();
+                    user.BlobReference = blob.Item2;
                 }
-                else
-                {
-                    return new Tuple<CloudBlockBlob, string>(null, null);
-                }
+
+                return user;
+            }
+            catch (Exception e)
+            {
+                // Log the exception:
+                LoggerHelper.Log(e);
+                // Throw the exception:
+                throw e;
+            }
+        }
+
+        public async Task<Tuple<CloudBlockBlob, string>> UploadBlob(HttpRequest request)
+        {
+            try
+            {
+                using var stream = request.Form.Files[0].OpenReadStream();
+                var filenameReference = BlobHelper.GetRandomBlobName(request.Form.Files[0].FileName);
+                var cloudBlockBlob = _blobContainer.GetBlockBlobReference(filenameReference);
+                await cloudBlockBlob.UploadFromStreamAsync(stream);
+                return new Tuple<CloudBlockBlob, string>(cloudBlockBlob, filenameReference);
             }
             catch (Exception e)
             {
@@ -155,18 +176,17 @@ namespace Bootleg.Services.Business
             }
         }
 
-        public async Task<DTO<Uri>> DeleteBlob(string blobReference)
+        public async Task<DTO<bool>> DeleteBlob(string blobReference)
         {
             try
             {
                 var blob = _blobContainer.GetBlockBlobReference(blobReference);
-                var uri = await blob.DownloadTextAsync();
                 await blob.DeleteIfExistsAsync();
 
-                return new DTO<Uri>()
+                return new DTO<bool>()
                 {
-                    Success = true,
-                    Data = new Uri(uri)
+                    Data = true,
+                    Success = true
                 };
             }
             catch (Exception e)

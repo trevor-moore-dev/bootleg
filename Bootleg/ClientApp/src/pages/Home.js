@@ -137,7 +137,7 @@ export default function Home() {
 								>
 									{content.mediaType == 0 ? (
 										<LazyLoad>
-											<img src={content.mediaUri} alt="Image couldn't load :(" className={classes.img} />
+											<img src={content.mediaUri} alt="Image couldn't load or was deleted :(" className={classes.img} />
 										</LazyLoad>
 									) : (
 											<LazyLoad>

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Bootleg.Helpers;
-using Bootleg.Models;
 using Bootleg.Models.Documents;
 using Bootleg.Models.DTO;
 using Bootleg.Services.Business.Interfaces;
@@ -58,6 +56,7 @@ namespace Bootleg.Controllers
                 };
             }
         }
+
         [HttpGet("GetUserContent")]
         public async Task<DTO<Tuple<User, List<Content>>>> GetUserContent(string userId)
         {
@@ -91,8 +90,8 @@ namespace Bootleg.Controllers
             try
             {
                 var user = await _userService.GetUser(Request.Form["userId"]);
-                var blob = await _blobService.UploadBlob(Request);
-                var updatedUser = await _userService.UpdateUser(user.Data, blob);
+                var currentUser = await _blobService.UpdateUserProfilePic(user.Data, Request);
+                var updatedUser = await _userService.UpdateUserProfile(currentUser, Request, HttpContext);
 
                 return new DTO<User>()
                 {

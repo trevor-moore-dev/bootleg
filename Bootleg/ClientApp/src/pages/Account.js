@@ -16,6 +16,8 @@ import {
     CardActions,
     CardContent,
     Avatar,
+    GridList,
+    GridListTile,
     Paper
 } from '@material-ui/core';
 
@@ -51,7 +53,11 @@ const useStyles = makeStyles(theme => ({
     },
     img: {
         width: "100%"
-    }
+    },
+    gridList: {
+        width: 500,
+        height: 450,
+    },
 }));
 
 // Home component for rendering the home page:
@@ -84,44 +90,32 @@ export default function Account() {
             justifyContent='center'
             className={classes.root}
         >
-            {uploads && uploads.length > 0 ? uploads.map(content => (
-                <Paper
-                    key={content.id}
-                    elevation={3}
-                    children={content.mediaUri ? (
-                        <>
-                            {content.mediaType == 0 ? (
-                                <LazyLoad>
-                                    <img src={content.mediaUri} alt="Image couldn't load :(" className={classes.img} />
-                                </LazyLoad>
-                            ) : (
+            <GridList cellHeight={160} className={classes.gridList} cols={5}>
+                {uploads && uploads.length > 0 ? uploads.map(content => (
+                    <GridListTile key={content.id} cols={1}>
+                        {content.mediaUri ? (
+                            <>
+                                {content.mediaType == 0 ? (
                                     <LazyLoad>
-                                        <video className={classes.video} loop controls autoPlay>
-                                            <source src={content.mediaUri} type="video/mp4" />
-                                            <source src={content.mediaUri} type="video/webm" />
-                                            <source src={content.mediaUri} type="video/ogg" />
-                                            <p className={classes.text}>Your browser does not support our videos :(</p>
-                                        </video>
+                                        <img src={content.mediaUri} alt="Image couldn't load :(" className={classes.img} />
                                     </LazyLoad>
-                                )}
-                        </>
-                    ) : (
-                            <></>
-                        )}
-                />
-            )) : <Paper elevation={3} />}
-            <Paper elevation={3} />
-            <Paper elevation={3} />
-            <Paper elevation={3} />
-            <Paper elevation={3} />
-            <Paper elevation={3} />
-            <Paper elevation={3} />
-            <Paper elevation={3} />
-            <Paper elevation={3} />
-            <Paper elevation={3} />
-            <Paper elevation={3} />
-            <Paper elevation={3} />
-            <Paper elevation={3} />
+                                ) : (
+                                        <LazyLoad>
+                                            <video className={classes.video} loop controls autoPlay>
+                                                <source src={content.mediaUri} type="video/mp4" />
+                                                <source src={content.mediaUri} type="video/webm" />
+                                                <source src={content.mediaUri} type="video/ogg" />
+                                                <p className={classes.text}>Your browser does not support our videos :(</p>
+                                            </video>
+                                        </LazyLoad>
+                                    )}
+                            </>
+                        ) : (
+                                <></>
+                            )}
+                    </GridListTile>
+                )) : <></>}
+            </GridList>
         </Box>
     );
 }

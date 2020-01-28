@@ -36,5 +36,9 @@ namespace Bootleg.Helpers
 				}
 			);
 		}
+		public static void RemoveCookie(HttpResponse response, string key)
+		{
+			response.Cookies.Delete(key);
+		}
 	}
 }

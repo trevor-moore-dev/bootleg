@@ -19,11 +19,22 @@ import Avatar from "@material-ui/core/Avatar";
 import CloseIcon from "@material-ui/icons/Close";
 import { GoogleLogin } from "react-google-login";
 import config from "../config.json";
+import { makeStyles } from "@material-ui/core/styles";
 
 // Trevor Moore
 // CST-451
 // 12/9/2019
 // This is my own work.
+
+const useStyles = makeStyles(theme => ({
+	root: {
+		display: 'flex',
+		flexDirection: 'column',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingTop: theme.spacing(3)
+	},
+}));
 
 // Login component for rendering our login and register markup:
 export default function Login() {
@@ -45,6 +56,7 @@ export default function Login() {
 	const [failureOpen, setFailureOpen] = useState(false);
 	const { post } = useRequest();
 	const { login } = useAuth();
+	const classes = useStyles();
 	// Function for handling when the email input is changed:
 	const handleEmailChange = e => {
 		// Update the state to the target value:
@@ -257,6 +269,7 @@ export default function Login() {
 			alignItems="center"
 			justifyContent="center"
 			flexDirection="column"
+			className={classes.root}
 		>
 			<Grid container spacing={3}>
 				<Grid item xs={12} sm={6}>

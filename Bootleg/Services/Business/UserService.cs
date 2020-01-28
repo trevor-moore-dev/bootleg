@@ -1,10 +1,15 @@
-﻿using Bootleg.Models.Documents;
+﻿using Bootleg.Extensions;
+using Bootleg.Helpers;
+using Bootleg.Models;
+using Bootleg.Models.Documents;
 using Bootleg.Models.DTO;
 using Bootleg.Services.Business.Interfaces;
 using Bootleg.Services.Data.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Bootleg.Services.Business
@@ -56,22 +61,84 @@ namespace Bootleg.Services.Business
 			}
 		}
 
-		public async Task<DTO<User>> UpdateUser(User currentUser, Tuple<CloudBlockBlob, string> blobReference = null)
+		public async Task<DTO<User>> UpdateUser(User currentUser)
 		{
 			try
 			{
-				if (blobReference != null)
+				var result = await _userDAO.Update(currentUser.Id, currentUser);
+
+				return new DTO<User>()
 				{
-					if (blobReference.Item1 != null)
+					Data = result,
+					Success = true
+				};
+			}
+			catch (Exception e)
+			{
+				throw e;
+			}
+		}
+
+		public async Task<DTO<User>> UpdateUserProfile(User currentUser, HttpRequest request, HttpContext httpContext)
+		{
+			try
+			{
+
+				if (request.Form.Keys.Contains("username") || request.Form.Keys.Contains("email") || request.Form.Keys.Contains("oldpassword") || request.Form.Keys.Contains("newpassword"))
+				{
+					// Get all users from the database using dao:
+					var users = await _userDAO.GetAll();
+
+					if (request.Form.Keys.Contains("username"))
 					{
-						currentUser.ProfilePicUri = blobReference.Item1.Uri.ToString();
+						// Find a user match in the database with the same exact username (case sensitive) or the same email (case insensitive):
+						var usernameAlreadyExists = users.Any(u => u.Username.Equals(request.Form["username"]));
+
+						if (!usernameAlreadyExists)
+						{
+							currentUser.Username = request.Form["username"];
+						}
 					}
 
-					if (blobReference.Item2 != null)
+					if (request.Form.Keys.Contains("email"))
 					{
-						currentUser.BlobReference = blobReference.Item2;
+						// Find a user match in the database with the same exact username (case sensitive) or the same email (case insensitive):
+						var emailAlreadyExists = users.Any(u => u.Email.EqualsIgnoreCase(request.Form["email"]));
+
+						if (!emailAlreadyExists)
+						{
+							currentUser.Email = request.Form["email"];
+						}
+					}
+
+					if (request.Form.Keys.Contains("oldpassword") && request.Form.Keys.Contains("newpassword"))
+					{
+						// If password hashes are an exact match, user can change password:
+						if (currentUser.Password.Equals(SecurityHelper.EncryptPassword(request.Form["oldpassword"], currentUser.Salt)))
+						{
+							// Generate random salt:
+							var salt = SecurityHelper.GenerateSalt();
+							// Hash the user's entered password using the salt:
+							var securePassword = SecurityHelper.EncryptPassword(request.Form["newpassword"], salt);
+							// Set new User's password and salt values:
+							currentUser.Password = securePassword;
+							currentUser.Salt = salt;
+						}
 					}
 				}
+
+				if (request.Form.Keys.Contains("phone"))
+				{
+					currentUser.Phone = request.Form["phone"];
+				}
+
+				if (request.Form.Keys.Contains("bio"))
+				{
+					currentUser.Bio = request.Form["bio"];
+				}
+
+				var jwt = TokenHelper.GenerateToken(currentUser.Username ?? currentUser.Email, AppSettingsModel.AppSettings.JwtSecret, currentUser.Id, currentUser.ProfilePicUri);
+				CookieHelper.AddCookie(httpContext.Response, "Authorization-Token", jwt);
 
 				var result = await _userDAO.Update(currentUser.Id, currentUser);
 
