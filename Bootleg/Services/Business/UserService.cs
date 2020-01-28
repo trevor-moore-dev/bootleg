@@ -84,7 +84,7 @@ namespace Bootleg.Services.Business
 			try
 			{
 
-				if (request.Form.Keys.Contains("username") || request.Form.Keys.Contains("email") || request.Form.Keys.Contains("oldpassword") || request.Form.Keys.Contains("newpassword"))
+				if (request.Form.Keys.Contains("username") || request.Form.Keys.Contains("email"))
 				{
 					// Get all users from the database using dao:
 					var users = await _userDAO.GetAll();
@@ -109,22 +109,20 @@ namespace Bootleg.Services.Business
 						{
 							currentUser.Email = request.Form["email"];
 						}
-					}
+					}				
+				}
 
-					if (request.Form.Keys.Contains("oldpassword") && request.Form.Keys.Contains("newpassword"))
-					{
-						// If password hashes are an exact match, user can change password:
-						if (currentUser.Password.Equals(SecurityHelper.EncryptPassword(request.Form["oldpassword"], currentUser.Salt)))
-						{
-							// Generate random salt:
-							var salt = SecurityHelper.GenerateSalt();
-							// Hash the user's entered password using the salt:
-							var securePassword = SecurityHelper.EncryptPassword(request.Form["newpassword"], salt);
-							// Set new User's password and salt values:
-							currentUser.Password = securePassword;
-							currentUser.Salt = salt;
-						}
-					}
+				if (request.Form.Keys.Contains("oldpassword")
+					&& request.Form.Keys.Contains("newpassword")
+					&& currentUser.Password.Equals(SecurityHelper.EncryptPassword(request.Form["oldpassword"], currentUser.Salt)))
+				{
+					// If password hashes are an exact match, user can change password, generate random salt
+					var salt = SecurityHelper.GenerateSalt();
+					// Hash the user's entered password using the salt:
+					var securePassword = SecurityHelper.EncryptPassword(request.Form["newpassword"], salt);
+					// Set new User's password and salt values:
+					currentUser.Password = securePassword;
+					currentUser.Salt = salt;
 				}
 
 				if (request.Form.Keys.Contains("phone"))
