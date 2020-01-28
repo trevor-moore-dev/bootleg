@@ -153,18 +153,22 @@ export default function Login() {
 			});
 			// If Request was successful:
 			if (response.success) {
+				setSubmitting(false);
 				// Dispatch the login:
 				login(response.data[0]);
 			}
 			// Else:
 			else {
 				// Set the response errors and set failureOpen to true:
+				setSubmitting(false);
 				setErrors(response.errors);
 				setFailureOpen(true);
 			}
 		}
-		// Set submitting to false:
-		setSubmitting(false);
+		else {
+			// Set submitting to false:
+			setSubmitting(false);
+		}
 	};
 	// Function for handling when the user submits the login form:
 	const handleLoginSubmit = async () => {

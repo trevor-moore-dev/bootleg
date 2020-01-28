@@ -24,14 +24,15 @@ namespace Bootleg.Helpers
 		/// <param name="secret">Secret (which is the secret key used for encrypting/decrypting the token) as string.</param>
 		/// <param name="id">Id of the object as a string.</param>
 		/// <returns>Token as a string.</returns>
-		public static string GenerateToken(string email, string secret, string id)
+		public static string GenerateToken(string email, string secret, string id, string profileUri)
         {
 			// Initialize claims of of the JWT using the email, a Guid, and the id:
 			var claims = new[]
 			{
-				new Claim(JwtRegisteredClaimNames.Sub, email),
+				new Claim(JwtRegisteredClaimNames.Sub, email ?? string.Empty),
 				new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-				new Claim(JwtRegisteredClaimNames.Azp, id)
+				new Claim(JwtRegisteredClaimNames.Azp, id ?? string.Empty),
+				new Claim(JwtRegisteredClaimNames.Aud, profileUri ?? string.Empty)
 			};
 			// Initialize the key of the JWT using the bytes of the secret key passed in:
 			var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));

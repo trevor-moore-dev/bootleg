@@ -20,6 +20,8 @@ using Bootleg.Models.Documents;
 using Bootleg.Models.DTO;
 using System.Collections.Generic;
 using Bootleg.Services.Business;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 // Trevor Moore
 // CST-451
@@ -180,6 +182,11 @@ namespace Bootleg
 			app.UseAuthentication();
 			app.UseAuthorization();
 			app.UseCookiePolicy();
+			app.UseStaticFiles(new StaticFileOptions
+			{
+				FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Images")),
+				RequestPath = "/Resources/Images"
+			});
 			// Specify to use endpoints on our app with route pattern:
 			app.UseEndpoints(endpoints =>
 			{

@@ -10,5 +10,6 @@ namespace Bootleg.Services.Business.Interfaces
 	{
 		Task<DTO<Tuple<Content, User>>> AddContentForUser(Content content, User user);
 		Task<DTO<List<Content>>> GetAllContent(User user);
+		Task<DTO<Tuple<User, List<Content>>>> GetUserContent(User user);
 	}
 }

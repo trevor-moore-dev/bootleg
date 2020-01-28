@@ -64,9 +64,8 @@ export default function useAuth() {
   };
   // Function for logging out the user and removing the cookies/tokens:
   const logout = () => {
-    // Remove the authorization and avatar cookies:
+    // Remove the authorization cookie:
     Cookies.remove("Authorization-Token");
-    Cookies.remove("Avatar-Url");
     // Dispatch the logout to update the store:
     dispatch({
       type: "LOGOUT"

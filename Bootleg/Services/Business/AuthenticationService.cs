@@ -44,7 +44,7 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <param name="token">Token as type of TokenModel.</param>
 		/// <param name="response">Response as type of HttpResponse.</param>
 		/// <returns>DTO encapsulating a list of strings of validated token.</returns>
-		public async Task<DTO<List<string>>> AuthenticateGoogleToken(TokenModel token, HttpResponse response)
+		public async Task<DTO<List<string>>> AuthenticateGoogleToken(TokenModel token, HttpContext httpContext)
 		{
 			// Surround with try/catch:
 			try
@@ -61,7 +61,7 @@ namespace Bootleg.Services.Business.Interfaces
 				if (userMatch != null)
 				{
 					// Generate a JWT to login the user:
-					jwt = TokenHelper.GenerateToken(userMatch.Username, AppSettingsModel.AppSettings.JwtSecret, userMatch.Id);
+					jwt = TokenHelper.GenerateToken(userMatch.Username, AppSettingsModel.AppSettings.JwtSecret, userMatch.Id, userMatch.ProfilePicUri);
 				}
 				else
 				{
@@ -84,12 +84,11 @@ namespace Bootleg.Services.Business.Interfaces
 					// Add User to the database:
 					await _userDAO.Add(user);
 					// Generate a JWT so that the user can login:
-					jwt = TokenHelper.GenerateToken(payload.Email, AppSettingsModel.AppSettings.JwtSecret, user.Id);
+					jwt = TokenHelper.GenerateToken(payload.Email, AppSettingsModel.AppSettings.JwtSecret, user.Id, payload.Picture);
 
 				}
-				// Add the token to a cookie, and add their Avatar image to a cookie:
-				CookieHelper.AddCookie(response, "Authorization-Token", jwt);
-				CookieHelper.AddCookie(response, "Avatar-Url", payload.Picture);
+				// Add the token to a cookie:
+				CookieHelper.AddCookie(httpContext.Response, "Authorization-Token", jwt);
 				// Return successful with the JWT:
 				return new DTO<List<string>>()
 				{
@@ -146,7 +145,8 @@ namespace Bootleg.Services.Business.Interfaces
 						Data = new List<string>()
 						{
 							user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? string.Empty,
-							user.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Azp)?.Value ?? string.Empty
+							user.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Azp)?.Value ?? string.Empty,
+							user.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Aud)?.Value ?? string.Empty
 						}
 					};
 				}
@@ -166,7 +166,7 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <param name="token">User as type of User.</param>
 		/// <param name="response">Response as type of HttpResponse.</param>
 		/// <returns>DTO encapsulating a list of strings of validated token.</returns>
-		public async Task<DTO<List<string>>> AuthenticateUser(User user, HttpResponse response)
+		public async Task<DTO<List<string>>> AuthenticateUser(User user, HttpContext httpContext)
 		{
 			// Surround with try/catch:
 			try
@@ -182,9 +182,9 @@ namespace Bootleg.Services.Business.Interfaces
 				if (userMatch != null && userMatch.Password.Equals(SecurityHelper.EncryptPassword(user.Password, userMatch.Salt)))
 				{
 					// Generate a JWT to login the user:
-					var jwt = TokenHelper.GenerateToken(userMatch.Email ?? userMatch.Username, AppSettingsModel.AppSettings.JwtSecret, userMatch.Id);
+					var jwt = TokenHelper.GenerateToken(userMatch.Username ?? userMatch.Email, AppSettingsModel.AppSettings.JwtSecret, userMatch.Id, userMatch.ProfilePicUri);
 					// Add the JWT to a cookie:
-					CookieHelper.AddCookie(response, "Authorization-Token", jwt);
+					CookieHelper.AddCookie(httpContext.Response, "Authorization-Token", jwt);
 					// Return successful with the JWT:
 					return new DTO<List<string>>()
 					{
@@ -213,7 +213,7 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <param name="token">User as type of User.</param>
 		/// <param name="response">Response as type of HttpResponse.</param>
 		/// <returns>DTO encapsulating a list of strings of validated token.</returns>
-		public async Task<DTO<List<string>>> RegisterUser(User user, HttpResponse response)
+		public async Task<DTO<List<string>>> RegisterUser(User user, HttpContext httpContext)
 		{
 			// Surround with try/catch:
 			try
@@ -247,15 +247,17 @@ namespace Bootleg.Services.Business.Interfaces
 					var salt = SecurityHelper.GenerateSalt();
 					// Hash the user's entered password using the salt:
 					var securePassword = SecurityHelper.EncryptPassword(user.Password, salt);
+					var profilePicHolder = ImageHelper.GetServerImagePath($"generic-profile-picture-{new Random().Next(1, 6)}.jpg");
 					// Set new User's password and salt values:
+					user.ProfilePicUri = profilePicHolder;
 					user.Password = securePassword;
 					user.Salt = salt;
 					// Add User to the database:
 					await _userDAO.Add(user);
 					// Generate JWT to login the user:
-					var jwt = TokenHelper.GenerateToken(user.Email ?? user.Username, AppSettingsModel.AppSettings.JwtSecret, user.Id);
+					var jwt = TokenHelper.GenerateToken(user.Username ?? user.Email, AppSettingsModel.AppSettings.JwtSecret, user.Id, profilePicHolder);
 					// Add the JWT to a cookie:
-					CookieHelper.AddCookie(response, "Authorization-Token", jwt);
+					CookieHelper.AddCookie(httpContext.Response, "Authorization-Token", jwt);
 					// Return successful with the JWT:
 					return new DTO<List<string>>()
 					{

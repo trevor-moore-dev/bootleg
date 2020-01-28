@@ -6,6 +6,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import config from '../config.json';
 import useRequest from '../hooks/useRequest';
 import useAuth from "../hooks/useAuth";
+import LazyLoad from 'react-lazyload';
 import {
     Box,
     IconButton,
@@ -14,7 +15,8 @@ import {
     Card,
     CardActions,
     CardContent,
-    Avatar
+    Avatar,
+    Paper
 } from '@material-ui/core';
 
 // Trevor Moore
@@ -23,6 +25,16 @@ import {
 // This is my own work.
 
 const useStyles = makeStyles(theme => ({
+    root: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        '& > *': {
+            margin: theme.spacing(1),
+            width: theme.spacing(16),
+            height: theme.spacing(16),
+        },
+    },
     card: {
         width: 700,
         marginBottom: "10px"
@@ -45,20 +57,22 @@ const useStyles = makeStyles(theme => ({
 // Home component for rendering the home page:
 export default function Account() {
     const classes = useStyles();
+    const [user, setUser] = useState({});
     const [uploads, setUploads] = useState([]);
     const { get } = useRequest();
     const { authState } = useAuth();
 
     useEffect(() => {
-        async function getUploads() {
-            const response = await get(config.CONTENT_GET_ALL_CONTENT_GET, {
-                token: authState.token
+        async function getUserContent() {
+            const response = await get(config.USER_GET_USER_CONTENT_GET, {
+                userId: authState.user.id
             });
             if (response.success) {
-                setUploads(response.data);
+                setUser(response.data.item1);
+                setUploads(response.data.item2);
             }
         }
-        getUploads();
+        getUserContent();
         return () => { };
     }, []);
 
@@ -68,53 +82,46 @@ export default function Account() {
             flexDirection='column'
             alignItems='center'
             justifyContent='center'
+            className={classes.root}
         >
-            {uploads.map(content => (
-                <Card key={content.id} className={classes.card}>
-                    <CardHeader
-                        avatar={
-                            <Avatar className={classes.avatar} alt="B" src={content.userProfilePicUri} />
-                        }
-                        action={
-                            <IconButton color="inherit">
-                                <MoreVertIcon />
-                            </IconButton>
-                        }
-                        title={content.userName}
-                        subheader={content.datePostedUTC}
-                        className={classes.text}
-                    />
-                    {content.mediaUri ? (
-                        <CardMedia
-                            className={classes.media}
-                        >
+            {uploads && uploads.length > 0 ? uploads.map(content => (
+                <Paper
+                    key={content.id}
+                    elevation={3}
+                    children={content.mediaUri ? (
+                        <>
                             {content.mediaType == 0 ? (
-                                <img src={content.mediaUri} alt="Content couldn't load :(" className={classes.img} />
+                                <LazyLoad height={200}>
+                                    <img src={content.mediaUri} alt="Image couldn't load :(" className={classes.img} />
+                                </LazyLoad>
                             ) : (
-                                    <video className={classes.video} loop controls autoPlay>
-                                        <source src={content.mediaUri} type="video/mp4" />
-                                        <source src={content.mediaUri} type="video/webm" />
-                                        <source src={content.mediaUri} type="video/ogg" />
-                                        <p className={classes.text}>Your browser does not support our videos :(</p>
-                                    </video>
+                                    <LazyLoad height={200}>
+                                        <video className={classes.video} loop controls autoPlay>
+                                            <source src={content.mediaUri} type="video/mp4" />
+                                            <source src={content.mediaUri} type="video/webm" />
+                                            <source src={content.mediaUri} type="video/ogg" />
+                                            <p className={classes.text}>Your browser does not support our videos :(</p>
+                                        </video>
+                                    </LazyLoad>
                                 )}
-                        </CardMedia>) : (
+                        </>
+                    ) : (
                             <></>
                         )}
-                    <CardContent>
-                        <p className={classes.text}>{content.contentBody}</p>
-                    </CardContent>
-                    <CardActions disableSpacing>
-                        <IconButton color="primary">
-                            <ThumbUpAltIcon />
-                        </IconButton>
-                        <IconButton color="primary">
-                            <ThumbDownAltIcon />
-                        </IconButton>
-                    </CardActions>
-
-                </Card>
-            ))}
+                />
+            )) : <Paper elevation={3} />}
+            <Paper elevation={3} />
+            <Paper elevation={3} />
+            <Paper elevation={3} />
+            <Paper elevation={3} />
+            <Paper elevation={3} />
+            <Paper elevation={3} />
+            <Paper elevation={3} />
+            <Paper elevation={3} />
+            <Paper elevation={3} />
+            <Paper elevation={3} />
+            <Paper elevation={3} />
+            <Paper elevation={3} />
         </Box>
     );
 }

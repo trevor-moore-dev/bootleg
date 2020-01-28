@@ -16,7 +16,8 @@ import {
 	CardActions,
 	CardContent,
 	Avatar,
-	Grid
+	Grid,
+	Link
 } from '@material-ui/core';
 
 // Trevor Moore
@@ -34,6 +35,10 @@ const useStyles = makeStyles(theme => ({
 	},
 	text: {
 		color: theme.text
+	},
+	link: {
+		color: theme.general.medium,
+		cursor: "pointer"
 	},
 	video: {
 		outline: "none",
@@ -97,7 +102,7 @@ export default function Home() {
 	useEffect(() => {
 		async function getUploads() {
 			const response = await get(config.CONTENT_GET_ALL_CONTENT_GET, {
-				token: authState.token
+				userId: authState.user.id
 			});
 			if (response.success) {
 				setUploads(response.data);
@@ -111,11 +116,11 @@ export default function Home() {
 		<Box className={classes.box}>
 			<Grid className={classes.grid} container spacing={3}>
 				<Grid item xs={8} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
-					{uploads.map(content => (
+					{uploads && uploads.length > 0 ? uploads.map(content => (
 						<Card key={content.id} className={classes.card}>
 							<CardHeader
 								avatar={
-									<Avatar className={classes.avatar} alt="B" src={content.userProfilePicUri} />
+									<Avatar className={classes.avatar} src={content.userProfilePicUri} />
 								}
 								action={
 									<IconButton color="inherit">
@@ -132,7 +137,7 @@ export default function Home() {
 								>
 									{content.mediaType == 0 ? (
 										<LazyLoad height={200}>
-											<img src={content.mediaUri} alt="Content couldn't load :(" className={classes.img} />
+											<img src={content.mediaUri} alt="Image couldn't load :(" className={classes.img} />
 										</LazyLoad>
 									) : (
 											<LazyLoad height={200}>
@@ -159,12 +164,26 @@ export default function Home() {
 								</IconButton>
 							</CardActions>
 						</Card>
-					))}
+					)) :
+						<Card className={classes.card}>
+							<CardContent>
+								<p className={classes.text}>Welcome Boomer! Feel free to <Link className={classes.link}>post some content</Link>.</p>
+							</CardContent>
+						</Card>}
 				</Grid>
 				<Grid item xs={4} className={`${classes.profileGrid} ${classes.spaceGrid}`}>
 					<Card className={classes.card}>
+						<CardHeader
+							avatar={
+								<LazyLoad>
+									<Avatar className={classes.avatar} src={authState.user.profilePic} />
+								</LazyLoad>
+							}
+							title={authState.user.email}
+							className={classes.text}
+						/>
 						<CardContent>
-							<p className={classes.text}>afdasdf</p>
+							<p className={classes.text}>Hello There! :)</p>
 						</CardContent>
 					</Card>
 				</Grid>

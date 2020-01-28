@@ -51,7 +51,7 @@ namespace Bootleg.Controllers
             try
             {
                 // Return the result of the AuthenticateGoogleToken() method of our service:
-                return await _authenticationService.AuthenticateGoogleToken(token.Data, HttpContext.Response);
+                return await _authenticationService.AuthenticateGoogleToken(token.Data, HttpContext);
             }
             // Catch any exceptions:
             catch (Exception ex)
@@ -83,7 +83,7 @@ namespace Bootleg.Controllers
             try
             {
                 // Return the result of the AuthenticateUser() method of our service:
-                return await _authenticationService.AuthenticateUser(userDTO.Data, HttpContext.Response);
+                return await _authenticationService.AuthenticateUser(userDTO.Data, HttpContext);
             }
             // Catch any exceptions:
             catch (Exception ex)
@@ -115,7 +115,7 @@ namespace Bootleg.Controllers
             try
             {
                 // Return the result of the RegisterUser() method of our service:
-                return await _authenticationService.RegisterUser(userDTO.Data, HttpContext.Response);
+                return await _authenticationService.RegisterUser(userDTO.Data, HttpContext);
             }
             // Catch any exceptions:
             catch (Exception ex)
@@ -124,41 +124,6 @@ namespace Bootleg.Controllers
                 LoggerHelper.Log(ex);
                 // Return the error and set success to false, encapsulated in a DTO:
                 return new DTO<List<string>>()
-                {
-                    Errors = new Dictionary<string, List<string>>()
-                    {
-                        ["*"] = new List<string> { ex.Message },
-                    },
-                    Success = false
-                };
-            }
-        }
-        /// <summary>
-        /// API Endpoint for logging in users.
-        /// Route: api/Authentication/Authenticate
-        /// </summary>
-        /// <param name="token">DTO encapsulating a User object. Send in the body of the request.</param>
-        /// <returns>DTO encapsulating a list of strings, filled with a signed authenticated token.</returns>
-        [HttpGet("GetUserId")]
-        public DTO<string> GetUserId(string token)
-        {
-            // Surround with try/catch:
-            try
-            {
-                // Return the result of the AuthenticateUser() method of our service:
-                return new DTO<string>()
-                {
-                    Data = _authenticationService.AuthenticateToken(token, AppSettingsModel.AppSettings.JwtSecret).Data[1],
-                    Success = true
-                };
-            }
-            // Catch any exceptions:
-            catch (Exception ex)
-            {
-                // Log the exception:
-                LoggerHelper.Log(ex);
-                // Return the error and set success to false, encapsulated in a DTO:
-                return new DTO<string>()
                 {
                     Errors = new Dictionary<string, List<string>>()
                     {

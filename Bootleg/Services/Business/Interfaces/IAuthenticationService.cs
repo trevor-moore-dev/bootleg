@@ -23,7 +23,7 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <param name="token">Token as type of TokenModel.</param>
 		/// <param name="response">Response as type of HttpResponse.</param>
 		/// <returns>DTO encapsulating a list of strings of validated token.</returns>
-		Task<DTO<List<string>>> AuthenticateGoogleToken(TokenModel token, HttpResponse response);
+		Task<DTO<List<string>>> AuthenticateGoogleToken(TokenModel token, HttpContext httpContext);
 		/// <summary>
 		/// Method for authenticating JWTs.
 		/// </summary>
@@ -37,13 +37,13 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <param name="token">User as type of User.</param>
 		/// <param name="response">Response as type of HttpResponse.</param>
 		/// <returns>DTO encapsulating a list of strings of validated token.</returns>
-		Task<DTO<List<string>>> AuthenticateUser(User user, HttpResponse response);
+		Task<DTO<List<string>>> AuthenticateUser(User user, HttpContext httpContext);
 		/// <summary>
 		/// Method for registering a user into the db.
 		/// </summary>
 		/// <param name="token">User as type of User.</param>
 		/// <param name="response">Response as type of HttpResponse.</param>
 		/// <returns>DTO encapsulating a list of strings of validated token.</returns>
-		Task<DTO<List<string>>> RegisterUser(User user, HttpResponse response);
+		Task<DTO<List<string>>> RegisterUser(User user, HttpContext httpContext);
 	}
 }

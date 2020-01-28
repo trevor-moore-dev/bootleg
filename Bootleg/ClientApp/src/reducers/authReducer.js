@@ -10,6 +10,7 @@ const initialState = {
   token: "",
   user: {
     email: "",
+    profilePic: "",
     id: ""
   },
   checkedForAuth: false
@@ -28,6 +29,7 @@ const authReducer = (state, action) => {
         ...state,
         user: {
           email: action.payload.sub,
+          profilePic: action.payload.aud[0],
           id: action.payload.azp
         },
         isAuthenticated: true,

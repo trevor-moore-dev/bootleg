@@ -73,14 +73,12 @@ namespace Bootleg.Controllers
         }
 
         [HttpGet("GetAllContent")]
-        public async Task<DTO<List<Content>>> GetAllContent(string token)
+        public async Task<DTO<List<Content>>> GetAllContent(string userId)
         {
             // Surround with try/catch:
             try
             {
-                // Return the result of the AuthenticateGoogleToken() method of our service:
-                var authenticate = _authenticationService.AuthenticateToken(token, AppSettingsModel.AppSettings.JwtSecret);
-                var user = await _userService.GetUser(authenticate.Data[1]);
+                var user = await _userService.GetUser(userId);
                 var currentUser = user.Data.FirstOrDefault();
                 return await _contentService.GetAllContent(currentUser);
             }
