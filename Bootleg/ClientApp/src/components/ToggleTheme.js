@@ -3,6 +3,7 @@ import { useTheme } from "../containers/ThemeContext";
 import { ReactComponent as MoonIcon } from '../resources/images/icons/moon.svg';
 import { ReactComponent as SunIcon } from '../resources/images/icons/sun.svg';
 import { makeStyles } from "@material-ui/core/styles";
+import { Tooltip } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
     toggleTheme: {
@@ -34,12 +35,14 @@ export default function ToggleTheme() {
     const themeState = useTheme();
     const classes = useStyles();
     return (
-        <button
-            className={classes.toggleTheme}
-            onClick={() => themeState.toggle()}
-        >
-            <SunIcon className={themeState.isDark ? `${classes.svg} ${classes.displayModeSvg}` : `${classes.svg} ${classes.hideModeSvg}`} />
-            <MoonIcon className={themeState.isDark ? `${classes.svg} ${classes.hideModeSvg}` : `${classes.svg} ${classes.displayModeSvg}`} />
-        </button>
+        <Tooltip title={themeState.isDark ? 'Light Mode' : 'Dark Mode'}>
+            <button
+                className={classes.toggleTheme}
+                onClick={() => themeState.toggle()}
+            >
+                <SunIcon className={themeState.isDark ? `${classes.svg} ${classes.displayModeSvg}` : `${classes.svg} ${classes.hideModeSvg}`} />
+                <MoonIcon className={themeState.isDark ? `${classes.svg} ${classes.hideModeSvg}` : `${classes.svg} ${classes.displayModeSvg}`} />
+            </button>
+        </Tooltip>
     );
 };

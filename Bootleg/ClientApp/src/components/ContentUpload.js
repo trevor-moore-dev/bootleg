@@ -14,7 +14,8 @@ import {
     Snackbar,
     SnackbarContent,
     Box,
-    TextField
+    TextField,
+    Tooltip
 } from '@material-ui/core';
 
 // Trevor Moore
@@ -119,9 +120,6 @@ export default function ContentUpload() {
                     Authorization: "Bearer " + authState.token
                 }
             });
-        if (response.success) {
-            alert('success :)');
-        }
     };
 
     const handleOpen = () => {
@@ -135,9 +133,11 @@ export default function ContentUpload() {
     // Render our markup:
     return (
         <>
-            <Fab className={classes.fab} onClick={handleOpen}>
-                <EditIcon />
-            </Fab>
+            <Tooltip title="Create New Post">
+                <Fab className={classes.fab} onClick={handleOpen}>
+                    <EditIcon />
+                </Fab>
+            </Tooltip>
             <Snackbar open={open} className={classes.snackbar}>
                 <SnackbarContent
                     className={classes.snackbarContent}

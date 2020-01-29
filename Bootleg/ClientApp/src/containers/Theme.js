@@ -20,6 +20,9 @@ export const lightTheme = createMuiTheme({
     background: "rgb(147,112,219)",
     hover: "rgb(113,80,181)"
   },
+  divider: {
+    backgroundColor: "#D3D3D3"
+  },
   palette: {
     primary: {
       light: "rgb(60,60,60)",
@@ -95,6 +98,9 @@ export const darkTheme = createMuiTheme({
     text: "rgb(255,255,255)",
     background: "rgb(147,112,219)",
     hover: "rgb(113,80,181)"
+  },
+  divider: {
+    backgroundColor: "#696969"
   },
   palette: {
     primary: {

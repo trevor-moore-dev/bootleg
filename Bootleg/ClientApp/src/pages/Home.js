@@ -3,10 +3,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import config from '../config.json';
 import useRequest from '../hooks/useRequest';
 import useAuth from "../hooks/useAuth";
 import LazyLoad from 'react-lazyload';
+import { formatDate } from "../helpers/dateHelper";
 import {
 	Box,
 	IconButton,
@@ -46,6 +48,9 @@ const useStyles = makeStyles(theme => ({
 	},
 	img: {
 		width: "100%"
+	},
+	iconButtons: {
+		color: theme.general.light
 	},
 	box: {
 		display: 'flex',
@@ -128,7 +133,7 @@ export default function Home() {
 									</IconButton>
 								}
 								title={content.userName}
-								subheader={content.datePostedUTC}
+								subheader={formatDate(content.datePostedUTC)}
 								className={classes.text}
 							/>
 							{content.mediaUri ? (
@@ -161,6 +166,9 @@ export default function Home() {
 								</IconButton>
 								<IconButton color="primary">
 									<ThumbDownAltIcon />
+								</IconButton>
+								<IconButton className={classes.iconButtons}>
+									<ChatBubbleIcon />
 								</IconButton>
 							</CardActions>
 						</Card>

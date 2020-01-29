@@ -11,6 +11,7 @@ import {
 	AppBar,
 	Link,
 	Badge,
+	Tooltip,
 	InputBase
 } from "@material-ui/core";
 import '../resources/css/site.css';
@@ -130,26 +131,32 @@ export default function NavigationBar() {
 						<Link
 							component={RouterLink}
 							to="/explore">
-							<IconButton className={classes.iconButtons}>
-								<ExploreIcon />
-							</IconButton>
+							<Tooltip title="Explore">
+								<IconButton className={classes.iconButtons}>
+									<ExploreIcon />
+								</IconButton>
+							</Tooltip>
 						</Link>
 						<Link
 							component={RouterLink}
 							to="/messages">
-							<IconButton className={classes.iconButtons}>
-								<Badge badgeContent={4} color='secondary'>
-									<MailIcon />
-								</Badge>
-							</IconButton>
+							<Tooltip title="Messages">
+								<IconButton className={classes.iconButtons}>
+									<Badge badgeContent={4} color='secondary'>
+										<MailIcon />
+									</Badge>
+								</IconButton>
+							</Tooltip>
 						</Link>
 						<Link
 							component={RouterLink}
 							//to={`/account/${authState.user.id}`}>
 							to="/account">
-							<IconButton className={classes.iconButtons}>
-								<AccountCircle />
-							</IconButton>
+							<Tooltip title="Account">
+								<IconButton className={classes.iconButtons}>
+									<AccountCircle />
+								</IconButton>
+							</Tooltip>
 						</Link>
 					</div>
 					<div className={classes.sectionDesktop}>

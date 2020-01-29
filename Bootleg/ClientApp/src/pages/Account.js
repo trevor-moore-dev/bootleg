@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt';
+import DeleteIcon from '@material-ui/icons/Delete';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import config from '../config.json';
 import useRequest from '../hooks/useRequest';
 import useAuth from "../hooks/useAuth";
 import LazyLoad from 'react-lazyload';
+import { formatDate } from "../helpers/dateHelper";
 import {
     Box,
     IconButton,
@@ -18,7 +21,10 @@ import {
     Avatar,
     GridList,
     GridListTile,
-    Paper
+    Paper,
+    Divider,
+    Grid,
+    Link
 } from '@material-ui/core';
 
 // Trevor Moore
@@ -28,36 +34,51 @@ import {
 
 const useStyles = makeStyles(theme => ({
     root: {
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        '& > *': {
-            margin: theme.spacing(1),
-            width: theme.spacing(16),
-            height: theme.spacing(16),
-        },
+        paddingTop: theme.spacing(5)
     },
-    card: {
-        width: 700,
-        marginBottom: "10px"
+    container: {
+        display: 'flex',
+        flexGrow: 1,
+        flexWrap: 'wrap',
+        justifyContent: 'center',
     },
     avatar: {
         backgroundColor: "rgb(147,112,219)"
     },
+    card: {
+        [theme.breakpoints.up('sm')]: {
+            width: '80%',
+        },
+        [theme.breakpoints.up('md')]: {
+            width: '25%',
+        },
+        margin: '10px'
+    },
+    avatar: {
+        backgroundColor: 'rgb(147,112,219)',
+        width: theme.spacing(20),
+        height: theme.spacing(20),
+    },
     text: {
         color: theme.text
     },
+    divider: {
+        backgroundColor: theme.divider.backgroundColor,
+        margin: '25px 15% 25px 15%',
+    },
     video: {
-        outline: "none",
-        width: "100%"
+        outline: 'none',
+        width: '100%'
     },
     img: {
-        width: "100%"
+        maxHeight: '300px',
+        maxWidth: '100%',
     },
-    gridList: {
-        width: 500,
-        height: 450,
-    },
+    media: {
+        textAlign: 'center',
+        display: 'block',
+        height: '300px',
+    }
 }));
 
 // Home component for rendering the home page:
@@ -83,39 +104,59 @@ export default function Account() {
     }, []);
 
     return (
-        <Box
-            display='flex'
-            flexDirection='column'
-            alignItems='center'
-            justifyContent='center'
-            className={classes.root}
-        >
-            <GridList cellHeight={160} className={classes.gridList} cols={5}>
-                {uploads && uploads.length > 0 ? uploads.map(content => (
-                    <GridListTile key={content.id} cols={1}>
-                        {content.mediaUri ? (
-                            <>
-                                {content.mediaType == 0 ? (
-                                    <LazyLoad>
-                                        <img src={content.mediaUri} alt="Image couldn't load :(" className={classes.img} />
-                                    </LazyLoad>
-                                ) : (
+        <Box className={classes.root}>
+            <div className={classes.container}>
+                <Avatar className={classes.avatar} src={user.profilePicUri} />
+                <div>{user.username}</div>
+                <div>{user.bio}</div>
+            </div>
+            <Divider className={classes.divider} ariant="middle" />
+            <Grid container spacing={3}>
+                <Grid item xs className={classes.container}>
+                    {uploads && uploads.length > 0 ? uploads.map(content => (
+                        <Card key={content.id} className={classes.card}>
+                            <CardHeader
+                                action={
+                                    <IconButton color="inherit">
+                                        <DeleteIcon />
+                                    </IconButton>
+                                }
+                                subheader={formatDate(content.datePostedUTC)}
+                                className={classes.text}
+                            />
+                            {content.mediaUri ? (
+                                <CardMedia
+                                    className={classes.media}
+                                >
+                                    {content.mediaType == 0 ? (
                                         <LazyLoad>
-                                            <video className={classes.video} loop controls autoPlay>
-                                                <source src={content.mediaUri} type="video/mp4" />
-                                                <source src={content.mediaUri} type="video/webm" />
-                                                <source src={content.mediaUri} type="video/ogg" />
-                                                <p className={classes.text}>Your browser does not support our videos :(</p>
-                                            </video>
+                                            <img src={content.mediaUri} alt="Image couldn't load or was deleted :(" className={classes.img} />
                                         </LazyLoad>
-                                    )}
-                            </>
-                        ) : (
-                                <></>
-                            )}
-                    </GridListTile>
-                )) : <></>}
-            </GridList>
+                                    ) : (
+                                            <LazyLoad>
+                                                <video className={classes.video} loop controls autoPlay>
+                                                    <source src={content.mediaUri} type="video/mp4" />
+                                                    <source src={content.mediaUri} type="video/webm" />
+                                                    <source src={content.mediaUri} type="video/ogg" />
+                                                    <p className={classes.text}>Your browser does not support our videos :(</p>
+                                                </video>
+                                            </LazyLoad>
+                                        )}
+                                </CardMedia>) : (
+                                    <></>
+                                )}
+                            <CardContent>
+                                <p className={classes.text}></p>
+                            </CardContent>
+                        </Card>
+                    )) :
+                        <Card className={classes.card}>
+                            <CardContent>
+                                <p className={classes.text}>Welcome Boomer! Feel free to <Link className={classes.link}>post some content</Link>.</p>
+                            </CardContent>
+                        </Card>}
+                </Grid>
+            </Grid>
         </Box>
     );
 }
