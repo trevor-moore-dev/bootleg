@@ -14,7 +14,6 @@ import {
 	Tooltip,
 	InputBase
 } from "@material-ui/core";
-import '../resources/css/site.css';
 import clsx from "clsx";
 import ToggleTheme from '../components/ToggleTheme';
 import SearchIcon from '@material-ui/icons/Search';

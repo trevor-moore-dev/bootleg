@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import { useTheme } from "./containers/ThemeContext";
 import { MuiThemeProvider } from "@material-ui/core/styles";
+import './resources/css/site.css';
 
 // Trevor Moore
 // CST-451

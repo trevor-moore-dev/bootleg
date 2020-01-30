@@ -68,16 +68,20 @@ const useStyles = makeStyles(theme => ({
     },
     video: {
         outline: 'none',
-        width: '100%'
+        width: '100%',
+        height: '100%'
     },
     img: {
         maxHeight: '300px',
         maxWidth: '100%',
+        verticalAlign: 'middle',
     },
     media: {
         textAlign: 'center',
         display: 'block',
         height: '300px',
+        backgroundColor: 'rgba(0,0,0,1)',
+        lineHeight: '300px',
     }
 }));
 
@@ -118,7 +122,7 @@ export default function Account() {
                             <CardHeader
                                 action={
                                     <IconButton color="inherit">
-                                        <DeleteIcon />
+                                        <MoreVertIcon />
                                     </IconButton>
                                 }
                                 subheader={formatDate(content.datePostedUTC)}
@@ -134,7 +138,7 @@ export default function Account() {
                                         </LazyLoad>
                                     ) : (
                                             <LazyLoad>
-                                                <video className={classes.video} loop controls autoPlay>
+                                                <video className={classes.video} loop autoPlay>
                                                     <source src={content.mediaUri} type="video/mp4" />
                                                     <source src={content.mediaUri} type="video/webm" />
                                                     <source src={content.mediaUri} type="video/ogg" />
@@ -146,7 +150,7 @@ export default function Account() {
                                     <></>
                                 )}
                             <CardContent>
-                                <p className={classes.text}></p>
+                                <p className={classes.text}>{content.contentBody}</p>
                             </CardContent>
                         </Card>
                     )) :

@@ -62,11 +62,6 @@ const useStyles = makeStyles(theme => ({
 		[theme.breakpoints.up('md')]: {
 			width: "70%"
 		},
-		overflow: "hidden",
-		height: "105vh",
-		marginTop: "-100px",
-		paddingTop: "100px",
-		position: "relative"
 	},
 	contentGrid: {
 		[theme.breakpoints.down('sm')]: {
@@ -74,23 +69,21 @@ const useStyles = makeStyles(theme => ({
 			maxWidth: "100%",
 			flexBasis: "100%"
 		},
-		overflow: "scroll",
-		overflowX: "hidden",
 		'&::-webkit-scrollbar': {
 			display: 'none'
 		},
-		height: "-moz-available",
-		height: "-webkit-fill-available",
-		height: "fill-available",
 	},
 	profileGrid: {
 		display: 'none',
+		position: 'fixed',
+		left: '61%',
+		width: '24%',
 		[theme.breakpoints.up('md')]: {
 			display: 'block',
 		},
 	},
 	spaceGrid: {
-		paddingTop: "24px!important",
+		paddingTop: "48px!important",
 		paddingBottom: "24px!important",
 		paddingLeft: "12px!important",
 		paddingRight: "12px!important",
