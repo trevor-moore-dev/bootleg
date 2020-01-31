@@ -71,6 +71,7 @@ const useStyles = makeStyles(theme => ({
 		},
 	},
 	sectionMobile: {
+		color: "#A9A9A9",
 		display: 'flex',
 		[theme.breakpoints.up('md')]: {
 			display: 'none',
@@ -90,21 +91,11 @@ export default function NavigationBar() {
 	const classes = useStyles();
 	const themeState = useTheme();
 	const { logout, authState } = useAuth();
-	const [anchorEl, setAnchorEl] = React.useState(null);
-	const isMenuOpen = Boolean(anchorEl);
 
 	// Method for handling when the user clicks 'Logout':
 	const handleLogout = () => {
 		// Logout the user:
 		logout();
-	};
-
-	const handleMenuClose = () => {
-		setAnchorEl(null);
-	};
-
-	const handleMenuOpen = event => {
-		setAnchorEl(event.currentTarget);
 	};
 
 	// Render our nav bar:
@@ -162,48 +153,13 @@ export default function NavigationBar() {
 						<ToggleTheme />
 					</div>
 					<IconButton
+						onClick={() => themeState.toggle()}
 						className={classes.sectionMobile}
-						onClick={handleMenuOpen}
-						color="inherit"
 					>
-						<MoreIcon />
+						{themeState.isDark ? <Brightness5Icon /> : <Brightness4Icon />}
 					</IconButton>
 				</Toolbar>
 			</AppBar>
-			<Menu
-				anchorEl={anchorEl}
-				anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-				transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-				open={isMenuOpen}
-				onClose={handleMenuClose}
-			>
-				<MenuItem>
-					<IconButton color='primary'>
-						<ExploreIcon />
-					</IconButton>
-					<p className={classes.text}>Explore</p>
-				</MenuItem>
-				<MenuItem>
-					<IconButton color='primary'>
-						<Badge badgeContent={4}>
-							<MailIcon />
-						</Badge>
-					</IconButton>
-					<p className={classes.text}>Messages</p>
-				</MenuItem>
-				<MenuItem>
-					<IconButton color='primary'>
-						<AccountCircle />
-					</IconButton>
-					<p className={classes.text}>Account</p>
-				</MenuItem>
-				<MenuItem onClick={() => themeState.toggle()}>
-					<IconButton color='primary'>
-						{themeState.isDark ? <Brightness5Icon /> : <Brightness4Icon />}
-					</IconButton>
-					<p className={classes.text}>{themeState.isDark ? 'Light Mode' : 'Dark Mode'}</p>
-				</MenuItem>
-			</Menu>
 		</div>
 	);
 }

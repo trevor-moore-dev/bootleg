@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import NavigationBar from "../components/NavigationBar";
-import ContentUpload from "../components/ContentUpload";
+import Footer from "../components/Footer";
 import Routes from "./Routes";
 import { makeStyles } from "@material-ui/core/styles";
 import useAuth from "../hooks/useAuth";
@@ -38,7 +38,7 @@ export default function Template() {
 							<Routes />
 						</div>
 					</main>
-					<ContentUpload />
+					<Footer />
 				</>
 			) : (
 					<>

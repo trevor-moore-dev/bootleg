@@ -1,4 +1,11 @@
 import React, { useState } from "react";
+import BottomNavigation from '@material-ui/core/BottomNavigation';
+import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
+import MailIcon from '@material-ui/icons/Mail';
+import HomeIcon from '@material-ui/icons/Home';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import SearchIcon from '@material-ui/icons/Search';
 import { makeStyles } from "@material-ui/core/styles";
 import EditIcon from '@material-ui/icons/Edit';
 import CloseIcon from '@material-ui/icons/Close';
@@ -25,6 +32,23 @@ import {
 
 // Create CSS styles:
 const useStyles = makeStyles(theme => ({
+    sectionDesktop: {
+        display: 'none',
+        [theme.breakpoints.up('md')]: {
+            display: 'flex',
+        },
+    },
+    stickToBottom: {
+        display: 'flex',
+        [theme.breakpoints.up('md')]: {
+            display: 'none',
+        },
+        width: '100%',
+        position: 'fixed',
+        bottom: 0,
+        color: theme.button.text,
+        backgroundColor: theme.general.dark
+    },
     box: {
         alignItems: "center",
         display: "flex"
@@ -83,17 +107,21 @@ const useStyles = makeStyles(theme => ({
         "&:hover": {
             backgroundColor: "rgb(113,80,181)"
         }
+    },
+    footerIcon: {
+        color: "#A9A9A9"
     }
 }));
 
-// Template component for rendering the template of our web app, and where main components get rendered within it:
-export default function ContentUpload() {
-    // Create our styles and declare our state properties with the useState Hooks API:
+// Nav Bar component for the top of the web app:
+export default function Footer() {
+    // Create our styles and declare our state properties:
     const classes = useStyles();
     const [contentBody, setContentBody] = useState("");
     const [open, setOpen] = useState(false);
     const [file, setFile] = useState({});
     const { authState } = useAuth();
+    const [value, setValue] = React.useState('recents');
 
     const handleFileChange = file => {
         setFile(file);
@@ -103,7 +131,18 @@ export default function ContentUpload() {
         setContentBody(e.target.value);
     };
 
-    // Function for handling when the user submits the register form:
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     const uploadPost = async () => {
         let formData = new FormData();
         if (file) {
@@ -122,18 +161,17 @@ export default function ContentUpload() {
             });
     };
 
-    const handleOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    // Render our markup:
+    // Render our nav bar:
     return (
         <>
-            <Tooltip title="Create New Post">
+            <BottomNavigation value={value} onChange={handleChange} className={classes.stickToBottom}>
+                <BottomNavigationAction label="" value="home" icon={<HomeIcon className={classes.footerIcon} />} />
+                <BottomNavigationAction label="" value="search" icon={<SearchIcon className={classes.footerIcon} />} />
+                <BottomNavigationAction label="" value="newpost" icon={<AddCircleOutlineIcon />} className={classes.footerIcon} onClick={handleOpen} />
+                <BottomNavigationAction label="" value="messages" icon={<MailIcon className={classes.footerIcon} />} />
+                <BottomNavigationAction label="" value="account" icon={<AccountCircleIcon className={classes.footerIcon} />} />
+            </BottomNavigation>
+            <Tooltip title="Create New Post" className={classes.sectionDesktop}>
                 <Fab className={classes.fab} onClick={handleOpen}>
                     <EditIcon />
                 </Fab>

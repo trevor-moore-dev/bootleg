@@ -50,7 +50,7 @@ const useStyles = makeStyles(theme => ({
 		width: "100%"
 	},
 	iconButtons: {
-		color: theme.general.light
+		color: "#A9A9A9"
 	},
 	box: {
 		display: 'flex',

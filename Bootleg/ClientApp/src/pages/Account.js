@@ -1,28 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
-import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
-import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt';
-import DeleteIcon from '@material-ui/icons/Delete';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
+import DoneOutlineIcon from '@material-ui/icons/DoneOutline';
+import EditIcon from '@material-ui/icons/Edit';
+import CancelIcon from '@material-ui/icons/Cancel';
 import config from '../config.json';
 import useRequest from '../hooks/useRequest';
 import useAuth from "../hooks/useAuth";
 import LazyLoad from 'react-lazyload';
 import { formatDate } from "../helpers/dateHelper";
+import { FilePicker } from "react-file-picker";
+import Axios from "axios";
 import {
     Box,
     IconButton,
     CardMedia,
     CardHeader,
     Card,
-    CardActions,
     CardContent,
     Avatar,
-    GridList,
-    GridListTile,
-    Paper,
+    TextField,
     Divider,
+    Tooltip,
     Grid,
     Link
 } from '@material-ui/core';
@@ -42,9 +41,6 @@ const useStyles = makeStyles(theme => ({
         flexWrap: 'wrap',
         justifyContent: 'center',
     },
-    avatar: {
-        backgroundColor: "rgb(147,112,219)"
-    },
     card: {
         [theme.breakpoints.up('sm')]: {
             width: '80%',
@@ -58,6 +54,11 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: 'rgb(147,112,219)',
         width: theme.spacing(20),
         height: theme.spacing(20),
+    },
+    mousePointer: {
+        '&:hover': {
+            mouse: "pointer"
+        },
     },
     text: {
         color: theme.text
@@ -82,16 +83,27 @@ const useStyles = makeStyles(theme => ({
         height: '300px',
         backgroundColor: 'rgba(0,0,0,1)',
         lineHeight: '300px',
-    }
+    },
+    accountDetailsContainer: {
+        flexDirection: 'column',
+        display: 'flex',
+    },
 }));
 
 // Home component for rendering the home page:
 export default function Account() {
     const classes = useStyles();
-    const [user, setUser] = useState({});
     const [uploads, setUploads] = useState([]);
     const { get } = useRequest();
     const { authState } = useAuth();
+    const [editAccount, setEditAccount] = useState(false);
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [username, setUsername] = useState("");
+    const [profilePicUri, setProfilePicUri] = useState("");
+    const [bio, setBio] = useState("");
+    const [oldPassword, setOldPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
 
     useEffect(() => {
         async function getUserContent() {
@@ -99,7 +111,11 @@ export default function Account() {
                 userId: authState.user.id
             });
             if (response.success) {
-                setUser(response.data.item1);
+                setEmail(response.data.item1.email ? response.data.item1.email : '');
+                setPhone(response.data.item1.phone ? response.data.item1.phone : '');
+                setUsername(response.data.item1.username ? response.data.item1.username : '');
+                setProfilePicUri(response.data.item1.profilePicUri ? response.data.item1.profilePicUri : '');
+                setBio(response.data.item1.bio ? response.data.item1.bio : '');
                 setUploads(response.data.item2);
             }
         }
@@ -107,12 +123,102 @@ export default function Account() {
         return () => { };
     }, []);
 
+    const handleEmailChange = e => {
+        setEmail(e.target.value);
+    };
+    const handlePhoneChange = e => {
+        setPhone(e.target.value);
+    };
+    const handleUsernameChange = e => {
+        setUsername(e.target.value);
+    };
+    const handleBioChange = e => {
+        setBio(e.target.value);
+    };
+    const handleOldPasswordChange = e => {
+        setOldPassword(e.target.value);
+    };
+    const handleNewPasswordChange = e => {
+        setNewPassword(e.target.value);
+    };
+    const handleEditAccount = () => {
+        setEditAccount(!editAccount);
+    };
+
+    const makeUserUpdateRequest = async (formData, notProfilePicUpdate) => {
+        if (authState.user.id) {
+            formData.append('userId', authState.user.id);
+        }
+        let response = await Axios.post(
+            config.USER_UPDATE_USER_POST,
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: "Bearer " + authState.token
+                }
+            });
+        if (response.data.success) {
+            setEmail(response.data.data.email ? response.data.data.email : '');
+            setPhone(response.data.data.phone ? response.data.data.phone : '');
+            setUsername(response.data.data.username ? response.data.data.username : '');
+            setProfilePicUri(response.data.data.profilePicUri ? response.data.data.profilePicUri : '');
+            setBio(response.data.data.bio ? response.data.data.bio : '');
+
+            if (notProfilePicUpdate) {
+                setEditAccount(!editAccount);
+            }
+        }
+    };
+
+    const handleUpdateAccount = async () => {
+        let formData = new FormData();
+        if (username) {
+            formData.append('username', username);
+        }
+        if (email) {
+            formData.append('email', email);
+        }
+        if (phone) {
+            formData.append('phone', phone);
+        }
+        if (bio) {
+            formData.append('bio', bio);
+        }
+        makeUserUpdateRequest(formData, true);
+    };
+
+    const handleProfilePicChange = async (profilePic) => {
+        let formData = new FormData();
+        if (profilePic) {
+            formData.append('file', profilePic);
+        }
+        makeUserUpdateRequest(formData, false);
+    };
+
     return (
         <Box className={classes.root}>
             <div className={classes.container}>
-                <Avatar className={classes.avatar} src={user.profilePicUri} />
-                <div>{user.username}</div>
-                <div>{user.bio}</div>
+                <FilePicker
+                    extensions={["jpeg", "mov", "mp4", "jpg", "img", "png", "wmv", "avi"]}
+                    onChange={handleProfilePicChange}
+                >
+                    <Avatar className={classes.avatar} src={profilePicUri} />
+                </FilePicker>
+                <div className={classes.accountDetailsContainer}>
+                    {editAccount ? <TextField value={username} onChange={handleUsernameChange} className={classes.text} /> : <div className={classes.text}>{username}</div>}
+                    {editAccount ? <TextField value={bio} onChange={handleBioChange} className={classes.text} /> : <div className={classes.text}>{bio}</div>}
+                    {editAccount ? <TextField value={email} onChange={handleEmailChange} className={classes.text} /> : <div className={classes.text}>{email}</div>}
+                    {editAccount ? <TextField value={phone} onChange={handlePhoneChange} className={classes.text} /> : <div className={classes.text}>{phone}</div>}
+                    <IconButton color="inherit" onClick={handleEditAccount}>
+                        {editAccount ? <CancelIcon /> : <EditIcon />}
+                    </IconButton>
+                    {editAccount ?
+                        <IconButton color="inherit" onClick={handleUpdateAccount}>
+                            <DoneOutlineIcon />
+                        </IconButton> :
+                        <></>}
+                </div>
             </div>
             <Divider className={classes.divider} ariant="middle" />
             <Grid container spacing={3}>
@@ -149,9 +255,6 @@ export default function Account() {
                                 </CardMedia>) : (
                                     <></>
                                 )}
-                            <CardContent>
-                                <p className={classes.text}>{content.contentBody}</p>
-                            </CardContent>
                         </Card>
                     )) :
                         <Card className={classes.card}>
