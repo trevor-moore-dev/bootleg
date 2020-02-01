@@ -141,7 +141,7 @@ export default function NavigationBar() {
 						<Link
 							component={RouterLink}
 							//to={`/account/${authState.user.id}`}>
-							to="/account">
+							to="/my-account">
 							<Tooltip title="Account">
 								<IconButton className={classes.iconButtons}>
 									<AccountCircle />

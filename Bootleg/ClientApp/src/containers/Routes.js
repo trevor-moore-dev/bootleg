@@ -2,6 +2,9 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 import NotFound from "../components/NotFound";
 import Home from "../pages/Home";
+import Explore from "../pages/Explore";
+import Messages from "../pages/Messages";
+import User from "../pages/User";
 import Login from "../pages/Login";
 import Account from "../pages/Account";
 
@@ -18,13 +21,13 @@ export default function Routes() {
 
       <Route path="/login" component={Login} />
 
-      <Route path="/account" component={Account} />
-      <Route path="/account/:id" component={Account} />
+      <Route path="/my-account" component={Account} />
+      <Route path="/account/:id" component={User} />
 
-      <Route path="/messages" component={Home} />
-      <Route path="/messages/:id" component={Home} />
+      <Route path="/messages" component={Messages} />
+      <Route path="/chat/:id" component={Messages} />
 
-      <Route path="/explore" component={Home} />
+      <Route path="/explore" component={Explore} />
 
       <Route component={NotFound} />
     </Switch>

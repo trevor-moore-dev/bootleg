@@ -16,6 +16,7 @@ namespace Bootleg.Controllers
         private readonly IContentService _contentService;
         private readonly IUserService _userService;
         private readonly IBlobService _blobService;
+
         /// <summary>
         /// Constructor that will instantiate our dependencies.
         /// </summary>
@@ -27,7 +28,8 @@ namespace Bootleg.Controllers
             this._userService = _userService;
             this._blobService = _blobService;
         }
-        [HttpGet("GetUser")]
+
+        [HttpGet("[action]")]
         public async Task<DTO<User>> GetUser(string userId)
         {
             // Surround with try/catch:
@@ -57,7 +59,51 @@ namespace Bootleg.Controllers
             }
         }
 
-        [HttpGet("GetUserContent")]
+        [HttpPost("[action]")]
+        public async Task<DTO<User>> FollowUser([FromBody] DTO<string> user)
+        {
+            try
+            {
+                var loggedInUser = await _userService.GetUser(user.Data);
+                return await _userService.FollowUser(loggedInUser.Data, user.Id);
+            }
+            catch (Exception ex)
+            {
+                LoggerHelper.Log(ex);
+                return new DTO<User>()
+                {
+                    Errors = new Dictionary<string, List<string>>()
+                    {
+                        ["*"] = new List<string> { ex.Message },
+                    },
+                    Success = false
+                };
+            }
+        }
+
+        [HttpPost("[action]")]
+        public async Task<DTO<User>> UnfollowUser([FromBody] DTO<string> user)
+        {
+            try
+            {
+                var loggedInUser = await _userService.GetUser(user.Data);
+                return await _userService.UnfollowUser(loggedInUser.Data, user.Id);
+            }
+            catch (Exception ex)
+            {
+                LoggerHelper.Log(ex);
+                return new DTO<User>()
+                {
+                    Errors = new Dictionary<string, List<string>>()
+                    {
+                        ["*"] = new List<string> { ex.Message },
+                    },
+                    Success = false
+                };
+            }
+        }
+
+        [HttpGet("[action]")]
         public async Task<DTO<Tuple<User, List<Content>>>> GetUserContent(string userId)
         {
             // Surround with try/catch:
@@ -83,7 +129,7 @@ namespace Bootleg.Controllers
             }
         }
 
-        [HttpPost("UpdateUser")]
+        [HttpPost("[action]")]
         [DisableRequestSizeLimit]
         public async Task<DTO<User>> UpdateUser()
         {
@@ -106,6 +152,31 @@ namespace Bootleg.Controllers
                 LoggerHelper.Log(ex);
                 // Return the error and set success to false, encapsulated in a DTO:
                 return new DTO<User>()
+                {
+                    Errors = new Dictionary<string, List<string>>()
+                    {
+                        ["*"] = new List<string> { ex.Message },
+                    },
+                    Success = false
+                };
+            }
+        }
+
+        [HttpGet("[action]")]
+        public async Task<DTO<List<User>>> SearchAllUsers(string username)
+        {
+            // Surround with try/catch:
+            try
+            {
+                return await _userService.SearchAllUsers(username);
+            }
+            // Catch any exceptions:
+            catch (Exception ex)
+            {
+                // Log the exception:
+                LoggerHelper.Log(ex);
+                // Return the error and set success to false, encapsulated in a DTO:
+                return new DTO<List<User>>()
                 {
                     Errors = new Dictionary<string, List<string>>()
                     {

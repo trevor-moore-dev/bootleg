@@ -6,6 +6,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SearchIcon from '@material-ui/icons/Search';
+import ExploreIcon from '@material-ui/icons/Explore';
 import { makeStyles } from "@material-ui/core/styles";
 import EditIcon from '@material-ui/icons/Edit';
 import CloseIcon from '@material-ui/icons/Close';
@@ -15,6 +16,7 @@ import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
 import AddIcon from '@material-ui/icons/Add';
 import { FilePicker } from "react-file-picker";
 import useAuth from "../hooks/useAuth";
+import { Link as RouterLink } from 'react-router-dom';
 import {
     Fab,
     IconButton,
@@ -165,11 +167,11 @@ export default function Footer() {
     return (
         <>
             <BottomNavigation value={value} onChange={handleChange} className={classes.stickToBottom}>
-                <BottomNavigationAction label="" value="home" icon={<HomeIcon className={classes.footerIcon} />} />
-                <BottomNavigationAction label="" value="search" icon={<SearchIcon className={classes.footerIcon} />} />
-                <BottomNavigationAction label="" value="newpost" icon={<AddCircleOutlineIcon />} className={classes.footerIcon} onClick={handleOpen} />
-                <BottomNavigationAction label="" value="messages" icon={<MailIcon className={classes.footerIcon} />} />
-                <BottomNavigationAction label="" value="account" icon={<AccountCircleIcon className={classes.footerIcon} />} />
+                <BottomNavigationAction component={RouterLink} to="/" icon={<HomeIcon className={classes.footerIcon} />} />
+                <BottomNavigationAction component={RouterLink} to="/explore" icon={<ExploreIcon className={classes.footerIcon} />} />
+                <BottomNavigationAction onClick={handleOpen} icon={<AddCircleOutlineIcon className={classes.footerIcon} />} />
+                <BottomNavigationAction component={RouterLink} to="/messages" icon={<MailIcon className={classes.footerIcon} />} />
+                <BottomNavigationAction component={RouterLink} to="/my-account" icon={<AccountCircleIcon className={classes.footerIcon} />} />
             </BottomNavigation>
             <Tooltip title="Create New Post" className={classes.sectionDesktop}>
                 <Fab className={classes.fab} onClick={handleOpen}>

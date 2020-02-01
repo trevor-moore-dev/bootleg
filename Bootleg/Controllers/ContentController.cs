@@ -35,7 +35,7 @@ namespace Bootleg.Controllers
             this._contentService = _contentService;
             this._userService = _userService;
         }
-        [HttpPost("UploadContent")]
+        [HttpPost("[action]")]
         [DisableRequestSizeLimit]
         public async Task<DTO<bool>> UploadContent()
         {
@@ -68,7 +68,7 @@ namespace Bootleg.Controllers
             }
         }
 
-        [HttpGet("GetAllContent")]
+        [HttpGet("[action]")]
         public async Task<DTO<List<Content>>> GetAllContent(string userId)
         {
             // Surround with try/catch:

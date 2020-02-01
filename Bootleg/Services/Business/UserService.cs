@@ -6,7 +6,6 @@ using Bootleg.Models.DTO;
 using Bootleg.Services.Business.Interfaces;
 using Bootleg.Services.Data.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,11 +26,18 @@ namespace Bootleg.Services.Business
 			// Set our dependency:
 			this._userDAO = userDAO;
 		}
-		public async Task<DTO<List<User>>> GetAllUsers()
+
+		public async Task<DTO<List<User>>> SearchAllUsers(string username)
 		{
 			try
 			{
 				var result = await _userDAO.GetAll();
+
+				if (!string.IsNullOrEmpty(username))
+				{
+					result = result.OrderByDescending(x => string.Compare(x.Username, username, true)).ToList();
+				}
+
 				return new DTO<List<User>>()
 				{
 					Data = result,
@@ -54,6 +60,44 @@ namespace Bootleg.Services.Business
 					Data = result,
 					Success = true
 				};
+			}
+			catch (Exception e)
+			{
+				throw e;
+			}
+		}
+
+		public async Task<DTO<User>> FollowUser(User user, string userID)
+		{
+			try
+			{
+				if (user.FollowingIds == null)
+				{
+					user.FollowingIds = new List<string>() { userID };
+				}
+				else
+				{
+					user.FollowingIds.Add(userID);
+				}
+
+				return await UpdateUser(user);
+			}
+			catch (Exception e)
+			{
+				throw e;
+			}
+		}
+
+		public async Task<DTO<User>> UnfollowUser(User user, string userID)
+		{
+			try
+			{
+				if (user.FollowingIds?.Count() > 0)
+				{
+					user.FollowingIds.Remove(userID);
+				}
+
+				return await UpdateUser(user);
 			}
 			catch (Exception e)
 			{
