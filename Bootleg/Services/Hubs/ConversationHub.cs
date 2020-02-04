@@ -15,12 +15,13 @@ namespace SecretSanta2._0.Services.Hubs
             this._conversationService = _conversationService;
         }
 
-        public async Task GetConversations()
+        public async Task GetConversation(string conversationId)
         {
             try
             {
-                //var participants = await _conversationService.GetConversations();
-                //await Clients.All.SendAsync("GetConversations", participants);
+                await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
+                var conversation = await _conversationService.GetConversation(conversationId);
+                await Clients.Group(conversationId).SendAsync("GetConversation", conversation);
             }
             catch (Exception ex)
             {
@@ -28,18 +29,16 @@ namespace SecretSanta2._0.Services.Hubs
             }
         }
 
-        public async Task AddToGroup(string groupName)
+        public async Task LeaveConversation(string conversationId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-
-            await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has joined the group {groupName}.");
-        }
-
-        public async Task RemoveFromGroup(string groupName)
-        {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-
-            await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has left the group {groupName}.");
+            try
+            {
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, conversationId);
+            }
+            catch (Exception ex)
+            {
+                LoggerHelper.Log(ex);
+            }
         }
     }
 }
