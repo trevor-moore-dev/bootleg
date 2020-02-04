@@ -11,9 +11,9 @@ namespace Bootleg.Services.Business.Interfaces
 		Task<DTO<List<Conversation>>> GetAllConversations(string userID);
 		Task<DTO<Conversation>> GetConversation(string conversationId);
 		Task<DTO<Conversation>> CreateConversation(List<User> users);
-		Task<Message> CreateMessage(HttpRequest request);
-		Task<DTO<Conversation>> SendMessage(Message message);
-		Task<DTO<Conversation>> DeleteMessage(string conversationId, string messageId);
-		Task<DTO<Conversation>> DeleteConversation(string conversationId);
+		Message CreateMessage(HttpRequest request, Message message, User user);
+		Task<DTO<Conversation>> SendMessage(Conversation conversation, Message message);
+		Task<DTO<Conversation>> DeleteMessage(Conversation conversation, string messageId);
+		Task<DTO<Conversation>> LeaveConversation(Conversation conversation, User user);
 	}
 }

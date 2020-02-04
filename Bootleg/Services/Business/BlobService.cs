@@ -71,6 +71,34 @@ namespace Bootleg.Services.Business
             }
         }
 
+        public async Task<Message> UploadMessageBlob(HttpRequest request)
+        {
+            try
+            {
+                var message = new Message();
+
+                if (request.Form.Any())
+                {
+                    if (request.Form.Files.Count > 0 && request.Form.Files[0].Length > 0)
+                    {
+                        var blob = await UploadBlob(request);
+                        message.MediaUri = blob.Item1.Uri.ToString();
+                        message.BlobReference = blob.Item2;
+                        message.MediaType = BlobHelper.GetMediaType(request.Form.Files[0].FileName);
+                    }
+                }
+
+                return message;
+            }
+            catch (Exception e)
+            {
+                // Log the exception:
+                LoggerHelper.Log(e);
+                // Throw the exception:
+                throw e;
+            }
+        }
+
         public async Task<User> UpdateUserProfilePic(User user, HttpRequest request)
         {
             try

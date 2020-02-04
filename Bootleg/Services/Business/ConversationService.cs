@@ -6,6 +6,7 @@ using Bootleg.Services.Data.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Bootleg.Services.Business
@@ -18,34 +19,114 @@ namespace Bootleg.Services.Business
 		/// Constructor that will instantiate our dependencies that get injected by the container.
 		/// </summary>
 		/// <param name="contentDAO">DAO to be injected.</param>
-		public ConversationService(IDAO<Conversation> contentDAO)
+		public ConversationService(IDAO<Conversation> _conversationDAO)
 		{
 			// Set our dependencies:
-			_conversationDAO = contentDAO;
+			this._conversationDAO = _conversationDAO;
 		}
+
 		public async Task<DTO<Conversation>> CreateConversation(List<User> users)
 		{
-			throw new System.NotImplementedException();
+			try
+			{
+				var conversation = new Conversation()
+				{
+					UserIds = users.Select(x => x.Id).ToList(),
+					UserNames = users.Select(x => x.Username).ToList(),
+					Messages = new List<Message>()
+				};
+
+				var result = await _conversationDAO.Add(conversation);
+
+				return new DTO<Conversation>()
+				{
+					Data = result,
+					Success = true
+				};
+			}
+			catch(Exception e)
+			{
+				LoggerHelper.Log(e);
+				throw e;
+			}
 		}
 
-		public async Task<Message> CreateMessage(HttpRequest request)
+		public Message CreateMessage(HttpRequest request, Message message, User user)
 		{
-			throw new System.NotImplementedException();
+			if (request.Form.Any())
+			{
+				if (request.Form.Keys.Contains("messageBody"))
+				{
+					message.MessageBody = request.Form["messageBody"];
+				}
+
+				message.Username = user.Username;
+				message.UserId = user.Id;
+				message.DatePostedUTC = DateTime.UtcNow;
+			}
+
+			return message;
 		}
 
-		public async Task<DTO<Conversation>> DeleteConversation(string conversationId)
+		public async Task<DTO<Conversation>> LeaveConversation(Conversation conversation, User user)
 		{
-			throw new System.NotImplementedException();
+			try
+			{
+				conversation.UserIds.Remove(user.Id);
+				conversation.UserNames.Remove(user.Username);
+				var result = await _conversationDAO.Update(conversation.Id, conversation);
+
+				return new DTO<Conversation>()
+				{
+					Data = result,
+					Success = true
+				};
+			}
+			catch(Exception e)
+			{
+				LoggerHelper.Log(e);
+				throw e;
+			}
 		}
 
-		public async Task<DTO<Conversation>> DeleteMessage(string conversationId, string messageId)
+		public async Task<DTO<Conversation>> DeleteMessage(Conversation conversation, string messageId)
 		{
-			throw new System.NotImplementedException();
+			try
+			{
+				conversation.Messages.RemoveAll(x => x.Id.Equals(messageId));
+				var result = await _conversationDAO.Update(conversation.Id, conversation);
+
+				return new DTO<Conversation>()
+				{
+					Data = result,
+					Success = true
+				};
+			}
+			catch (Exception e)
+			{
+				LoggerHelper.Log(e);
+				throw e;
+			}
 		}
 
-		public async Task<DTO<List<Conversation>>> GetAllConversations(string userID)
+		public async Task<DTO<List<Conversation>>> GetAllConversations(string userId)
 		{
-			throw new System.NotImplementedException();
+			try
+			{
+				var conversations = await _conversationDAO.GetAll();
+				var result = conversations.Where(convo => convo.UserIds.Any(id => id.Equals(userId))).ToList();
+
+				return new DTO<List<Conversation>>()
+				{
+					Data = result,
+					Success = true
+				};
+			}
+			catch (Exception e)
+			{
+				LoggerHelper.Log(e);
+				throw e;
+			}
 		}
 
 		public async Task<DTO<Conversation>> GetConversation(string conversationId)
@@ -66,9 +147,24 @@ namespace Bootleg.Services.Business
 			}
 		}
 
-		public async Task<DTO<Conversation>> SendMessage(Message message)
+		public async Task<DTO<Conversation>> SendMessage(Conversation conversation, Message message)
 		{
-			throw new System.NotImplementedException();
+			try
+			{
+				conversation.Messages.Add(message);
+				var result = await _conversationDAO.Update(conversation.Id, conversation);
+
+				return new DTO<Conversation>()
+				{
+					Data = result,
+					Success = true
+				};
+			}
+			catch (Exception e)
+			{
+				LoggerHelper.Log(e);
+				throw e;
+			}
 		}
 	}
 }

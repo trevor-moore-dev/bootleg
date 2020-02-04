@@ -1,4 +1,5 @@
 ﻿using Bootleg.Models.Enums;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -7,6 +8,9 @@ namespace Bootleg.Models.Documents
 {
 	public class Message
 	{
+		[BsonId]
+		[BsonRepresentation(BsonType.ObjectId)]
+		public string Id { get; set; }
 		[BsonRequired]
 		public string UserId { get; set; }
 		public string Username { get; set; }

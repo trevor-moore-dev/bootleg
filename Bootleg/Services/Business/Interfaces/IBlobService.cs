@@ -11,6 +11,7 @@ namespace Bootleg.Services.Business.Interfaces
 	public interface IBlobService
 	{
 		Task<Content> UploadContentBlob(HttpRequest request);
+		Task<Message> UploadMessageBlob(HttpRequest request);
 		Task<Tuple<CloudBlockBlob, string>> UploadBlob(HttpRequest request);
 		Task<User> UpdateUserProfilePic(User user, HttpRequest request);
 		Task<DTO<List<Uri>>> GetAllBlobs();

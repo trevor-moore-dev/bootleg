@@ -67,6 +67,23 @@ namespace Bootleg.Services.Business
 			}
 		}
 
+		public async Task<DTO<List<User>>> GetUsers(List<string> userIds)
+		{
+			try
+			{
+				var result = await _userDAO.GetAllFromIndexes(userIds);
+				return new DTO<List<User>>()
+				{
+					Data = result,
+					Success = true
+				};
+			}
+			catch (Exception e)
+			{
+				throw e;
+			}
+		}
+
 		public async Task<DTO<User>> FollowUser(User user, string userID)
 		{
 			try

@@ -121,7 +121,7 @@ namespace Bootleg
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
 					Configuration["ConnectionStrings:LocalMongoDBCollectionTwo"]));
-				services.AddSingleton<IDAO<Content>>(service => new ContentDAO(
+				services.AddSingleton<IDAO<Conversation>>(service => new ConversationDAO(
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
 					Configuration["ConnectionStrings:LocalMongoDBCollectionThree"]));
@@ -138,7 +138,7 @@ namespace Bootleg
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
 					Configuration["ConnectionStrings:LocalMongoDBCollectionTwo"]));
-				services.AddSingleton<IDAO<Content>>(service => new ContentDAO(
+				services.AddSingleton<IDAO<Conversation>>(service => new ConversationDAO(
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
 					Configuration["ConnectionStrings:LocalMongoDBCollectionThree"]));
