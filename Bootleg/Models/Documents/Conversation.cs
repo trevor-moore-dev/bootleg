@@ -11,7 +11,7 @@ namespace Bootleg.Models.Documents
 		public string Id { get; set; }
 		[BsonRequired]
 		public List<string> UserIds { get; set; }
-		public string ConversationName { get; set; }
+		public List<string> UserNames { get; set; }
 		public List<Message> Messages { get; set; }
 	}
 }

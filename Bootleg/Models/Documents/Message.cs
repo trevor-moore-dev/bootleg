@@ -9,6 +9,7 @@ namespace Bootleg.Models.Documents
 	{
 		[BsonRequired]
 		public string UserId { get; set; }
+		public string Username { get; set; }
 		public string ContentId { get; set; }
 		public DateTime DatePostedUTC { get; set; }
 		[Required]

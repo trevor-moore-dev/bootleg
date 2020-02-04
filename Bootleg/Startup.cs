@@ -17,11 +17,10 @@ using Newtonsoft.Json;
 using Bootleg.Services.Data.Interfaces;
 using Bootleg.Services.Business.Interfaces;
 using Bootleg.Models.Documents;
-using Bootleg.Models.DTO;
-using System.Collections.Generic;
 using Bootleg.Services.Business;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
+using SecretSanta2._0.Services.Hubs;
 
 // Trevor Moore
 // CST-451
@@ -122,19 +121,27 @@ namespace Bootleg
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
 					Configuration["ConnectionStrings:LocalMongoDBCollectionTwo"]));
+				services.AddSingleton<IDAO<Content>>(service => new ContentDAO(
+					Configuration["ConnectionStrings:LocalMongoDBConnection"],
+					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
+					Configuration["ConnectionStrings:LocalMongoDBCollectionThree"]));
 			}
 			else
 			{
 				// Inject our DAO as a Singleton using our LIVE parameters:
 				// TO DOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO NEED TO CHANGE THESE:
 				services.AddSingleton<IDAO<User>>(service => new UserDAO(
-					Configuration["ConnectionStrings:HerokuMongoDBConnection"],
-					Configuration["ConnectionStrings:HerokuMongoDBDatabase"],
-					Configuration["ConnectionStrings:HerokuMongoDBCollection"]));
-				services.AddSingleton<IDAO<Content>>(service => new ContentDAO(
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
 					Configuration["ConnectionStrings:LocalMongoDBCollectionOne"]));
+				services.AddSingleton<IDAO<Content>>(service => new ContentDAO(
+					Configuration["ConnectionStrings:LocalMongoDBConnection"],
+					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
+					Configuration["ConnectionStrings:LocalMongoDBCollectionTwo"]));
+				services.AddSingleton<IDAO<Content>>(service => new ContentDAO(
+					Configuration["ConnectionStrings:LocalMongoDBConnection"],
+					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
+					Configuration["ConnectionStrings:LocalMongoDBCollectionThree"]));
 			}
 			// Inject our Blob service as a Singleton:
 			services.AddSingleton<IBlobService, BlobService>(service => new BlobService(
@@ -146,6 +153,8 @@ namespace Bootleg
 			services.AddSingleton<IUserService, UserService>();
 			// Inject our Content service as a Singleton:
 			services.AddSingleton<IContentService, ContentService>();
+			// Inject our Conversation service as a Singleton:
+			services.AddSingleton<IConversationService, ConversationService>();
 			// Inject our Prediction service as a Singleton:
 			services.AddSingleton<IPredictionService, PredictionService>();
 			// In production, the React files will be served from this directory:
@@ -193,7 +202,7 @@ namespace Bootleg
 				endpoints.MapControllerRoute(
 					name: "default",
 					pattern: "{controller}/{action=Index}/{id?}");
-				//TO DOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO endpoints.MapHub<SantaHub>("/SantaHub");
+				endpoints.MapHub<ConversationHub>("/ConversationHub");
 			});
 			// Specify to use SPA and source path:
 			app.UseSpa(spa =>
