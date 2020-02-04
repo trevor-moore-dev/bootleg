@@ -18,7 +18,9 @@ import {
     CardActions,
     CardContent,
     Avatar,
+    Tooltip,
     Grid,
+    AvatarGroup,
     Link
 } from '@material-ui/core';
 
@@ -93,16 +95,80 @@ const useStyles = makeStyles(theme => ({
 // Home component for rendering the home page:
 export default function Messages() {
     const classes = useStyles();
+    const [conversations, setConversations] = useState([]);
+    const { get } = useRequest();
+    const { authState } = useAuth();
+
+    useEffect(() => {
+        async function getUploads() {
+            const response = await get(config.MESSAGING_GET_ALL_CONVERSATIONS_GET, {
+                userId: authState.user.id
+            });
+            if (response.success) {
+                setConversations(response.data);
+            }
+        }
+        getUploads();
+        return () => { };
+    }, []);
 
     return (
         <Box className={classes.box}>
             <Grid className={classes.grid} container spacing={3}>
                 <Grid item xs={12} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
-                    <Card className={classes.card}>
-                        <CardContent>
-                            <p className={classes.text}>Welcome to Messages.</p>
-                        </CardContent>
-                    </Card>
+                    {conversations && conversations.length > 0 ? conversations.map(conversation =>
+                        <Card key={user.id} className={classes.card}>
+                            <CardHeader
+                                avatar={
+                                    <AvatarGroup>
+                                        {conversation.users && conversation.users.length > 0 ?
+                                            (conversation.users[0].id !== authState.user.id ?
+                                                <Avatar className={classes.avatar} src={conversation.users[0].profilePicUri} />
+                                                : <></>)
+                                            : <></>}
+                                        {conversation.users && conversation.users.length > 1 ?
+                                            (conversation.users[1].id !== authState.user.id ?
+                                                <Avatar className={classes.avatar} src={conversation.users[1].profilePicUri} />
+                                                : <></>)
+                                            : <></>}
+                                        {conversation.users && conversation.users.length > 2 ?
+                                            (conversation.users[2].id !== authState.user.id ?
+                                                <Avatar className={classes.avatar} src={conversation.users[2].profilePicUri} />
+                                                : <></>)
+                                            : <></>}
+                                        {conversation.users && conversation.users.length > 3 ?
+                                            <Tooltip>
+                                                <Avatar>+{conversation.users.length - 3}</Avatar>
+                                            </Tooltip>
+                                            : <></>}
+                                    </AvatarGroup>
+                                }
+                                action={
+                                    <IconButton color="inherit">
+                                        <MoreVertIcon />
+                                    </IconButton>
+                                }
+                                title={conversation.users && conversation.users.length == 2 ? conversation.users.map(user =>
+                                    (user.id !== authState.user.id ?
+                                        user.username
+                                        : <></>)
+                                )
+                                    : conversation.conversationName}
+                                subheader={conversation.messages && conversation.messages.length > 0 ?
+                                    conversation.messages[conversation.messages.length - 1].messageBody
+                                    : <></>}
+                                className={classes.text}
+                            />
+                            <CardContent>
+                                <Link
+                                    component={RouterLink}
+                                    to={`/account/${user.id}`}>
+                                    <p className={classes.text}>{user.username}</p>
+                                </Link>
+                            </CardContent>
+                        </Card>
+                    ) :
+                        <></>}
                 </Grid>
             </Grid>
         </Box>

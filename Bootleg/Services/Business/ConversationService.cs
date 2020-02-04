@@ -31,8 +31,7 @@ namespace Bootleg.Services.Business
 			{
 				var conversation = new Conversation()
 				{
-					UserIds = users.Select(x => x.Id).ToList(),
-					UserNames = users.Select(x => x.Username).ToList(),
+					Users = users,
 					Messages = new List<Message>()
 				};
 
@@ -61,6 +60,7 @@ namespace Bootleg.Services.Business
 				}
 
 				message.Username = user.Username;
+				message.ProfilePicUri = user.ProfilePicUri;
 				message.UserId = user.Id;
 				message.DatePostedUTC = DateTime.UtcNow;
 			}
@@ -72,8 +72,7 @@ namespace Bootleg.Services.Business
 		{
 			try
 			{
-				conversation.UserIds.Remove(user.Id);
-				conversation.UserNames.Remove(user.Username);
+				conversation.Users.RemoveAll(x => x.Id.Equals(user.Id));
 				var result = await _conversationDAO.Update(conversation.Id, conversation);
 
 				return new DTO<Conversation>()
@@ -114,7 +113,7 @@ namespace Bootleg.Services.Business
 			try
 			{
 				var conversations = await _conversationDAO.GetAll();
-				var result = conversations.Where(convo => convo.UserIds.Any(id => id.Equals(userId))).ToList();
+				var result = conversations?.Where(convo => convo?.Users?.Any(user => user.Id.Equals(userId)) == true)?.ToList() ?? new List<Conversation>();
 
 				return new DTO<List<Conversation>>()
 				{

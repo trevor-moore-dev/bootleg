@@ -10,8 +10,8 @@ namespace Bootleg.Models.Documents
 		[BsonRepresentation(BsonType.ObjectId)]
 		public string Id { get; set; }
 		[BsonRequired]
-		public List<string> UserIds { get; set; }
-		public List<string> UserNames { get; set; }
+		public List<User> Users { get; set; }
+		public string ConversationName { get; set; } = "Group Conversation";
 		public List<Message> Messages { get; set; }
 	}
 }

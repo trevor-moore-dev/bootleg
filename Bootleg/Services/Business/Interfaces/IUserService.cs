@@ -10,7 +10,7 @@ namespace Bootleg.Services.Business.Interfaces
 	{
 		Task<DTO<List<User>>> SearchAllUsers(string username);
 		Task<DTO<User>> GetUser(string userId);
-		Task<DTO<List<User>>> GetUsers(List<string> userIds)
+		Task<DTO<List<User>>> GetUsers(List<string> userIds);
 		Task<DTO<User>> FollowUser(User user, string userId);
 		Task<DTO<User>> UnfollowUser(User user, string userId);
 		Task<DTO<User>> UpdateUser(User currentUser);
