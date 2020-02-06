@@ -140,7 +140,6 @@ export default function NavigationBar() {
 						</Link>
 						<Link
 							component={RouterLink}
-							//to={`/account/${authState.user.id}`}>
 							to="/my-account">
 							<Tooltip title="Account">
 								<IconButton className={classes.iconButtons}>

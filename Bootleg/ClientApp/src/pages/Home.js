@@ -118,7 +118,9 @@ export default function Home() {
 						<Card key={content.id} className={classes.card}>
 							<CardHeader
 								avatar={
-									<Avatar className={classes.avatar} src={content.userProfilePicUri} />
+									<LazyLoad>
+										<Avatar className={classes.avatar} src={content.userProfilePicUri} />
+									</LazyLoad>
 								}
 								action={
 									<IconButton color="inherit">

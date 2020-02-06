@@ -1,29 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
-import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
-import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import config from '../config.json';
-import useRequest from '../hooks/useRequest';
 import useAuth from "../hooks/useAuth";
 import LazyLoad from 'react-lazyload';
 import { formatDate } from "../helpers/dateHelper";
-import { Link as RouterLink } from 'react-router-dom';
+import { useParams } from "react-router-dom";
+import AddIcon from '@material-ui/icons/Add';
+import Axios from "axios";
+import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
 import {
     Box,
     IconButton,
-    CardMedia,
     CardHeader,
     Card,
-    CardActions,
-    CardContent,
     Avatar,
-    Tooltip,
+    Snackbar,
     Grid,
-    Link
+    TextField,
+    SnackbarContent,
 } from '@material-ui/core';
-import { AvatarGroup } from '@material-ui/lab';
 
 // Trevor Moore
 // CST-451
@@ -61,6 +56,10 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    inputBox: {
+        alignItems: "center",
+        display: "flex"
+    },
     grid: {
         [theme.breakpoints.up('md')]: {
             width: "70%"
@@ -90,86 +89,145 @@ const useStyles = makeStyles(theme => ({
         paddingBottom: "24px!important",
         paddingLeft: "12px!important",
         paddingRight: "12px!important",
-    }
+    },
+    snackbar: {
+        [theme.breakpoints.up('md')]: {
+            width: '50%'
+        }
+    },
+    snackbarContent: {
+        color: theme.text,
+        backgroundColor: theme.palette.secondary.main,
+        width: '100%',
+    },
+    uploadButton: {
+        backgroundColor: theme.general.medium,
+        color: "rgb(255,255,255)",
+        "&:hover": {
+            backgroundColor: "rgb(113,80,181)"
+        }
+    },
+    postInput: {
+        width: "100%",
+        marginLeft: "15px"
+    },
 }));
 
 // Home component for rendering the home page:
 export default function Messages() {
     const classes = useStyles();
-    const [conversations, setConversations] = useState([]);
-    const { get } = useRequest();
+    const [messages, setMessages] = useState({});
+    const [connection, setConnection] = useState({});
+    const { id } = useParams();
     const { authState } = useAuth();
+    const [messageBody, setMessageBody] = useState("");
+
+    const handleMessageBodyChange = e => {
+        setMessageBody(e.target.value);
+    };
+
+    const sendMessage = async () => {
+        let formData = new FormData();
+        formData.append('conversationId', id);
+        formData.append('userId', authState.user.id);
+        formData.append('messageBody', messageBody);
+        let response = await Axios.post(
+            config.MESSAGING_SEND_MESSAGE_POST,
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: "Bearer " + authState.token
+                }
+            });
+        if (response.data.success) {
+            connection.invoke(config.SIGNALR_CONVERSATION_HUB_INVOKE_GET_CONVERSATION, id);
+        }
+    };
 
     useEffect(() => {
         async function getConversations() {
-            const response = await get(config.MESSAGING_GET_ALL_CONVERSATIONS_GET, {
-                userId: authState.user.id
+            const hubConnection = new HubConnectionBuilder()
+                .withUrl(config.SIGNALR_CONVERSATION_HUB)
+                .build();
+            await hubConnection.start()
+                .catch((error) => console.log('Error while starting connection :(  Error:' + error));
+            console.log('Connected to SignalR!');
+            hubConnection.onclose(() => {
+                console.log('Connection with SignalR has closed.');
             });
-            if (response.success) {
-                setConversations(response.data);
-            }
+
+            /**const hubConnection = new HubConnection(config.SIGNALR_CONVERSATION_HUB)
+                .start()
+                .then(() => console.log('Connected to SignalR Hub!'))
+                .catch((error) => console.log('Error while establishing connection :(  Error:' + error));**/
+
+            hubConnection.on(config.SIGNALR_CONVERSATION_HUB_ON_GET_CHAT, (response) => {
+                console.log(response.data.messages);
+                setMessages(response.data.messages)
+            });
+            hubConnection.invoke(config.SIGNALR_CONVERSATION_HUB_INVOKE_GET_CONVERSATION, id)
+                .catch((error) => console.log('Error while invoking connection :(  Error:' + error));
+
+            setConnection(hubConnection);
         }
         getConversations();
-        return () => { };
+        return () => {
+            connection.invoke(config.SIGNALR_CONVERSATION_HUB_LEAVE_CONVERSATION, id)
+                .stop()
+                .catch((error) => console.log('Error while stopping connection :(  Error:' + error));
+            console.log('SignalR Hub connection successully closed :)');
+        };
     }, []);
 
     return (
-        <Box className={classes.box}>
-            <Grid className={classes.grid} container spacing={3}>
-                <Grid item xs={12} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
-                    {conversations && conversations.length > 0 ? conversations.map(conversation =>
-                        <Link
-                            key={conversation.id}
-                            component={RouterLink}
-                            to={`/messages/${conversation.id}`}>
-                            <Card className={classes.card}>
+        <>
+            <Box className={classes.box}>
+                <Grid className={classes.grid} container spacing={3}>
+                    <Grid item xs={12} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
+                        {messages && messages.length > 0 ? messages.map(message =>
+                            <Card key={message.id} className={classes.card}>
                                 <CardHeader
                                     avatar={
-                                        <AvatarGroup>
-                                            {conversation.users && conversation.users.length > 0 ?
-                                                (conversation.users[0].id !== authState.user.id ?
-                                                    <Avatar className={classes.avatar} src={conversation.users[0].profilePicUri} />
-                                                    : <></>)
-                                                : <></>}
-                                            {conversation.users && conversation.users.length > 1 ?
-                                                (conversation.users[1].id !== authState.user.id ?
-                                                    <Avatar className={classes.avatar} src={conversation.users[1].profilePicUri} />
-                                                    : <></>)
-                                                : <></>}
-                                            {conversation.users && conversation.users.length > 2 ?
-                                                (conversation.users[2].id !== authState.user.id ?
-                                                    <Avatar className={classes.avatar} src={conversation.users[2].profilePicUri} />
-                                                    : <></>)
-                                                : <></>}
-                                            {conversation.users && conversation.users.length > 3 ?
-                                                <Tooltip>
-                                                    <Avatar>+{conversation.users.length - 3}</Avatar>
-                                                </Tooltip>
-                                                : <></>}
-                                        </AvatarGroup>
+                                        <LazyLoad>
+                                            <Avatar className={classes.avatar} src={message.profilePicUri} />
+                                        </LazyLoad>
                                     }
-                                    action={
-                                        <IconButton color="inherit">
-                                            <MoreVertIcon />
-                                        </IconButton>
-                                    }
-                                    title={conversation.users && conversation.users.length == 2 ? conversation.users.map(user =>
-                                        (user.id !== authState.user.id ?
-                                            user.username
-                                            : <></>)
-                                    )
-                                        : conversation.conversationName}
-                                    subheader={conversation.messages && conversation.messages.length > 0 ?
-                                        conversation.messages[conversation.messages.length - 1].messageBody
-                                        : <></>}
+                                    subheader={message.messageBody}
+                                    title={message.datePostedUTC}
                                     className={classes.text}
                                 />
                             </Card>
-                        </Link>
-                    ) :
-                        <></>}
+                        ) :
+                            <></>}
+                    </Grid>
                 </Grid>
-            </Grid>
-        </Box>
+            </Box>
+            <Snackbar open={true} className={classes.snackbar}>
+                <SnackbarContent
+                    className={classes.snackbarContent}
+                    message={
+                        <>
+                            <Box className={classes.inputBox}>
+                                <TextField
+                                    className={classes.postInput}
+                                    autoFocus
+                                    multiline
+                                    value={messageBody}
+                                    onChange={handleMessageBodyChange}
+                                    rowsMax="8"
+                                    label="Write some snazzy message..."
+                                    variant="outlined"
+                                />
+                                <IconButton
+                                    className={classes.uploadButton}
+                                    onClick={sendMessage}>
+                                    <AddIcon />
+                                </IconButton>
+                            </Box>
+                        </>}
+                />
+            </Snackbar>
+        </>
     );
 }

@@ -21,7 +21,7 @@ namespace SecretSanta2._0.Services.Hubs
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
                 var conversation = await _conversationService.GetConversation(conversationId);
-                await Clients.Group(conversationId).SendAsync("GetConversation", conversation);
+                await Clients.Group(conversationId).SendAsync("GetChat", conversation);
             }
             catch (Exception ex)
             {
