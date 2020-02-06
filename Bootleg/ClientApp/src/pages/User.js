@@ -148,6 +148,15 @@ export default function User() {
         }
     };
 
+    const messageUser = async (id1, id2) => {
+        const response = await post(config.MESSAGING_CREATE_CONVERSATION_POST, {
+            Data: [
+                id1,
+                id2
+            ]
+        });
+    };
+
     return (
         <Box className={classes.root}>
             <div className={classes.container}>
@@ -162,6 +171,7 @@ export default function User() {
                         <Button variant="contained" onClick={followUser}>Follow</Button>}
                     <Link
                         component={RouterLink}
+                        onClick={() => messageUser(authState.user.id, id)}
                         to="/messages">
                         <Button variant="contained">Message</Button>
                     </Link>
