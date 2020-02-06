@@ -21,6 +21,8 @@ using Bootleg.Services.Business;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
 using SecretSanta2._0.Services.Hubs;
+using Microsoft.OpenApi.Models;
+using System;
 
 // Trevor Moore
 // CST-451
@@ -80,8 +82,30 @@ namespace Bootleg
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
+			// Add Swashbuckle Swagger generation:
+			services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc("v1", new OpenApiInfo
+				{
+					Version = "v1",
+					Title = "Bootleg API",
+					Description = "ASP.NET Core Web API for Bootleg",
+					TermsOfService = new Uri("https://trevormoore.dev/"),
+					Contact = new OpenApiContact
+					{
+						Name = "Trevor Moore",
+						Email = "TMMooreGCU@gmail.com",
+						Url = new Uri("https://www.youtube.com/watch?v=6-HUgzYPm9g"),
+					},
+					License = new OpenApiLicense
+					{
+						Name = "Use under MIT",
+						Url = new Uri("https://opensource.org/licenses/MIT"),
+					}
+				});
+			});
 			// Add Authentication and a JWT Bearer that will use our secret key for decrypting tokens:
-            services.AddAuthentication()
+			services.AddAuthentication()
 				.AddJwtBearer(cfg =>
 				{
 					cfg.RequireHttpsMetadata = false;
@@ -170,6 +194,13 @@ namespace Bootleg
 		/// <param name="env">Environment of type IWebHostEnvironment.</param>
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 		{
+			// Use swagger for API documentation generation using Swashbuckle:
+			app.UseSwagger();
+			app.UseSwaggerUI(c =>
+			{
+				c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+			});
+
 			// If DEV environment use the DEV exception page:
 			if (env.IsDevelopment())
 			{
