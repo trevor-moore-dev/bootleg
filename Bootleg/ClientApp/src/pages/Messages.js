@@ -43,6 +43,7 @@ const useStyles = makeStyles(theme => ({
     },
     link: {
         color: theme.general.medium,
+        textDecoration: "none",
         cursor: "pointer"
     },
     video: {
@@ -120,10 +121,12 @@ export default function Messages() {
                     {conversations && conversations.length > 0 ? conversations.map(conversation =>
                         <Link
                             key={conversation.id}
+                            className={classes.link}
                             component={RouterLink}
                             to={`/Chat/${conversation.id}`}>
-                            <Card className={classes.card}>
+                            <Card className={classes.card} key={conversation.id}>
                                 <CardHeader
+                                    key={conversation.id}
                                     avatar={
                                         <AvatarGroup>
                                             {conversation.users && conversation.users.length > 0 ?

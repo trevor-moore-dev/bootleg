@@ -67,6 +67,11 @@ export const lightTheme = createMuiTheme({
         backgroundColor: "rgb(255,255,255)"
       }
     },
+    MuiCardHeader: {
+      subheader: {
+        color: "rgb(60,60,60)"
+      }
+    },
     MuiToolbar: {
       root: {
         justifyContent: "center"

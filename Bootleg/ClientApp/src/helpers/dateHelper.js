@@ -11,3 +11,17 @@ export function formatDate(date) {
 	// Return the standard format: MM/DD/YYY
 	return time.getMonth() + 1 + "/" + time.getDate() + "/" + time.getFullYear();
 }
+
+
+// Function for formatting a plain text date (which could be in DateTime format) with the standard format of: MM/DD/YYY
+export function formatDateWithTime(date) {
+	let time = new Date(date);
+	let hours = time.getHours();
+	let minutes = time.getMinutes();
+	let ampm = hours >= 12 ? 'pm' : 'am';
+	hours = hours % 12;
+	hours = hours ? hours : 12; // the hour '0' should be '12'
+	minutes = minutes < 10 ? '0' + minutes : minutes;
+	let formattedTime = hours + ':' + minutes + ' ' + ampm;
+	return time.getMonth() + 1 + "/" + time.getDate() + "/" + time.getFullYear() + "  " + formattedTime;
+}
