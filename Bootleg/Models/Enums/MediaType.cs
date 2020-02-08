@@ -1,5 +1,14 @@
-﻿namespace Bootleg.Models.Enums
+﻿
+// Trevor Moore
+// CST-451
+// 2/7/2019
+// This is my own work.
+
+namespace Bootleg.Models.Enums
 {
+	/// <summary>
+	/// Enum for different media upload types.
+	/// </summary>
 	public enum MediaType
 	{
 		Image = 0,

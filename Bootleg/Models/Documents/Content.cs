@@ -5,8 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
+// Trevor Moore
+// CST-451
+// 2/7/2019
+// This is my own work.
+
 namespace Bootleg.Models.Documents
 {
+	/// <summary>
+	/// Content object that represents posted content on the app.
+	/// </summary>
 	public class Content
 	{
 		[BsonId]

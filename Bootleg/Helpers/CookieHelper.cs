@@ -3,7 +3,7 @@ using System;
 
 // Trevor Moore
 // CST-451
-// 12/9/2019
+// 2/7/2019
 // This is my own work.
 
 namespace Bootleg.Helpers
@@ -36,8 +36,14 @@ namespace Bootleg.Helpers
 				}
 			);
 		}
+		/// <summary>
+		/// Method for removing a cookie from the HttpResponse.
+		/// </summary>
+		/// <param name="response">HttpResponse object.</param>
+		/// <param name="key">String of the key of the cookie to be removed.</param>
 		public static void RemoveCookie(HttpResponse response, string key)
 		{
+			// Delete the cookie from the response:
 			response.Cookies.Delete(key);
 		}
 	}

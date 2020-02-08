@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Bootleg.Models;
 using Bootleg.Helpers;
 using Bootleg.Services.Business.Interfaces;
-using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Bootleg.Models.DTO;
 using System.Collections.Generic;

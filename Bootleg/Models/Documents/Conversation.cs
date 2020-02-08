@@ -2,8 +2,16 @@
 using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
 
+// Trevor Moore
+// CST-451
+// 2/7/2019
+// This is my own work.
+
 namespace Bootleg.Models.Documents
 {
+	/// <summary>
+	/// Conversation object that represents a chat between multiple Users.
+	/// </summary>
 	public class Conversation
 	{
 		[BsonId]

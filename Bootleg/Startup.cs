@@ -153,7 +153,7 @@ namespace Bootleg
 			else
 			{
 				// Inject our DAO as a Singleton using our LIVE parameters:
-				// TO DOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO NEED TO CHANGE THESE:
+				// TO DOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO NEED TO CHANGE THESE CONNECTION STRINGS:
 				services.AddSingleton<IDAO<User>>(service => new UserDAO(
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
 					Configuration["ConnectionStrings:LocalMongoDBDatabase"],

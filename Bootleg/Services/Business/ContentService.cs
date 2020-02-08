@@ -8,17 +8,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+// Trevor Moore
+// CST-451
+// 2/7/2019
+// This is my own work.
+
 namespace Bootleg.Services.Business
 {
+	/// <summary>
+	/// Class for handling tasks related to all Content data persistence. Implements IContentService.
+	/// </summary>
 	public class ContentService : IContentService
 	{
-		// Private readonly data access object to be injected:
+		// Private readonly IDAO dependencies for content and users:
 		private readonly IDAO<Content> _contentDAO;
 		private readonly IDAO<User> _userDAO;
 		/// <summary>
-		/// Constructor that will instantiate our dependencies that get injected by the container.
+		/// Constructor for injecting our dependencies.
 		/// </summary>
-		/// <param name="contentDAO">DAO to be injected.</param>
+		/// <param name="contentDAO">Content IDAO.</param>
+		/// <param name="userDAO">User IDAO.</param>
 		public ContentService(IDAO<Content> contentDAO, IDAO<User> userDAO)
 		{
 			// Set our dependencies:
@@ -26,22 +35,24 @@ namespace Bootleg.Services.Business
 			_userDAO = userDAO;
 		}
 		/// <summary>
-		/// Method for adding content to the db.
+		/// Method for adding Content for a User.
 		/// </summary>
-		/// <param name="content">content as type of Content.</param>
-		/// <returns>DTO encapsulating a list of strings of validated token.</returns>
+		/// <param name="content">Content to be uploaded.</param>
+		/// <param name="user">User who is doing the upload.</param>
+		/// <returns>DTO containing Tuple of the Content and User.</returns>
 		public async Task<DTO<Tuple<Content, User>>> AddContentForUser(Content content, User user)
 		{
 			// Surround with try/catch:
 			try
 			{
+				// Set content properties:
 				content.UserId = user?.Id;
 				content.UserName = user?.Username;
 				content.UserProfilePicUri = user?.ProfilePicUri ?? string.Empty;
 				content.DatePostedUTC = DateTime.UtcNow;
 				// Add User to the database:
 				await _contentDAO.Add(content);
-
+				// Set their posted content Ids:
 				if (user?.PostedContentIds == null)
 				{
 					user.PostedContentIds = new List<string>() { content.Id };
@@ -50,7 +61,6 @@ namespace Bootleg.Services.Business
 				{
 					user.PostedContentIds.Add(content.Id);
 				}
-
 				// Return successful with the JWT:
 				return new DTO<Tuple<Content, User>>()
 				{
@@ -68,19 +78,20 @@ namespace Bootleg.Services.Business
 			}
 		}
 		/// <summary>
-		/// Method for adding content to the db.
+		/// Method for getting all the Content for a User's Feed (including content from Users they follow).
 		/// </summary>
-		/// <param name="user">content as type of Content.</param>
-		/// <returns>DTO encapsulating a list of strings of validated token.</returns>
+		/// <param name="user">User to get the Content for.</param>
+		/// <returns>DTO containing a list of the User's Content.</returns>
 		public async Task<DTO<List<Content>>> GetAllContent(User user)
 		{
 			// Surround with try/catch:
 			try
 			{
+				// New list of strings for sotring content Ids:
 				var contentIds = new List<string>();
-
+				// Get all the users that the current user is following:
 				var followingUsers = await _userDAO.GetAllFromIndexes(user?.FollowingIds ?? new List<string>());
-
+				// Loop through each user they are following:
 				foreach (var followingUser in followingUsers)
 				{
 					// Add content ids of the people current user is following:
@@ -88,11 +99,11 @@ namespace Bootleg.Services.Business
 				}
 				// Add the content ids of the current user's post so they can see what they posted in their feed:
 				contentIds.AddRange(user?.PostedContentIds ?? new List<string>());
-
+				// Get all of the content for the current user's feed using all of the ids we grabbed:
 				var contentList = await _contentDAO.GetAllFromIndexes(contentIds);
+				// Order the content by date latest posted:
 				var orderedList = contentList?.OrderByDescending(x => x?.DatePostedUTC)?.Take(100)?.ToList();
-
-				// Return successful with the JWT:
+				// Return list of Content inside DTO:
 				return new DTO<List<Content>>()
 				{
 					Data = orderedList,
@@ -109,19 +120,20 @@ namespace Bootleg.Services.Business
 			}
 		}
 		/// <summary>
-		/// Method for adding content to the db.
+		/// Method for getting a User's "profile" data: their User data and their Content data.
 		/// </summary>
-		/// <param name="user">content as type of Content.</param>
-		/// <returns>DTO encapsulating a list of strings of validated token.</returns>
+		/// <param name="user">User object to get data for.</param>
+		/// <returns>DTO containing Tuple of the User and list of their Content.</returns>
 		public async Task<DTO<Tuple<User, List<Content>>>> GetUserContent(User user)
 		{
 			// Surround with try/catch:
 			try
 			{
+				// Get all of the current User's content:
 				var contentList = await _contentDAO.GetAllFromIndexes(user?.PostedContentIds ?? new List<string>());
+				// Order by date latest posted:
 				var orderedList = contentList?.OrderByDescending(x => x?.DatePostedUTC)?.ToList();
-
-				// Return successful with the JWT:
+				// Return the list of Content data in Tuple along with the User data:
 				return new DTO<Tuple<User, List<Content>>>()
 				{
 					Data = new Tuple<User, List<Content>>(user, orderedList ?? new List<Content>()),

@@ -26,7 +26,7 @@ namespace Bootleg.Helpers
 		/// <returns>Token as a string.</returns>
 		public static string GenerateToken(string email, string secret, string id, string profileUri)
         {
-			// Initialize claims of of the JWT using the email, a Guid, and the id:
+			// Initialize claims of of the JWT using the email, a Guid, id, and the profile pic uri:
 			var claims = new[]
 			{
 				new Claim(JwtRegisteredClaimNames.Sub, email ?? string.Empty),

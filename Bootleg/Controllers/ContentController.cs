@@ -1,5 +1,4 @@
 ﻿using Bootleg.Helpers;
-using Bootleg.Models;
 using Bootleg.Models.Documents;
 using Bootleg.Models.DTO;
 using Bootleg.Services.Business.Interfaces;
@@ -8,8 +7,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+
+// Trevor Moore
+// CST-451
+// 2/7/2019
+// This is my own work.
 
 namespace Bootleg.Controllers
 {
@@ -21,13 +24,16 @@ namespace Bootleg.Controllers
     [ApiController]
     public class ContentController : ControllerBase
     {
+        // Private readonly dependencies that will get injected:
         private readonly IBlobService _blobService;
         private readonly IContentService _contentService;
         private readonly IUserService _userService;
         /// <summary>
         /// Constructor that will instantiate our dependencies.
         /// </summary>
-        /// <param name="_blobService">Service to be injected by the container.</param>
+        /// <param name="_blobService">Blob service to be injected by the container.</param>
+        /// <param name="_contentService">Content service to be injected by the container.</param>
+        /// <param name="_userService">User service to be injected by the container.</param>
         public ContentController(IBlobService _blobService, IContentService _contentService, IUserService _userService)
         {
             // Set our instances of our services.
@@ -35,17 +41,27 @@ namespace Bootleg.Controllers
             this._contentService = _contentService;
             this._userService = _userService;
         }
+        /// <summary>
+        /// Method for uploading content on Bootleg - whether that be images, videos, or plain text.
+        /// </summary>
+        /// <returns>DTO containing a boolean indicating success or failure.</returns>
         [HttpPost("[action]")]
         [DisableRequestSizeLimit]
         public async Task<DTO<bool>> UploadContent()
         {
+            // Surround with try/catch:
             try
             {
+                // Upload our blob to Blob Storage:
                 var response = await _blobService.UploadContentBlob(Request);
+                // Grab the user doing the upload:
                 var user = await _userService.GetUser(Request.Form["userId"]);
+                // Add the content that the user is uploading to the database:
                 var content = await _contentService.AddContentForUser(response, user.Data);
+                // Update the user:
                 await _userService.UpdateUser(content.Data.Item2);
 
+                // Return success if no exceptions are thrown:
                 return new DTO<bool>()
                 {
                     Success = true
@@ -67,14 +83,20 @@ namespace Bootleg.Controllers
                 };
             }
         }
-
+        /// <summary>
+        /// Method for getting all the content that shows up on a user's feed, sorting by most recently posted.
+        /// </summary>
+        /// <param name="userId">The user id of the current user.</param>
+        /// <returns>DTO containing a list of Content objects.</returns>
         [HttpGet("[action]")]
         public async Task<DTO<List<Content>>> GetAllContent(string userId)
         {
             // Surround with try/catch:
             try
             {
+                // Grab the user from the database:
                 var user = await _userService.GetUser(userId);
+                // Return all their content using the content service:
                 return await _contentService.GetAllContent(user.Data);
             }
             // Catch any exceptions:

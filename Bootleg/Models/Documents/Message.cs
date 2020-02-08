@@ -4,8 +4,16 @@ using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.ComponentModel.DataAnnotations;
 
+// Trevor Moore
+// CST-451
+// 2/7/2019
+// This is my own work.
+
 namespace Bootleg.Models.Documents
 {
+	/// <summary>
+	/// Message object that represents direct messages sent between Users in Conversations.
+	/// </summary>
 	public class Message
 	{
 		[BsonId]
