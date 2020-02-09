@@ -4,8 +4,6 @@ import Logo from "./Logo";
 import useAuth from "../hooks/useAuth";
 import { Link as RouterLink } from 'react-router-dom';
 import {
-	Menu,
-	MenuItem,
 	IconButton,
 	Toolbar,
 	AppBar,
@@ -20,7 +18,6 @@ import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import ExploreIcon from '@material-ui/icons/Explore';
-import MoreIcon from '@material-ui/icons/MoreVert';
 import { useTheme } from "../containers/ThemeContext";
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import Brightness5Icon from '@material-ui/icons/Brightness5';
@@ -85,16 +82,15 @@ const useStyles = makeStyles(theme => ({
 	}
 }));
 
-// Nav Bar component for the top of the web app:
+// Navigation Bar component for the top of the web app:
 export default function NavigationBar() {
 	// Create our styles and declare our state properties:
 	const classes = useStyles();
 	const themeState = useTheme();
 	const { logout, authState } = useAuth();
 
-	// Method for handling when the user clicks 'Logout':
+	// Method for handling when the user logs out:
 	const handleLogout = () => {
-		// Logout the user:
 		logout();
 	};
 

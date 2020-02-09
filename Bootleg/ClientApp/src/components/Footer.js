@@ -5,7 +5,6 @@ import MailIcon from '@material-ui/icons/Mail';
 import HomeIcon from '@material-ui/icons/Home';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import SearchIcon from '@material-ui/icons/Search';
 import ExploreIcon from '@material-ui/icons/Explore';
 import { makeStyles } from "@material-ui/core/styles";
 import EditIcon from '@material-ui/icons/Edit';
@@ -115,7 +114,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-// Nav Bar component for the top of the web app:
+// Footer component for the bottom of the web app:
 export default function Footer() {
     // Create our styles and declare our state properties:
     const classes = useStyles();
@@ -125,6 +124,7 @@ export default function Footer() {
     const { authState } = useAuth();
     const [value, setValue] = React.useState('recents');
 
+    // Our state change handlers:
     const handleFileChange = file => {
         setFile(file);
     };
@@ -145,13 +145,18 @@ export default function Footer() {
         setOpen(false);
     };
 
+    // Method for uploading a post:
     const uploadPost = async () => {
+        // Create new FormData object to hold files:
         let formData = new FormData();
+        // Append file if it's there:
         if (file) {
             formData.append('file', file);
         }
+        // Append contentBody and userId:
         formData.append('contentBody', contentBody);
         formData.append('userId', authState.user.id);
+        // Send post request:
         let response = await Axios.post(
             config.CONTENT_UPLOAD_CONTENT_POST,
             formData,
@@ -163,7 +168,7 @@ export default function Footer() {
             });
     };
 
-    // Render our nav bar:
+    // Return our footer:
     return (
         <>
             <BottomNavigation value={value} onChange={handleChange} className={classes.stickToBottom}>

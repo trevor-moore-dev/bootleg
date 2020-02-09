@@ -12,20 +12,18 @@ import {
     Box,
     IconButton,
     CardHeader,
-    BottomNavigation,
     Card,
     Avatar,
-    Snackbar,
     Grid,
     TextField,
-    SnackbarContent,
 } from '@material-ui/core';
 
 // Trevor Moore
 // CST-451
-// 12/9/2019
+// 2/9/2020
 // This is my own work.
 
+// Create CSS Styles:
 const useStyles = makeStyles(theme => ({
     leftCard: {
         width: "80%",
@@ -124,8 +122,9 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-// Home component for rendering the home page:
-export default function Messages() {
+// Chat component for rendering chats:
+export default function Chat() {
+    // Create our styles and set our initial state:
     const classes = useStyles();
     const [messages, setMessages] = useState({});
     const [connection, setConnection] = useState({});
@@ -133,15 +132,19 @@ export default function Messages() {
     const { authState } = useAuth();
     const [messageBody, setMessageBody] = useState("");
 
+    // On change handler:
     const handleMessageBodyChange = e => {
         setMessageBody(e.target.value);
     };
 
+    // Method for sending a new message:
     const sendMessage = async () => {
+        // Create form data object and append data:
         let formData = new FormData();
         formData.append('conversationId', id);
         formData.append('userId', authState.user.id);
         formData.append('messageBody', messageBody);
+        // Send post request to send the message:
         let response = await Axios.post(
             config.MESSAGING_SEND_MESSAGE_POST,
             formData,
@@ -151,6 +154,7 @@ export default function Messages() {
                     Authorization: "Bearer " + authState.token
                 }
             });
+        // Upon success set the new data, and invoke the SignalR Hub for real-time delivery:
         if (response.data.success) {
             connection.invoke(config.SIGNALR_CONVERSATION_HUB_INVOKE_GET_CONVERSATION, id);
             setMessageBody("");
@@ -159,8 +163,10 @@ export default function Messages() {
         }
     };
 
+    // useEffect hook for getting the conversation and setting up the SignalR connection:
     useEffect(() => {
-        async function getConversations() {
+        async function getConversation() {
+            // Build the SignalR connection and start it:
             const hubConnection = new HubConnectionBuilder()
                 .withUrl(config.SIGNALR_CONVERSATION_HUB)
                 .build();
@@ -170,21 +176,23 @@ export default function Messages() {
             hubConnection.onclose(() => {
                 console.log('Connection with SignalR has closed.');
             });
-
+            // Set the on event so that data will update on invocation:
             hubConnection.on(config.SIGNALR_CONVERSATION_HUB_ON_GET_CHAT, (response) => {
                 setMessages(response.data.messages)
             });
+            // Set invoke event so that data will initially be delivered:
             hubConnection.invoke(config.SIGNALR_CONVERSATION_HUB_INVOKE_GET_CONVERSATION, id)
                 .catch((error) => console.log('Error while invoking connection :(  Error:' + error));
-
+            // Set data and scroll to bottom of the scroll:
             let messageContainer = document.getElementById("message-box");
             messageContainer.scrollTop = messageContainer.scrollHeight;
             setConnection(hubConnection);
         }
-        getConversations();
+        getConversation();
         return () => { };
     }, []);
 
+    // Return our markup:
     return (
         <>
             <Box className={classes.box} id='message-box'>

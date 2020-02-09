@@ -24,7 +24,7 @@ import {
 
 // Trevor Moore
 // CST-451
-// 12/9/2019
+// 2/9/2020
 // This is my own work.
 
 const useStyles = makeStyles(theme => ({
@@ -92,16 +92,20 @@ const useStyles = makeStyles(theme => ({
 
 // Home component for rendering the home page:
 export default function Home() {
+	// Create our styles and such, and create our state:
 	const classes = useStyles();
 	const [uploads, setUploads] = useState([]);
 	const { get } = useRequest();
 	const { authState } = useAuth();
 
+	// useEffect hook for getting all content that a user should have showing up on their feed:
 	useEffect(() => {
 		async function getUploads() {
+			// Send post request to get all profiles
 			const response = await get(config.CONTENT_GET_ALL_CONTENT_GET, {
 				userId: authState.user.id
 			});
+			// On success set the data:
 			if (response.success) {
 				setUploads(response.data);
 			}
@@ -110,6 +114,7 @@ export default function Home() {
 		return () => { };
 	}, []);
 
+	// Return our markup:
 	return (
 		<Box className={classes.box}>
 			<Grid className={classes.grid} container spacing={3}>

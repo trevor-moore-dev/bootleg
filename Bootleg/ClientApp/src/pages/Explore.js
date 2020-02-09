@@ -15,7 +15,7 @@ import {
 
 // Trevor Moore
 // CST-451
-// 12/9/2019
+// 2/9/2020
 // This is my own work.
 
 const useStyles = makeStyles(theme => ({
@@ -72,25 +72,31 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-// Home component for rendering the home page:
+// Explore component for rendering the explore page:
 export default function Explore() {
+    // Create our styles and set our initial state:
     const classes = useStyles();
     const [users, setUsers] = useState([]);
     const { get, post } = useRequest();
     const { authState } = useAuth();
     const [loggedInUser, setLoggedInUser] = useState({});
 
+    // useEffect hook for getting logged in user and all users on the app:
     useEffect(() => {
         async function getLoggedInUser() {
+            // Make get request to grab the user data:
             const response = await get(config.USER_GET_USER_GET, {
                 userId: authState.user.id
             });
+            // On success set the state data:
             if (response.success) {
                 setLoggedInUser(response.data);
             }
         }
         async function getUsers() {
+            // Make get request to grab all of the user data:
             const response = await get(config.USER_SEARCH_ALL_USERS_GET, {});
+            // On success set the state data:
             if (response.success) {
                 setUsers(response.data);
             }
@@ -100,26 +106,33 @@ export default function Explore() {
         return () => { };
     }, []);
 
+    // Method for following a user:
     const followUser = async (userId) => {
+        // Make post request to update the user data:
         const response = await post(config.USER_FOLLOW_USER_POST, {
             Id: userId,
             Data: authState.user.id
         });
+        // On success set the state data:
         if (response.success) {
             setLoggedInUser(response.data);
         }
     };
 
+    // Method for unfollowing a user:
     const unfollowUser = async (userId) => {
+        // Make post request to update the user data:
         const response = await post(config.USER_UNFOLLOW_USER_POST, {
             Id: userId,
             Data: authState.user.id
         });
+        // On success set the state data:
         if (response.success) {
             setLoggedInUser(response.data);
         }
     };
 
+    // Return our markup:
     return (
         <Box className={classes.box}>
             <Grid className={classes.grid} container spacing={3}>

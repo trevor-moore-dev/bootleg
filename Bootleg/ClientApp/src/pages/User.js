@@ -23,9 +23,10 @@ import {
 
 // Trevor Moore
 // CST-451
-// 12/9/2019
+// 2/9/2020
 // This is my own work.
 
+// Create CSS styles:
 const useStyles = makeStyles(theme => ({
     root: {
         paddingTop: theme.spacing(5)
@@ -85,8 +86,9 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-// Home component for rendering the home page:
+// User component for rendering someone else's profile:
 export default function User() {
+    // Create our CSS classes and also setting the state data initially:
     const classes = useStyles();
     const { id } = useParams();
     const { authState } = useAuth();
@@ -96,11 +98,14 @@ export default function User() {
     const [loggedInUser, setLoggedInUser] = useState({});
     const [isFollowing, setIsFollowing] = useState(false);
 
+    // useEffect hook for getting the user and all the content they should have on their feet.
     useEffect(() => {
         async function getLoggedInUser() {
+            // Send get request to get the user:
             const response = await get(config.USER_GET_USER_GET, {
                 userId: authState.user.id
             });
+            // On success set the data:
             if (response.success) {
                 setLoggedInUser(response.data);
                 if (response.data.followingIds) {
@@ -109,9 +114,11 @@ export default function User() {
             }
         }
         async function getUser() {
+            // Send get request to get the user:
             const response = await get(config.USER_GET_USER_CONTENT_GET, {
                 userId: id
             });
+            // On success set the data:
             if (response.success) {
                 setUser(response.data.item1);
                 setUploads(response.data.item2);
@@ -122,11 +129,14 @@ export default function User() {
         return () => { };
     }, []);
 
+    // Method for following a user:
     const followUser = async () => {
+        // Send post request to the user:
         const response = await post(config.USER_FOLLOW_USER_POST, {
             Id: id,
             Data: authState.user.id
         });
+        // On success set the data:
         if (response.success) {
             setLoggedInUser(response.data);
             if (response.data.followingIds) {
@@ -135,11 +145,14 @@ export default function User() {
         }
     };
 
+    // Method for unfollowing a user:
     const unfollowUser = async () => {
+        // Send post request to the user:
         const response = await post(config.USER_UNFOLLOW_USER_POST, {
             Id: id,
             Data: authState.user.id
         });
+        // On success set the data:
         if (response.success) {
             setLoggedInUser(response.data);
             if (response.data.followingIds) {
@@ -148,7 +161,9 @@ export default function User() {
         }
     };
 
+    // Method for messaging a user:
     const messageUser = async (id1, id2) => {
+        // Make post request to send a new message (this invokes all websocket connections to this group):
         const response = await post(config.MESSAGING_CREATE_CONVERSATION_POST, {
             Data: [
                 id1,
@@ -157,6 +172,7 @@ export default function User() {
         });
     };
 
+    // Return our markup:
     return (
         <Box className={classes.root}>
             <div className={classes.container}>

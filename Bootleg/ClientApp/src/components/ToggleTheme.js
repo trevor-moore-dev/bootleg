@@ -5,6 +5,12 @@ import { ReactComponent as SunIcon } from '../resources/images/icons/sun.svg';
 import { makeStyles } from "@material-ui/core/styles";
 import { Tooltip } from "@material-ui/core";
 
+// Trevor Moore
+// CST-451
+// 2/8/2020
+// This is my own work.
+
+// Creating our CSS styles:
 const useStyles = makeStyles(theme => ({
     toggleTheme: {
         position: "relative",
@@ -31,9 +37,12 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
+// Toggle Theme component for switching between light and dark mode:
 export default function ToggleTheme() {
+    // Create our theme and styles:
     const themeState = useTheme();
     const classes = useStyles();
+    // Return our toggle:
     return (
         <Tooltip title={themeState.isDark ? 'Light Mode' : 'Dark Mode'}>
             <button

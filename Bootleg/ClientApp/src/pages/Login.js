@@ -26,6 +26,7 @@ import { makeStyles } from "@material-ui/core/styles";
 // 12/9/2019
 // This is my own work.
 
+// Create our CSS styless:
 const useStyles = makeStyles(theme => ({
 	root: {
 		display: 'flex',
@@ -262,7 +263,7 @@ export default function Login() {
 			}
 		}
 	};
-	// Render the login and register markup:
+	// Return the login and register markup:
 	return (
 		<Box className={classes.root}>
 			<Grid container spacing={3}>

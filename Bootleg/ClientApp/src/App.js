@@ -17,7 +17,7 @@ import './resources/css/site.css';
 // Our overarching App function (essentially it's a component, but it's not technically speaking) for our SPA:
 export default function App() {
   const themeState = useTheme();
-  // Render our markup with our Provider (with the store), Theme, Css, Router, and Template:
+  // Return our markup with our Provider (with the store), Theme, Css, Router, and Template:
   return (
     <Provider store={store}>
       <MuiThemeProvider theme={themeState.isDark ? darkTheme : lightTheme}>

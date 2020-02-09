@@ -28,9 +28,10 @@ import {
 
 // Trevor Moore
 // CST-451
-// 12/9/2019
+// 2/8/2020
 // This is my own work.
 
+// Create our CSS styles:
 const useStyles = makeStyles(theme => ({
     root: {
         paddingTop: theme.spacing(5)
@@ -90,8 +91,9 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-// Home component for rendering the home page:
+// Account component for rendering the current user's account page:
 export default function Account() {
+    // Create our styles and set our initial state values:
     const classes = useStyles();
     const [uploads, setUploads] = useState([]);
     const { get } = useRequest();
@@ -105,11 +107,14 @@ export default function Account() {
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
 
+    // useEffect hook for getting all the user's content:
     useEffect(() => {
         async function getUserContent() {
+            // Make get request to get all the user's content:
             const response = await get(config.USER_GET_USER_CONTENT_GET, {
                 userId: authState.user.id
             });
+            // Set the corresponding state upon success:
             if (response.success) {
                 setEmail(response.data.item1.email ? response.data.item1.email : '');
                 setPhone(response.data.item1.phone ? response.data.item1.phone : '');
@@ -123,6 +128,7 @@ export default function Account() {
         return () => { };
     }, []);
 
+    // State handler methods on change:
     const handleEmailChange = e => {
         setEmail(e.target.value);
     };
@@ -145,10 +151,13 @@ export default function Account() {
         setEditAccount(!editAccount);
     };
 
+    // Method for making the request to update a user's content:
     const makeUserUpdateRequest = async (formData, notProfilePicUpdate) => {
+        // Append user id if it's there:
         if (authState.user.id) {
             formData.append('userId', authState.user.id);
         }
+        // Send request for updating the user's post:
         let response = await Axios.post(
             config.USER_UPDATE_USER_POST,
             formData,
@@ -158,6 +167,7 @@ export default function Account() {
                     Authorization: "Bearer " + authState.token
                 }
             });
+        // Upon success set the state data:
         if (response.data.success) {
             setEmail(response.data.data.email ? response.data.data.email : '');
             setPhone(response.data.data.phone ? response.data.data.phone : '');
@@ -171,8 +181,11 @@ export default function Account() {
         }
     };
 
+    // Method for handling updating account:
     const handleUpdateAccount = async () => {
+        // Create form data object:
         let formData = new FormData();
+        // Append corresponding data if it's there:
         if (username) {
             formData.append('username', username);
         }
@@ -185,17 +198,24 @@ export default function Account() {
         if (bio) {
             formData.append('bio', bio);
         }
+        // Make post request:
         makeUserUpdateRequest(formData, true);
     };
 
+
+    // Method for handling a profile pic change:
     const handleProfilePicChange = async (profilePic) => {
+        // Create form data object:
         let formData = new FormData();
+        // Append corresponding data if it's there:
         if (profilePic) {
             formData.append('file', profilePic);
         }
+        // Make post request:
         makeUserUpdateRequest(formData, false);
     };
 
+    // Return our markup:
     return (
         <Box className={classes.root}>
             <div className={classes.container}>

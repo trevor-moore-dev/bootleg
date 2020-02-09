@@ -6,14 +6,19 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+// Trevor Moore
+// CST-451
+// 2/8/2020
+// This is my own work.
+
 namespace Bootleg.Services.Data
 {
 	/// <summary>
-	/// User DAO for handling all data access concerning the User documents in the database. Implements the IDAO interface.
+	/// User DAO for handling all data access concerning the Conversation documents in the database. Implements the IDAO interface.
 	/// </summary>
 	public class ConversationDAO : IDAO<Conversation>
 	{
-		// Private readonly MongoCollection of users:
+		// Private readonly MongoCollection of Conversation:
 		private readonly IMongoCollection<Conversation> _conversation;
 		/// <summary>
 		/// Constructor that sets the MongoClient, Database, and Collection.
@@ -30,7 +35,7 @@ namespace Bootleg.Services.Data
 				var client = new MongoClient(connectionString);
 				// Get the database using the database name:
 				var database = client.GetDatabase(databaseName);
-				// Instantiate our collection of users:
+				// Instantiate our collection of conversations:
 				_conversation = database.GetCollection<Conversation>(contentCollection);
 			}
 			// Catch any exceptions:
@@ -43,9 +48,9 @@ namespace Bootleg.Services.Data
 			}
 		}
 		/// <summary>
-		/// Method for getting all data.
+		/// Method for getting all Conversation data.
 		/// </summary>
-		/// <returns>DTO encapsulating a List of type User.</returns>
+		/// <returns>DTO encapsulating a List of type Conversation.</returns>
 		public async Task<List<Conversation>> GetAll()
 		{
 			// Surround with try/catch:
@@ -68,20 +73,24 @@ namespace Bootleg.Services.Data
 			}
 		}
 		/// <summary>
-		/// Method for getting all data.
+		/// Method for getting all Conversation data for a list of ids.
 		/// </summary>
-		/// <returns>DTO encapsulating a List of type User.</returns>
+		/// <param name="indexes">List of string of ids to get.</param>
+		/// <returns>List of Conversation objects.</returns>
 		public async Task<List<Conversation>> GetAllFromIndexes(List<string> indexes)
 		{
 			// Surround with try/catch:
 			try
 			{
+				// Create filter definition:
 				var filterDefinition = new FilterDefinitionBuilder<Conversation>();
+				// Add the ids:
 				var filter = filterDefinition.In(x => x.Id, indexes);
+				// Find async using the filter definition:
 				var content = await _conversation.FindAsync(filter);
 				// Convert to list:
 				var contentList = await content.ToListAsync();
-				// Return DTO with encapsulated data:
+				// Return data:
 				return contentList;
 			}
 			// Catch any exceptions:
@@ -94,20 +103,20 @@ namespace Bootleg.Services.Data
 			}
 		}
 		/// <summary>
-		/// Method that will get a document from the database.
+		/// Method that will get a Conversation document from the database.
 		/// </summary>
 		/// <param name="index">Index of object of type string.</param>
-		/// <returns>DTO encapsulating a List of type User.</returns>
+		/// <returns>Conversation object.</returns>
 		public async Task<Conversation> Get(string index)
 		{
 			// Surround with try/catch:
 			try
 			{
-				// Get first user with the specified id:
+				// Get first Conversation with the specified id:
 				var content = await _conversation.FindAsync(x => x.Id.Equals(index));
 				// Grab the first or default of the result:
 				var foundContent = await content.FirstOrDefaultAsync();
-				// Return DTO with encapsulated data:
+				// Return data:
 				return foundContent;
 			}
 			// Catch any exceptions:
@@ -120,18 +129,18 @@ namespace Bootleg.Services.Data
 			}
 		}
 		/// <summary>
-		/// Method that will add the document to the database.
+		/// Method that will add a Conversation document to the database.
 		/// </summary>
 		/// <param name="newContent">Object to be added of type generic.</param>
-		/// <returns>DTO encapsulating a List of type User.</returns>
+		/// <returns>Conversation object.</returns>
 		public async Task<Conversation> Add(Conversation newContent)
 		{
 			// Surround with try/catch:
 			try
 			{
-				// Insert User into the collection:
+				// Insert Conversation into the collection:
 				await _conversation.InsertOneAsync(newContent);
-				// Return DTO with encapsulated data:
+				// Return data:
 				return newContent;
 			}
 			// Catch any exceptions:
@@ -144,19 +153,19 @@ namespace Bootleg.Services.Data
 			}
 		}
 		/// <summary>
-		/// Method that will update the document in the database.
+		/// Method that will update the Conversation document in the database.
 		/// </summary>
 		/// <param name="index">Index of object of type string.</param>
 		/// <param name="updatedContent">Object to be updated of type generic.</param>
-		/// <returns>DTO encapsulating a List of type User.</returns>
+		/// <returns>Conversation object.</returns>
 		public async Task<Conversation> Update(string index, Conversation updatedContent)
 		{
 			// Surround with try/catch:
 			try
 			{
-				// Replace the user in the collection that matches the id passed in with the specified updated user:
+				// Replace the Conversation in the collection that matches the id passed in with the specified updated Conversation:
 				await _conversation.FindOneAndReplaceAsync(x => x.Id.Equals(index), updatedContent);
-				// Return DTO with encapsulated data:
+				// Return data:
 				return updatedContent;
 			}
 			// Catch any exceptions:
@@ -169,16 +178,16 @@ namespace Bootleg.Services.Data
 			}
 		}
 		/// <summary>
-		/// Method that will delete the document from the database.
+		/// Method that will delete the Conversation document from the database.
 		/// </summary>
 		/// <param name="index">Index of object of type string.</param>
-		/// <returns>DTO encapsulating a List of type User.</returns>
+		/// <returns>Task.</returns>
 		public async Task Delete(string index)
 		{
 			// Surround with try/catch:
 			try
 			{
-				// Delete the user in the collection that matches the id:
+				// Delete the Conversation in the collection that matches the id:
 				await _conversation.FindOneAndDeleteAsync(x => x.Id.Equals(index));
 			}
 			// Catch any exceptions:

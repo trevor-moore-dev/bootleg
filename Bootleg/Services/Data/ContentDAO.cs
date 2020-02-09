@@ -6,14 +6,19 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+// Trevor Moore
+// CST-451
+// 2/8/2020
+// This is my own work.
+
 namespace Bootleg.Services.Data
 {
 	/// <summary>
-	/// User DAO for handling all data access concerning the User documents in the database. Implements the IDAO interface.
+	/// User DAO for handling all data access concerning the Content documents in the database. Implements the IDAO interface.
 	/// </summary>
 	public class ContentDAO : IDAO<Content>
 	{
-		// Private readonly MongoCollection of users:
+		// Private readonly MongoCollection of Content:
 		private readonly IMongoCollection<Content> _content;
 		/// <summary>
 		/// Constructor that sets the MongoClient, Database, and Collection.

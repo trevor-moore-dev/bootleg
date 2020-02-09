@@ -5,7 +5,7 @@ import { createMuiTheme } from "@material-ui/core/styles";
 // 12/9/2019
 // This is my own work.
 
-// Create dark & light mode CSS site-wide themes:
+// Create our light mode theme:
 export const lightTheme = createMuiTheme({
   background: "#F8F8F9",
   gradient: "linear-gradient(#091236, #1E215D)",
@@ -90,6 +90,7 @@ export const lightTheme = createMuiTheme({
   }
 });
 
+// Create our dark mode theme:
 export const darkTheme = createMuiTheme({
   background: "#363537",
   gradient: "linear-gradient(#DE4DAA, #F6D327)",

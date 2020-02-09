@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 export default function Logo({ className }) {
   // Make our styles:
   const classes = useStyles();
-  // Render markup:
+  // Return markup:
   return (
     <div className={className}>
       <Typography variant="h6" component={Link} to="/" className={classes.root}>

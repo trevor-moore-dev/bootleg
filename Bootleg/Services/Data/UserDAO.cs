@@ -18,7 +18,7 @@ namespace Bootleg.Services.Data
 	/// </summary>
 	public class UserDAO : IDAO<User>
 	{
-		// Private readonly MongoCollection of users:
+		// Private readonly MongoCollection of User:
 		private readonly IMongoCollection<User> _users;
 		/// <summary>
 		/// Constructor that sets the MongoClient, Database, and Collection.
@@ -50,7 +50,7 @@ namespace Bootleg.Services.Data
 		/// <summary>
 		/// Method for getting all data.
 		/// </summary>
-		/// <returns>DTO encapsulating a List of type User.</returns>
+		/// <returns>List of type User.</returns>
 		public async Task<List<User>> GetAll()
 		{
 			// Surround with try/catch:
@@ -60,7 +60,7 @@ namespace Bootleg.Services.Data
 				var users = await _users.FindAsync(x => true);
 				// Convert to list:
 				var usersList = await users.ToListAsync();
-				// Return DTO with encapsulated data:
+				// Return data:
 				return usersList;
 			}
 			// Catch any exceptions:
@@ -73,20 +73,24 @@ namespace Bootleg.Services.Data
 			}
 		}
 		/// <summary>
-		/// Method for getting all data.
+		/// Method for getting all User data for a list of ids.
 		/// </summary>
-		/// <returns>DTO encapsulating a List of type User.</returns>
+		/// <param name="indexes">List of string of ids to get.</param>
+		/// <returns>List of User objects.</returns>
 		public async Task<List<User>> GetAllFromIndexes(List<string> indexes)
 		{
 			// Surround with try/catch:
 			try
 			{
+				// Create filter definition:
 				var filterDefinition = new FilterDefinitionBuilder<User>();
+				// Add in ids for filtering:
 				var filter = filterDefinition.In(x => x.Id, indexes);
+				// Find data for id filter:
 				var users = await _users.FindAsync(filter);
 				// Convert to list:
 				var usersList = await users.ToListAsync();
-				// Return DTO with encapsulated data:
+				// Return data:
 				return usersList;
 			}
 			// Catch any exceptions:
@@ -99,10 +103,10 @@ namespace Bootleg.Services.Data
 			}
 		}
 		/// <summary>
-		/// Method that will get a document from the database.
+		/// Method that will get a User document from the database.
 		/// </summary>
 		/// <param name="index">Index of object of type string.</param>
-		/// <returns>DTO encapsulating a List of type User.</returns>
+		/// <returns>User object.</returns>
 		public async Task<User> Get(string index)
 		{
 			// Surround with try/catch:
@@ -112,7 +116,7 @@ namespace Bootleg.Services.Data
 				var users = await _users.FindAsync(x => x.Id.Equals(index));
 				// Grab the first or default of the result:
 				var foundUser = await users.FirstOrDefaultAsync();
-				// Return DTO with encapsulated data:
+				// Return data:
 				return foundUser;
 			}
 			// Catch any exceptions:
@@ -125,10 +129,10 @@ namespace Bootleg.Services.Data
 			}
 		}
 		/// <summary>
-		/// Method that will add the document to the database.
+		/// Method that will add the User document to the database.
 		/// </summary>
 		/// <param name="newUser">Object to be added of type generic.</param>
-		/// <returns>DTO encapsulating a List of type User.</returns>
+		/// <returns>User object.</returns>
 		public async Task<User> Add(User newUser)
 		{
 			// Surround with try/catch:
@@ -136,7 +140,7 @@ namespace Bootleg.Services.Data
 			{
 				// Insert User into the collection:
 				await _users.InsertOneAsync(newUser);
-				// Return DTO with encapsulated data:
+				// Return data:
 				return newUser;
 			}
 			// Catch any exceptions:
@@ -149,11 +153,11 @@ namespace Bootleg.Services.Data
 			}
 		}
 		/// <summary>
-		/// Method that will update the document in the database.
+		/// Method that will update the User document in the database.
 		/// </summary>
 		/// <param name="index">Index of object of type string.</param>
 		/// <param name="updatedUser">Object to be updated of type generic.</param>
-		/// <returns>DTO encapsulating a List of type User.</returns>
+		/// <returns>User object.</returns>
 		public async Task<User> Update(string index, User updatedUser)
 		{
 			// Surround with try/catch:
@@ -161,7 +165,7 @@ namespace Bootleg.Services.Data
 			{
 				// Replace the user in the collection that matches the id passed in with the specified updated user:
 				await _users.FindOneAndReplaceAsync(x => x.Id.Equals(index), updatedUser);
-				// Return DTO with encapsulated data:
+				// Return data:
 				return updatedUser;
 			}
 			// Catch any exceptions:
@@ -174,10 +178,10 @@ namespace Bootleg.Services.Data
 			}
 		}
 		/// <summary>
-		/// Method that will delete the document from the database.
+		/// Method that will delete a User document from the database.
 		/// </summary>
 		/// <param name="index">Index of object of type string.</param>
-		/// <returns>DTO encapsulating a List of type User.</returns>
+		/// <returns>Task.</returns>
 		public async Task Delete(string index)
 		{
 			// Surround with try/catch:

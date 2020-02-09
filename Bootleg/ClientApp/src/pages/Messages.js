@@ -1,23 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
-import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
-import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import config from '../config.json';
 import useRequest from '../hooks/useRequest';
 import useAuth from "../hooks/useAuth";
-import LazyLoad from 'react-lazyload';
-import { formatDate } from "../helpers/dateHelper";
 import { Link as RouterLink } from 'react-router-dom';
 import {
     Box,
     IconButton,
-    CardMedia,
     CardHeader,
     Card,
-    CardActions,
-    CardContent,
     Avatar,
     Tooltip,
     Grid,
@@ -27,9 +19,10 @@ import { AvatarGroup } from '@material-ui/lab';
 
 // Trevor Moore
 // CST-451
-// 12/9/2019
+// 2/9/2020
 // This is my own work.
 
+// Create CSS styling:
 const useStyles = makeStyles(theme => ({
     card: {
         width: "auto",
@@ -94,18 +87,22 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-// Home component for rendering the home page:
+// Messages component for rendering the messages page (for viewing all conversation the current user has):
 export default function Messages() {
+    // Create styles and state:
     const classes = useStyles();
     const [conversations, setConversations] = useState([]);
     const { get } = useRequest();
     const { authState } = useAuth();
 
+    // useEffect hook for getting all a user's conversations:
     useEffect(() => {
         async function getConversations() {
+            // Send get request for conversations:
             const response = await get(config.MESSAGING_GET_ALL_CONVERSATIONS_GET, {
                 userId: authState.user.id
             });
+            // On success set the data in state:
             if (response.success) {
                 setConversations(response.data);
             }
@@ -114,6 +111,7 @@ export default function Messages() {
         return () => { };
     }, []);
 
+    // Return our markup:
     return (
         <Box className={classes.box}>
             <Grid className={classes.grid} container spacing={3}>
