@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import config from '../config.json';
 import useAuth from "../hooks/useAuth";
 import LazyLoad from 'react-lazyload';
 import { formatDateWithTime } from "../helpers/dateHelper";
 import { useParams } from "react-router-dom";
+import useRequest from '../hooks/useRequest';
 import SendIcon from '@material-ui/icons/Send';
+import { FilePicker } from "react-file-picker";
 import Axios from "axios";
+import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
 import { HubConnectionBuilder } from '@aspnet/signalr';
 import {
     Box,
@@ -120,27 +123,49 @@ const useStyles = makeStyles(theme => ({
     postInput: {
         width: "100%",
     },
+    fileUpload: {
+        '&:hover': {
+            mouse: "pointer"
+        },
+    },
+    filePickerButton: {
+        marginLeft: "10px",
+        marginRight: "10px"
+    },
 }));
 
 // Chat component for rendering chats:
 export default function Chat() {
     // Create our styles and set our initial state:
     const classes = useStyles();
-    const [messages, setMessages] = useState({});
-    const [connection, setConnection] = useState({});
+    const [messages, setMessages] = useState([]);
+    const [signalRConnection, setSignalRConnection] = useState({});
     const { id } = useParams();
-    const { authState } = useAuth();
+    const { authState, connection, getConnection } = useAuth();
+    const { get } = useRequest();
+    const conn = getConnection();
     const [messageBody, setMessageBody] = useState("");
+    const [file, setFile] = useState({});
+    const messagesEndRef = useRef(null);
 
-    // On change handler:
+    // Our state change handler:
     const handleMessageBodyChange = e => {
         setMessageBody(e.target.value);
     };
+    const handleFileChange = file => {
+        setFile(file);
+    };
+    const scrollToBottom = () => {
+        messagesEndRef.current.scrollIntoView();
+    }
 
     // Method for sending a new message:
     const sendMessage = async () => {
         // Create form data object and append data:
         let formData = new FormData();
+        if (file) {
+            formData.append('file', file);
+        }
         formData.append('conversationId', id);
         formData.append('userId', authState.user.id);
         formData.append('messageBody', messageBody);
@@ -156,37 +181,53 @@ export default function Chat() {
             });
         // Upon success set the new data, and invoke the SignalR Hub for real-time delivery:
         if (response.data.success) {
-            connection.invoke(config.SIGNALR_CONVERSATION_HUB_INVOKE_GET_CONVERSATION, id);
+            signalRConnection.invoke(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, {
+                Id: id,
+                Data: response.data.data
+            });
             setMessageBody("");
-            let messageContainer = document.getElementById("message-box");
-            messageContainer.scrollTop = messageContainer.scrollHeight;
         }
     };
 
     // useEffect hook for getting the conversation and setting up the SignalR connection:
     useEffect(() => {
         async function getConversation() {
-            // Build the SignalR connection and start it:
-            const hubConnection = new HubConnectionBuilder()
-                .withUrl(config.SIGNALR_CONVERSATION_HUB)
-                .build();
-            await hubConnection.start()
-                .catch((error) => console.log('Error while starting connection :(  Error:' + error));
-            console.log('Connected to SignalR!');
-            hubConnection.onclose(() => {
-                console.log('Connection with SignalR has closed.');
+            // If the connection isn't null:
+            if (conn) {
+                setSignalRConnection(conn);
+            }
+            else {
+                // Build the SignalR connection and start it:
+                const hubConnection = new HubConnectionBuilder()
+                    .withUrl(config.SIGNALR_CONVERSATION_HUB)
+                    .build();
+                await hubConnection.start()
+                    .catch((error) => console.log('Error while starting connection :(  Error:' + error));
+                console.log('Connected to SignalR!');
+                hubConnection.onclose(() => {
+                    console.log('Connection with SignalR has closed.');
+                });
+                // Set the on event so that data will update on invocation:
+                hubConnection.on(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, (response) => {
+                    messages.push(response);
+                    setMessages(messages);
+                    scrollToBottom();
+                });
+                // Store the SignalR connection in the state:
+                setSignalRConnection(hubConnection);
+                // Dispatch the connection into the store:
+                connection(hubConnection);
+            }
+
+            // Get the conversation:
+            const response = await get(config.MESSAGING_GET_CONVERSATION_GET, {
+                conversationId: id
             });
-            // Set the on event so that data will update on invocation:
-            hubConnection.on(config.SIGNALR_CONVERSATION_HUB_ON_GET_CHAT, (response) => {
-                setMessages(response.data.messages)
-            });
-            // Set invoke event so that data will initially be delivered:
-            hubConnection.invoke(config.SIGNALR_CONVERSATION_HUB_INVOKE_GET_CONVERSATION, id)
-                .catch((error) => console.log('Error while invoking connection :(  Error:' + error));
-            // Set data and scroll to bottom of the scroll:
-            let messageContainer = document.getElementById("message-box");
-            messageContainer.scrollTop = messageContainer.scrollHeight;
-            setConnection(hubConnection);
+            // On success set the data:
+            if (response.success) {
+                setMessages(response.data.messages);
+            }
+            scrollToBottom();
         }
         getConversation();
         return () => { };
@@ -212,6 +253,7 @@ export default function Chat() {
                             </Card>
                         ) :
                             <></>}
+                        <div ref={messagesEndRef} />
                     </Grid>
                 </Grid>
             </Box>
@@ -225,9 +267,18 @@ export default function Chat() {
                             value={messageBody}
                             onChange={handleMessageBodyChange}
                             rowsMax="8"
-                            label="Write some snazzy message..."
+                            label="Send a nice message :)"
                             variant="outlined"
                         />
+                        <FilePicker
+                            extensions={["jpeg", "mov", "mp4", "jpg", "img", "png", "wmv", "avi"]}
+                            onChange={handleFileChange}
+                            className={classes.fileUpload}
+                        >
+                            <IconButton color="inherit" className={classes.filePickerButton}>
+                                <AddPhotoAlternateIcon />
+                            </IconButton>
+                        </FilePicker>
                         <IconButton
                             className={classes.uploadButton}
                             onClick={sendMessage}>

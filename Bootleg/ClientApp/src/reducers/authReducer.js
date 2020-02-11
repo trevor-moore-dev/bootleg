@@ -13,7 +13,8 @@ const initialState = {
     profilePic: "",
     id: ""
   },
-  checkedForAuth: false
+  checkedForAuth: false,
+  signalRConnection: null
 };
 
 // Set constant for authorization reducer to update our state in the store:
@@ -45,6 +46,10 @@ const authReducer = (state, action) => {
     case "CHECKED_FOR_AUTH":
       // Return the updated state with checkedForAuth as true:
       return { ...state, checkedForAuth: true };
+    // On SignalR Connection:
+    case "SIGNALR_CONNECTION":
+      // Return the updated state with the connection:
+      return { ...state, signalRConnection: action.connection };
     // On default:
     default:
       // Simply return the state:

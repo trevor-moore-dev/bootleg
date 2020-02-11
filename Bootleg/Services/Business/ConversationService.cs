@@ -84,6 +84,7 @@ namespace Bootleg.Services.Business
 					message.MessageBody = request.Form["messageBody"];
 				}
 				// Set the rest of the properties for the Message:
+				message.Id = string.Format("{0:10}{1}", DateTime.Now.Ticks, Guid.NewGuid());
 				message.Username = user.Username;
 				message.ProfilePicUri = user.ProfilePicUri;
 				message.UserId = user.Id;

@@ -52,6 +52,11 @@ export default function useAuth() {
       return getAuthFromCookie();
     }
   };
+  // Function for getting the websocket connection if it's there:
+  const getConnection = () => {
+    // Return the connection (it will be null if it isn't there):
+    return authState.signalRConnection;
+  };
   // Function for dispatching the authorization token which updates the state in the store:
   const login = token => {
     // Dispatch the token and the payload:
@@ -71,6 +76,14 @@ export default function useAuth() {
       type: "LOGOUT"
     });
   };
+  // Function for storing the SignalR connection:
+  const connection = conn => {
+    // Dispatch the token and the payload:
+    dispatch({
+      type: "SIGNALR_CONNECTION",
+      connection: conn
+    });
+  };
   // Return our functions:
-  return { getAuthFromCookie, authState, login, logout, getToken };
+  return { getAuthFromCookie, authState, login, logout, connection, getToken, getConnection };
 }

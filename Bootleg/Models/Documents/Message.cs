@@ -16,8 +16,7 @@ namespace Bootleg.Models.Documents
 	/// </summary>
 	public class Message
 	{
-		[BsonId]
-		[BsonRepresentation(BsonType.ObjectId)]
+		[BsonRequired]
 		public string Id { get; set; }
 		[BsonRequired]
 		public string UserId { get; set; }

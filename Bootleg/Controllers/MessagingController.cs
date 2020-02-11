@@ -72,6 +72,36 @@ namespace Bootleg.Controllers
             }
         }
         /// <summary>
+        /// Method for getting a conversation.
+        /// </summary>
+        /// <param name="conversationId">The user id of the current user.</param>
+        /// <returns>DTO containing a list of Conversation objects.</returns>
+        [HttpGet("[action]")]
+        public async Task<DTO<Conversation>> GetConversation(string conversationId)
+        {
+            // Surround with try/catch:
+            try
+            {
+                // Return all the conversation of the user using the conversation service:
+                return await _conversationService.GetConversation(conversationId);
+            }
+            // Catch any exceptions:
+            catch (Exception ex)
+            {
+                // Log the exception:
+                LoggerHelper.Log(ex);
+                // Return the error and set success to false, encapsulated in a DTO:
+                return new DTO<Conversation>()
+                {
+                    Errors = new Dictionary<string, List<string>>()
+                    {
+                        ["*"] = new List<string> { ex.Message },
+                    },
+                    Success = false
+                };
+            }
+        }
+        /// <summary>
         /// Method for creating a conversation between multiple users.
         /// </summary>
         /// <param name="userIds">A list of user ids who will be a part of the Conversation.</param>
@@ -106,9 +136,9 @@ namespace Bootleg.Controllers
         /// <summary>
         /// Method for sending a message in a conversation.
         /// </summary>
-        /// <returns>DTO containing the updated Conversation object.</returns>
+        /// <returns>DTO containing the new Message.</returns>
         [HttpPost("[action]")]
-        public async Task<DTO<Conversation>> SendMessage()
+        public async Task<DTO<Message>> SendMessage()
         {
             // Surround with try/catch:
             try
@@ -121,8 +151,14 @@ namespace Bootleg.Controllers
                 var message = _conversationService.CreateMessage(Request, messageBlob, user.Data);
                 // Get the current conversation that the user is sending the message to:
                 var conversation = await _conversationService.GetConversation(Request.Form["conversationId"]);
-                // Return the updated Conversation after sending the message:
+                // Update Conversation after sending the message:
                 return await _conversationService.SendMessage(conversation.Data, message);
+                // Return the new message:
+                return new DTO<Message>()
+                {
+                    Data = message,
+                    Success = true
+                };
             }
             // Catch any exceptions:
             catch (Exception ex)
@@ -130,7 +166,7 @@ namespace Bootleg.Controllers
                 // Log the exception:
                 LoggerHelper.Log(ex);
                 // Return the error and set success to false, encapsulated in a DTO:
-                return new DTO<Conversation>()
+                return new DTO<Message>()
                 {
                     Errors = new Dictionary<string, List<string>>()
                     {

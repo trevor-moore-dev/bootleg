@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Bootleg.Helpers;
+using Bootleg.Models.Documents;
+using Bootleg.Models.DTO;
 using Bootleg.Services.Business.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 
@@ -17,32 +19,30 @@ namespace SecretSanta2._0.Services.Hubs
     public class ConversationHub : Hub
     {
         // Private readonly conversation service dependency:
-        private readonly IConversationService _conversationService;
+        //private readonly IConversationService _conversationService;
         /// <summary>
         /// Constructor for initializing our dependencies.
         /// </summary>
         /// <param name="_conversationService">Conversation service.</param>
-        public ConversationHub(IConversationService _conversationService)
-        {
-            // Set our dependencies:
-            this._conversationService = _conversationService;
-        }
+        //public ConversationHub(IConversationService _conversationService)
+        //{
+        // Set our dependencies:
+        //this._conversationService = _conversationService;
+        //}
         /// <summary>
         /// Method for delivering real-time data to those in a conversation (they join a SignalR group for content delivery).
         /// </summary>
-        /// <param name="conversationId">String of conversation id.</param>
+        /// <param name="message">DTO containing new Message.</param>
         /// <returns>Task of DTO populated with a Conversation object.</returns>
-        public async Task GetConversation(string conversationId)
+        public async Task SendMessage(DTO<Message> message)
         {
             // Surround with try/catch:
             try
             {
                 // Add the connection to the specified SignalR group, based off the conversation id:
-                await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
-                // Get the conversation:
-                var conversation = await _conversationService.GetConversation(conversationId);
+                await Groups.AddToGroupAsync(Context.ConnectionId, message.Id);
                 // Send the conversation to all connections in the group in real-time:
-                await Clients.Group(conversationId).SendAsync("GetChat", conversation);
+                await Clients.Group(message.Id).SendAsync("SendMessage", message.Data);
             }
             // Catch any exceptions:
             catch (Exception ex)
