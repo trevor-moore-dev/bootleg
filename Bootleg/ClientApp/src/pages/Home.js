@@ -137,9 +137,7 @@ export default function Home() {
 								className={classes.text}
 							/>
 							{content.mediaUri ? (
-								<CardMedia
-									className={classes.media}
-								>
+								<CardMedia>
 									{content.mediaType == 0 ? (
 										<LazyLoad>
 											<img src={content.mediaUri} alt="Image couldn't load or was deleted :(" className={classes.img} />

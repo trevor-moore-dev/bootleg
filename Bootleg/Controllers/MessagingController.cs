@@ -152,7 +152,7 @@ namespace Bootleg.Controllers
                 // Get the current conversation that the user is sending the message to:
                 var conversation = await _conversationService.GetConversation(Request.Form["conversationId"]);
                 // Update Conversation after sending the message:
-                return await _conversationService.SendMessage(conversation.Data, message);
+                await _conversationService.SendMessage(conversation.Data, message);
                 // Return the new message:
                 return new DTO<Message>()
                 {

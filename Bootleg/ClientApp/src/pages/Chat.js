@@ -16,6 +16,7 @@ import {
     IconButton,
     CardHeader,
     Card,
+    CardMedia,
     Avatar,
     Grid,
     TextField,
@@ -88,6 +89,9 @@ const useStyles = makeStyles(theme => ({
             width: "70%"
         },
     },
+    innerGrid: {
+        display: "flex"
+    },
     contentGrid: {
         [theme.breakpoints.down('sm')]: {
             width: "100%",
@@ -132,6 +136,16 @@ const useStyles = makeStyles(theme => ({
         marginLeft: "10px",
         marginRight: "10px"
     },
+    text: {
+        color: theme.text
+    },
+    video: {
+        outline: "none",
+        width: "100%"
+    },
+    img: {
+        width: "100%"
+    },
 }));
 
 // Chat component for rendering chats:
@@ -147,6 +161,11 @@ export default function Chat() {
     const [messageBody, setMessageBody] = useState("");
     const [file, setFile] = useState({});
     const messagesEndRef = useRef(null);
+    const messagesRef = React.useRef(messages);
+    const setMessageState = data => {
+        messagesRef.current = data;
+        setMessages(data);
+    };
 
     // Our state change handler:
     const handleMessageBodyChange = e => {
@@ -194,6 +213,16 @@ export default function Chat() {
         async function getConversation() {
             // If the connection isn't null:
             if (conn) {
+                conn.onclose(() => {
+                    alert('Please refresh the page :)');
+                    console.log('Connection with SignalR has closed.');
+                });
+                // Set the on event so that data will update on invocation:
+                conn.on(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, (response) => {
+                    messagesRef.current.push(response);
+                    setMessageState(messagesRef.current);
+                    scrollToBottom();
+                });
                 setSignalRConnection(conn);
             }
             else {
@@ -205,12 +234,13 @@ export default function Chat() {
                     .catch((error) => console.log('Error while starting connection :(  Error:' + error));
                 console.log('Connected to SignalR!');
                 hubConnection.onclose(() => {
+                    alert('Please refresh the page :)');
                     console.log('Connection with SignalR has closed.');
                 });
                 // Set the on event so that data will update on invocation:
                 hubConnection.on(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, (response) => {
-                    messages.push(response);
-                    setMessages(messages);
+                    messagesRef.current.push(response);
+                    setMessageState(messagesRef.current);
                     scrollToBottom();
                 });
                 // Store the SignalR connection in the state:
@@ -225,7 +255,7 @@ export default function Chat() {
             });
             // On success set the data:
             if (response.success) {
-                setMessages(response.data.messages);
+                setMessageState(response.data.messages);
             }
             scrollToBottom();
         }
@@ -236,9 +266,9 @@ export default function Chat() {
     // Return our markup:
     return (
         <>
-            <Box className={classes.box} id='message-box'>
+            <Box className={classes.box}>
                 <Grid className={classes.grid} container spacing={3}>
-                    <Grid item xs={12} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
+                    <Grid id='message-box' item xs={12} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
                         {messages && messages.length > 0 ? messages.map(message =>
                             <Card key={message.id} className={authState.user.id === message.userId ? classes.rightCard : classes.leftCard}>
                                 <CardHeader
@@ -250,6 +280,25 @@ export default function Chat() {
                                     title={message.username + ' - ' + formatDateWithTime(message.datePostedUTC)}
                                     subheader={message.messageBody}
                                 />
+                                {message.mediaUri ? (
+                                    <CardMedia>
+                                        {message.mediaType == 0 ? (
+                                            <LazyLoad>
+                                                <img src={message.mediaUri} alt="Image couldn't load or was deleted :(" className={classes.img} />
+                                            </LazyLoad>
+                                        ) : (
+                                                <LazyLoad>
+                                                    <video className={classes.video} loop controls autoPlay>
+                                                        <source src={message.mediaUri} type="video/mp4" />
+                                                        <source src={message.mediaUri} type="video/webm" />
+                                                        <source src={message.mediaUri} type="video/ogg" />
+                                                        <p className={classes.text}>Your browser does not support our videos :(</p>
+                                                    </video>
+                                                </LazyLoad>
+                                            )}
+                                    </CardMedia>) : (
+                                        <></>
+                                    )}
                             </Card>
                         ) :
                             <></>}
@@ -259,7 +308,7 @@ export default function Chat() {
             </Box>
             <Box className={classes.inputBox}>
                 <Grid className={classes.grid} container spacing={3}>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} className={classes.innerGrid}>
                         <TextField
                             className={classes.postInput}
                             autoFocus
