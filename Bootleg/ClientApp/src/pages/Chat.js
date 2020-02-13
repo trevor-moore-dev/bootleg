@@ -6,10 +6,12 @@ import LazyLoad from 'react-lazyload';
 import { formatDateWithTime, currentTicks } from "../helpers/dateHelper";
 import { useParams } from "react-router-dom";
 import useRequest from '../hooks/useRequest';
+import BottomNavigation from '@material-ui/core/BottomNavigation';
 import SendIcon from '@material-ui/icons/Send';
 import { FilePicker } from "react-file-picker";
 import Axios from "axios";
 import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
+import ScrollToBottom from 'react-scroll-to-bottom';
 import { HubConnectionBuilder } from '@aspnet/signalr';
 import {
     Box,
@@ -146,29 +148,51 @@ const useStyles = makeStyles(theme => ({
     img: {
         width: "100%"
     },
+    hidden: {
+        display: "none"
+    },
 }));
 
 // Chat component for rendering chats:
 export default function Chat() {
     // Create our styles and set our initial state:
     const classes = useStyles();
-    const [signalRConnection, setSignalRConnection] = useState({});
     const { id } = useParams();
     const [update, setUpdate] = useState(currentTicks());
-    const { authState, connection, getConnection } = useAuth();
+    const { getUserId, getToken, getConnection, storeConnection, resetConnection } = useAuth();
+    const userToken = getToken();
+    const userId = getUserId();
     const { get } = useRequest();
-    const conn = getConnection();
+    const connection = getConnection();
     const [messageBody, setMessageBody] = useState("");
     const [file, setFile] = useState({});
     const messagesRef = useRef(null);
     //const messagesEndRef = useRef(null);
 
-    // Our state change handler:
+    // Our state change handlers:
     const handleMessageBodyChange = e => {
         setMessageBody(e.target.value);
     };
     const handleFileChange = file => {
         setFile(file);
+    };
+    const establishConnection = conn => {
+        conn.onclose(() => {
+            resetConnection();
+            alert('Please refresh the page :)');
+            console.log('Connection with SignalR has closed.');
+        });
+        // Set the on event so that data will update on invocation:
+        conn.on(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, (response) => {
+            messagesRef.current.push(response);
+            setUpdate(currentTicks());
+            setMessageBody("");
+            setFile(null);
+        });
+        // Invoke joining the current conversation:
+        conn.invoke(config.SIGNALR_CONVERSATION_HUB_JOIN_CONVERSATION, id);
+        // Dispatch the connection into the store:
+        storeConnection(conn);
     };
     //const scrollToBottom = () => {
     //  messagesEndRef.current.scrollIntoView();
@@ -182,7 +206,7 @@ export default function Chat() {
             formData.append('file', file);
         }
         formData.append('conversationId', id);
-        formData.append('userId', authState.user.id);
+        formData.append('userId', userId);
         formData.append('messageBody', messageBody);
         // Send post request to send the message:
         let response = await Axios.post(
@@ -191,12 +215,12 @@ export default function Chat() {
             {
                 headers: {
                     "Content-Type": "multipart/form-data",
-                    Authorization: "Bearer " + authState.token
+                    Authorization: "Bearer " + userToken
                 }
             });
         // Upon success set the new data, and invoke the SignalR Hub for real-time delivery:
         if (response.data.success) {
-            signalRConnection.invoke(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE_INVOKE, {
+            connection.invoke(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, {
                 Id: id,
                 Data: response.data.data
             });
@@ -213,47 +237,22 @@ export default function Chat() {
             // On success set the data:
             if (response.success) {
                 messagesRef.current = response.data.messages;
-
             }
-
             // If the connection isn't null:
-            if (conn) {
-                conn.onclose(() => {
-                    alert('Please refresh the page :)');
-                    console.log('Connection with SignalR has closed.');
-                });
-                // Set the on event so that data will update on invocation:
-                conn.on(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, (response) => {
-                    messagesRef.current.push(response);
-                    setUpdate(currentTicks());
-                    setMessageBody("");
-                });
-                setSignalRConnection(conn);
+            if (connection) {
+                establishConnection(connection);
             }
             else {
                 // Build the SignalR connection and start it:
-                const hubConnection = new HubConnectionBuilder()
+                const conn = new HubConnectionBuilder()
                     .withUrl(config.SIGNALR_CONVERSATION_HUB)
                     .build();
-                await hubConnection.start()
+                // Start the SignalR connection and start it:
+                await conn.start()
                     .catch((error) => console.log('Error while starting connection :(  Error:' + error));
                 console.log('Connected to SignalR!');
-                hubConnection.onclose(() => {
-                    alert('Please refresh the page :)');
-                    console.log('Connection with SignalR has closed.');
-                });
-                // Set the on event so that data will update on invocation:
-                hubConnection.on(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, (response) => {
-                    messagesRef.current.push(response);
-                    setUpdate(currentTicks());
-                    setMessageBody("");
-                });
-                // Store the SignalR connection in the state:
-                setSignalRConnection(hubConnection);
-                // Dispatch the connection into the store:
-                connection(hubConnection);
+                establishConnection(conn);
             }
-
             //scrollToBottom();
         }
         getConversation();
@@ -263,73 +262,45 @@ export default function Chat() {
     // Return our markup:
     return (
         <>
-            <div style={{ display: 'none' }}>{update}</div>
+            <div className={classes.hidden}>{update}</div>
             <Box className={classes.box}>
                 <Grid className={classes.grid} container spacing={3}>
                     <Grid id='message-box' item xs={12} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
-                        {messagesRef.current && messagesRef.current.length > 0 ? messagesRef.current.map(message =>
-                            <Card key={message.id} className={authState.user.id === message.userId ? classes.rightCard : classes.leftCard}>
-                                <CardHeader
-                                    avatar={
-                                        <LazyLoad>
-                                            <Avatar className={classes.avatar} src={message.profilePicUri} />
-                                        </LazyLoad>
-                                    }
-                                    title={message.username + ' - ' + formatDateWithTime(message.datePostedUTC)}
-                                    subheader={message.messageBody}
-                                />
-                                {message.mediaUri ? (
-                                    <CardMedia>
-                                        {message.mediaType == 0 ? (
+                        <ScrollToBottom>
+                            {messagesRef.current && messagesRef.current.length > 0 ? messagesRef.current.map(message =>
+                                <Card key={message.id} className={userId === message.userId ? classes.rightCard : classes.leftCard}>
+                                    <CardHeader
+                                        avatar={
                                             <LazyLoad>
-                                                <img src={message.mediaUri} alt="Image couldn't load or was deleted :(" className={classes.img} />
+                                                <Avatar className={classes.avatar} src={message.profilePicUri} />
                                             </LazyLoad>
-                                        ) : (
+                                        }
+                                        title={message.username + ' - ' + formatDateWithTime(message.datePostedUTC)}
+                                        subheader={message.messageBody}
+                                    />
+                                    {message.mediaUri ? (
+                                        <CardMedia>
+                                            {message.mediaType == 0 ? (
                                                 <LazyLoad>
-                                                    <video className={classes.video} loop controls autoPlay>
-                                                        <source src={message.mediaUri} type="video/mp4" />
-                                                        <source src={message.mediaUri} type="video/webm" />
-                                                        <source src={message.mediaUri} type="video/ogg" />
-                                                        <p className={classes.text}>Your browser does not support our videos :(</p>
-                                                    </video>
+                                                    <img src={message.mediaUri} alt="Image couldn't load or was deleted :(" className={classes.img} />
                                                 </LazyLoad>
-                                            )}
-                                    </CardMedia>) : (
-                                        <></>
-                                    )}
-                            </Card>
-                        ) :
-                            <></>}
-                    </Grid>
-                </Grid>
-            </Box>
-            <Box className={classes.inputBox}>
-                <Grid className={classes.grid} container spacing={3}>
-                    <Grid item xs={12} className={classes.innerGrid}>
-                        <TextField
-                            className={classes.postInput}
-                            autoFocus
-                            multiline
-                            value={messageBody}
-                            onChange={handleMessageBodyChange}
-                            rowsMax="8"
-                            label="Send a nice message :)"
-                            variant="outlined"
-                        />
-                        <FilePicker
-                            extensions={["jpeg", "mov", "mp4", "jpg", "img", "png", "wmv", "avi"]}
-                            onChange={handleFileChange}
-                            className={classes.fileUpload}
-                        >
-                            <IconButton color="inherit" className={classes.filePickerButton}>
-                                <AddPhotoAlternateIcon />
-                            </IconButton>
-                        </FilePicker>
-                        <IconButton
-                            className={classes.uploadButton}
-                            onClick={sendMessage}>
-                            <SendIcon />
-                        </IconButton>
+                                            ) : (
+                                                    <LazyLoad>
+                                                        <video className={classes.video} loop controls autoPlay>
+                                                            <source src={message.mediaUri} type="video/mp4" />
+                                                            <source src={message.mediaUri} type="video/webm" />
+                                                            <source src={message.mediaUri} type="video/ogg" />
+                                                            <p className={classes.text}>Your browser does not support our videos :(</p>
+                                                        </video>
+                                                    </LazyLoad>
+                                                )}
+                                        </CardMedia>) : (
+                                            <></>
+                                        )}
+                                </Card>
+                            ) :
+                                <></>}
+                        </ScrollToBottom>
                     </Grid>
                 </Grid>
             </Box>

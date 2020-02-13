@@ -30,6 +30,26 @@ namespace SecretSanta2._0.Services.Hubs
         //this._conversationService = _conversationService;
         //}
         /// <summary>
+        /// Method for joining a connection from the SignalR group for conversations.
+        /// </summary>
+        /// <param name="conversationId">String of conversation id.</param>
+        /// <returns>Task.</returns>
+        public async Task JoinConversation(string conversationId)
+        {
+            // Surround with try/catch:
+            try
+            {
+                // Add the connection to the specified SignalR group, based off the conversation id:
+                await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
+            }
+            // Catch any exceptions:
+            catch (Exception ex)
+            {
+                // Log the exception and return nothing in this instance, since this is a websocket connection:
+                LoggerHelper.Log(ex);
+            }
+        }
+        /// <summary>
         /// Method for delivering real-time data to those in a conversation (they join a SignalR group for content delivery).
         /// </summary>
         /// <param name="message">DTO containing new Message.</param>
@@ -39,10 +59,8 @@ namespace SecretSanta2._0.Services.Hubs
             // Surround with try/catch:
             try
             {
-                // Add the connection to the specified SignalR group, based off the conversation id:
-                await Groups.AddToGroupAsync(Context.ConnectionId, message.Id);
                 // Send the conversation to all connections in the group in real-time:
-                await Clients.Group(message.Id).SendAsync("UpdateConversation", message.Data);
+                await Clients.Group(message.Id).SendAsync("SendMessage", message.Data);
             }
             // Catch any exceptions:
             catch (Exception ex)

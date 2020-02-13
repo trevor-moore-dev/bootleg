@@ -91,7 +91,8 @@ export default function User() {
     // Create our CSS classes and also setting the state data initially:
     const classes = useStyles();
     const { id } = useParams();
-    const { authState } = useAuth();
+    const { getUserId } = useAuth();
+    const userId = getUserId();
     const [uploads, setUploads] = useState([]);
     const { get, post } = useRequest();
     const [user, setUser] = useState({});
@@ -103,7 +104,7 @@ export default function User() {
         async function getLoggedInUser() {
             // Send get request to get the user:
             const response = await get(config.USER_GET_USER_GET, {
-                userId: authState.user.id
+                userId: userId
             });
             // On success set the data:
             if (response.success) {
@@ -134,7 +135,7 @@ export default function User() {
         // Send post request to the user:
         const response = await post(config.USER_FOLLOW_USER_POST, {
             Id: id,
-            Data: authState.user.id
+            Data: userId
         });
         // On success set the data:
         if (response.success) {
@@ -150,7 +151,7 @@ export default function User() {
         // Send post request to the user:
         const response = await post(config.USER_UNFOLLOW_USER_POST, {
             Id: id,
-            Data: authState.user.id
+            Data: userId
         });
         // On success set the data:
         if (response.success) {
@@ -187,7 +188,7 @@ export default function User() {
                         <Button variant="contained" onClick={followUser}>Follow</Button>}
                     <Link
                         component={RouterLink}
-                        onClick={() => messageUser(authState.user.id, id)}
+                        onClick={() => messageUser(userId, id)}
                         to="/messages">
                         <Button variant="contained">Message</Button>
                     </Link>

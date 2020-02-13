@@ -78,7 +78,8 @@ export default function Explore() {
     const classes = useStyles();
     const [users, setUsers] = useState([]);
     const { get, post } = useRequest();
-    const { authState } = useAuth();
+    const { getUserId } = useAuth();
+    const userId = getUserId();
     const [loggedInUser, setLoggedInUser] = useState({});
 
     // useEffect hook for getting logged in user and all users on the app:
@@ -86,7 +87,7 @@ export default function Explore() {
         async function getLoggedInUser() {
             // Make get request to grab the user data:
             const response = await get(config.USER_GET_USER_GET, {
-                userId: authState.user.id
+                userId: userId
             });
             // On success set the state data:
             if (response.success) {
@@ -111,7 +112,7 @@ export default function Explore() {
         // Make post request to update the user data:
         const response = await post(config.USER_FOLLOW_USER_POST, {
             Id: userId,
-            Data: authState.user.id
+            Data: userId
         });
         // On success set the state data:
         if (response.success) {
@@ -124,7 +125,7 @@ export default function Explore() {
         // Make post request to update the user data:
         const response = await post(config.USER_UNFOLLOW_USER_POST, {
             Id: userId,
-            Data: authState.user.id
+            Data: userId
         });
         // On success set the state data:
         if (response.success) {
@@ -138,7 +139,7 @@ export default function Explore() {
             <Grid className={classes.grid} container spacing={3}>
                 <Grid item xs={12} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
                     {users && users.length > 0 ? users.map(user =>
-                        (user.id !== authState.user.id ?
+                        (user.id !== userId ?
                             <Card key={user.id} className={classes.card}>
                                 <CardContent>
                                     <Link

@@ -97,7 +97,9 @@ export default function Account() {
     const classes = useStyles();
     const [uploads, setUploads] = useState([]);
     const { get } = useRequest();
-    const { authState } = useAuth();
+    const { getUserId, getToken } = useAuth();
+    const userToken = getToken();
+    const userId = getUserId();
     const [editAccount, setEditAccount] = useState(false);
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
@@ -112,7 +114,7 @@ export default function Account() {
         async function getUserContent() {
             // Make get request to get all the user's content:
             const response = await get(config.USER_GET_USER_CONTENT_GET, {
-                userId: authState.user.id
+                userId: userId
             });
             // Set the corresponding state upon success:
             if (response.success) {
@@ -154,8 +156,8 @@ export default function Account() {
     // Method for making the request to update a user's content:
     const makeUserUpdateRequest = async (formData, notProfilePicUpdate) => {
         // Append user id if it's there:
-        if (authState.user.id) {
-            formData.append('userId', authState.user.id);
+        if (userId) {
+            formData.append('userId', userId);
         }
         // Send request for updating the user's post:
         let response = await Axios.post(
@@ -164,7 +166,7 @@ export default function Account() {
             {
                 headers: {
                     "Content-Type": "multipart/form-data",
-                    Authorization: "Bearer " + authState.token
+                    Authorization: "Bearer " + userToken
                 }
             });
         // Upon success set the state data:

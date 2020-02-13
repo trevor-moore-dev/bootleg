@@ -16,6 +16,7 @@ import AddIcon from '@material-ui/icons/Add';
 import { FilePicker } from "react-file-picker";
 import useAuth from "../hooks/useAuth";
 import { Link as RouterLink } from 'react-router-dom';
+import SendIcon from '@material-ui/icons/Send';
 import {
     Fab,
     IconButton,
@@ -23,7 +24,8 @@ import {
     SnackbarContent,
     Box,
     TextField,
-    Tooltip
+    Tooltip,
+    Grid
 } from '@material-ui/core';
 
 // Trevor Moore
@@ -47,6 +49,12 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         position: 'fixed',
         bottom: 0,
+        color: theme.button.text,
+        backgroundColor: theme.general.dark
+    },
+    chatStickToBottom: {
+        display: 'flex',
+        width: '100%',
         color: theme.button.text,
         backgroundColor: theme.general.dark
     },
@@ -111,7 +119,21 @@ const useStyles = makeStyles(theme => ({
     },
     footerIcon: {
         color: "#A9A9A9"
-    }
+    },
+    inputBox: {
+        justifyContent: "center",
+        alignItems: "center",
+        display: "flex",
+        marginTop: theme.spacing(2),
+    },
+    grid: {
+        [theme.breakpoints.up('md')]: {
+            width: "70%"
+        },
+    },
+    innerGrid: {
+        display: "flex"
+    },
 }));
 
 // Footer component for the bottom of the web app:
@@ -121,26 +143,24 @@ export default function Footer() {
     const [contentBody, setContentBody] = useState("");
     const [open, setOpen] = useState(false);
     const [file, setFile] = useState({});
-    const { authState } = useAuth();
+    const { getUserId, getToken } = useAuth();
+    const userToken = getToken();
+    const userId = getUserId();
     const [value, setValue] = React.useState('recents');
 
     // Our state change handlers:
     const handleFileChange = file => {
         setFile(file);
     };
-
     const handleContentBodyChange = e => {
         setContentBody(e.target.value);
     };
-
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
-
     const handleOpen = () => {
         setOpen(true);
     };
-
     const handleClose = () => {
         setOpen(false);
     };
@@ -155,7 +175,7 @@ export default function Footer() {
         }
         // Append contentBody and userId:
         formData.append('contentBody', contentBody);
-        formData.append('userId', authState.user.id);
+        formData.append('userId', userId);
         // Send post request:
         let response = await Axios.post(
             config.CONTENT_UPLOAD_CONTENT_POST,
@@ -163,20 +183,52 @@ export default function Footer() {
             {
                 headers: {
                     "Content-Type": "multipart/form-data",
-                    Authorization: "Bearer " + authState.token
+                    Authorization: "Bearer " + userToken
                 }
             });
+        if (response.data.success) {
+            setFile(file);
+            setContentBody("");
+        }
     };
 
     // Return our footer:
     return (
         <>
+
             <BottomNavigation value={value} onChange={handleChange} className={classes.stickToBottom}>
-                <BottomNavigationAction component={RouterLink} to="/" icon={<HomeIcon className={classes.footerIcon} />} />
-                <BottomNavigationAction component={RouterLink} to="/explore" icon={<ExploreIcon className={classes.footerIcon} />} />
-                <BottomNavigationAction onClick={handleOpen} icon={<AddCircleOutlineIcon className={classes.footerIcon} />} />
-                <BottomNavigationAction component={RouterLink} to="/messages" icon={<MailIcon className={classes.footerIcon} />} />
-                <BottomNavigationAction component={RouterLink} to="/my-account" icon={<AccountCircleIcon className={classes.footerIcon} />} />
+                <Box className={classes.inputBox}>
+                    <Grid className={classes.grid} container>
+                        <Grid item className={classes.innerGrid}>
+                            <TextField
+                                className={classes.postInput}
+                                rowsMax="8"
+                                label="Send a nice message :)"
+                                variant="outlined"
+                            />
+                            <FilePicker
+                                extensions={["jpeg", "mov", "mp4", "jpg", "img", "png", "wmv", "avi"]}
+                                className={classes.fileUpload}
+                            >
+                                <IconButton color="inherit" className={classes.filePickerButton}>
+                                    <AddPhotoAlternateIcon />
+                                </IconButton>
+                            </FilePicker>
+                            <IconButton
+                                className={classes.uploadButton}
+                            >
+                                <SendIcon />
+                            </IconButton>
+                        </Grid>
+                    </Grid>
+                </Box>
+                <div>
+                    <BottomNavigationAction component={RouterLink} to="/" icon={<HomeIcon className={classes.footerIcon} />} />
+                    <BottomNavigationAction component={RouterLink} to="/explore" icon={<ExploreIcon className={classes.footerIcon} />} />
+                    <BottomNavigationAction onClick={handleOpen} icon={<AddCircleOutlineIcon className={classes.footerIcon} />} />
+                    <BottomNavigationAction component={RouterLink} to="/messages" icon={<MailIcon className={classes.footerIcon} />} />
+                    <BottomNavigationAction component={RouterLink} to="/my-account" icon={<AccountCircleIcon className={classes.footerIcon} />} />
+                </div>
             </BottomNavigation>
             <Tooltip title="Create New Post" className={classes.sectionDesktop}>
                 <Fab className={classes.fab} onClick={handleOpen}>

@@ -52,6 +52,10 @@ export default function useAuth() {
       return getAuthFromCookie();
     }
   };
+  // Function for getting the current user's id:
+  const getUserId = () => {
+    return authState.user.id;
+  };
   // Function for getting the websocket connection if it's there:
   const getConnection = () => {
     // Return the connection (it will be null if it isn't there):
@@ -77,13 +81,21 @@ export default function useAuth() {
     });
   };
   // Function for storing the SignalR connection:
-  const connection = conn => {
-    // Dispatch the token and the payload:
+  const storeConnection = conn => {
+    // Dispatch the connection to update the store:
     dispatch({
       type: "SIGNALR_CONNECTION",
       connection: conn
     });
   };
+  // Function for removing the signalr connection:
+  const resetConnection = () => {
+    // Dispatch the reset to update the store:
+    dispatch({
+      type: "SIGNALR_CONNECTION",
+      connection: null
+    });
+  };
   // Return our functions:
-  return { getAuthFromCookie, authState, login, logout, connection, getToken, getConnection };
+  return { getAuthFromCookie, authState, login, logout, storeConnection, resetConnection, getToken, getUserId, getConnection };
 }

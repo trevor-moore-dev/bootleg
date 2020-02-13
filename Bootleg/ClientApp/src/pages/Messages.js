@@ -93,14 +93,15 @@ export default function Messages() {
     const classes = useStyles();
     const [conversations, setConversations] = useState([]);
     const { get } = useRequest();
-    const { authState } = useAuth();
+    const { getUserId } = useAuth();
+    const userId = getUserId();
 
     // useEffect hook for getting all a user's conversations:
     useEffect(() => {
         async function getConversations() {
             // Send get request for conversations:
             const response = await get(config.MESSAGING_GET_ALL_CONVERSATIONS_GET, {
-                userId: authState.user.id
+                userId: userId
             });
             // On success set the data in state:
             if (response.success) {
@@ -128,17 +129,17 @@ export default function Messages() {
                                     avatar={
                                         <AvatarGroup>
                                             {conversation.users && conversation.users.length > 0 ?
-                                                (conversation.users[0].id !== authState.user.id ?
+                                                (conversation.users[0].id !== userId ?
                                                     <Avatar className={classes.avatar} src={conversation.users[0].profilePicUri} />
                                                     : <></>)
                                                 : <></>}
                                             {conversation.users && conversation.users.length > 1 ?
-                                                (conversation.users[1].id !== authState.user.id ?
+                                                (conversation.users[1].id !== userId ?
                                                     <Avatar className={classes.avatar} src={conversation.users[1].profilePicUri} />
                                                     : <></>)
                                                 : <></>}
                                             {conversation.users && conversation.users.length > 2 ?
-                                                (conversation.users[2].id !== authState.user.id ?
+                                                (conversation.users[2].id !== userId ?
                                                     <Avatar className={classes.avatar} src={conversation.users[2].profilePicUri} />
                                                     : <></>)
                                                 : <></>}
@@ -155,7 +156,7 @@ export default function Messages() {
                                         </IconButton>
                                     }
                                     title={conversation.users && conversation.users.length == 2 ? conversation.users.map(user =>
-                                        (user.id !== authState.user.id ?
+                                        (user.id !== userId ?
                                             user.username
                                             : <></>)
                                     )
