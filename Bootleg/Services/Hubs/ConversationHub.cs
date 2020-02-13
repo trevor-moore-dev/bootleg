@@ -42,7 +42,7 @@ namespace SecretSanta2._0.Services.Hubs
                 // Add the connection to the specified SignalR group, based off the conversation id:
                 await Groups.AddToGroupAsync(Context.ConnectionId, message.Id);
                 // Send the conversation to all connections in the group in real-time:
-                await Clients.Group(message.Id).SendAsync("SendMessage", message.Data);
+                await Clients.Group(message.Id).SendAsync("UpdateConversation", message.Data);
             }
             // Catch any exceptions:
             catch (Exception ex)

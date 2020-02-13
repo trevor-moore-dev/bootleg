@@ -31,3 +31,11 @@ export function formatDateWithTime(date) {
 	// Return the standard format: MM/DD/YYY HH:MM am/pm
 	return time.getMonth() + 1 + "/" + time.getDate() + "/" + time.getFullYear() + "  " + formattedTime;
 }
+
+// Function for getting the current ticks:
+export function currentTicks() {
+	// Create a new date:
+	let time = new Date();
+	// Return the ticks:
+	return time.getTime().toString();
+}

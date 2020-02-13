@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import config from '../config.json';
 import useAuth from "../hooks/useAuth";
 import LazyLoad from 'react-lazyload';
-import { formatDateWithTime } from "../helpers/dateHelper";
+import { formatDateWithTime, currentTicks } from "../helpers/dateHelper";
 import { useParams } from "react-router-dom";
 import useRequest from '../hooks/useRequest';
 import SendIcon from '@material-ui/icons/Send';
@@ -152,20 +152,16 @@ const useStyles = makeStyles(theme => ({
 export default function Chat() {
     // Create our styles and set our initial state:
     const classes = useStyles();
-    const [messages, setMessages] = useState([]);
     const [signalRConnection, setSignalRConnection] = useState({});
     const { id } = useParams();
+    const [update, setUpdate] = useState(currentTicks());
     const { authState, connection, getConnection } = useAuth();
     const { get } = useRequest();
     const conn = getConnection();
     const [messageBody, setMessageBody] = useState("");
     const [file, setFile] = useState({});
-    const messagesEndRef = useRef(null);
-    const messagesRef = React.useRef(messages);
-    const setMessageState = data => {
-        messagesRef.current = data;
-        setMessages(data);
-    };
+    const messagesRef = useRef(null);
+    //const messagesEndRef = useRef(null);
 
     // Our state change handler:
     const handleMessageBodyChange = e => {
@@ -174,9 +170,9 @@ export default function Chat() {
     const handleFileChange = file => {
         setFile(file);
     };
-    const scrollToBottom = () => {
-        messagesEndRef.current.scrollIntoView();
-    }
+    //const scrollToBottom = () => {
+    //  messagesEndRef.current.scrollIntoView();
+    //}
 
     // Method for sending a new message:
     const sendMessage = async () => {
@@ -200,17 +196,26 @@ export default function Chat() {
             });
         // Upon success set the new data, and invoke the SignalR Hub for real-time delivery:
         if (response.data.success) {
-            signalRConnection.invoke(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, {
+            signalRConnection.invoke(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE_INVOKE, {
                 Id: id,
                 Data: response.data.data
             });
-            setMessageBody("");
         }
     };
 
     // useEffect hook for getting the conversation and setting up the SignalR connection:
     useEffect(() => {
         async function getConversation() {
+            // Get the conversation:
+            const response = await get(config.MESSAGING_GET_CONVERSATION_GET, {
+                conversationId: id
+            });
+            // On success set the data:
+            if (response.success) {
+                messagesRef.current = response.data.messages;
+
+            }
+
             // If the connection isn't null:
             if (conn) {
                 conn.onclose(() => {
@@ -220,8 +225,8 @@ export default function Chat() {
                 // Set the on event so that data will update on invocation:
                 conn.on(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, (response) => {
                     messagesRef.current.push(response);
-                    setMessageState(messagesRef.current);
-                    scrollToBottom();
+                    setUpdate(currentTicks());
+                    setMessageBody("");
                 });
                 setSignalRConnection(conn);
             }
@@ -240,8 +245,8 @@ export default function Chat() {
                 // Set the on event so that data will update on invocation:
                 hubConnection.on(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, (response) => {
                     messagesRef.current.push(response);
-                    setMessageState(messagesRef.current);
-                    scrollToBottom();
+                    setUpdate(currentTicks());
+                    setMessageBody("");
                 });
                 // Store the SignalR connection in the state:
                 setSignalRConnection(hubConnection);
@@ -249,15 +254,7 @@ export default function Chat() {
                 connection(hubConnection);
             }
 
-            // Get the conversation:
-            const response = await get(config.MESSAGING_GET_CONVERSATION_GET, {
-                conversationId: id
-            });
-            // On success set the data:
-            if (response.success) {
-                setMessageState(response.data.messages);
-            }
-            scrollToBottom();
+            //scrollToBottom();
         }
         getConversation();
         return () => { };
@@ -266,10 +263,11 @@ export default function Chat() {
     // Return our markup:
     return (
         <>
+            <div style={{ display: 'none' }}>{update}</div>
             <Box className={classes.box}>
                 <Grid className={classes.grid} container spacing={3}>
                     <Grid id='message-box' item xs={12} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
-                        {messages && messages.length > 0 ? messages.map(message =>
+                        {messagesRef.current && messagesRef.current.length > 0 ? messagesRef.current.map(message =>
                             <Card key={message.id} className={authState.user.id === message.userId ? classes.rightCard : classes.leftCard}>
                                 <CardHeader
                                     avatar={
@@ -302,7 +300,6 @@ export default function Chat() {
                             </Card>
                         ) :
                             <></>}
-                        <div ref={messagesEndRef} />
                     </Grid>
                 </Grid>
             </Box>
