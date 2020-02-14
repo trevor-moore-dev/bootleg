@@ -5,6 +5,7 @@ import useAuth from "../hooks/useAuth";
 import LazyLoad from 'react-lazyload';
 import { formatDateWithTime, currentTicks } from "../helpers/dateHelper";
 import { useParams } from "react-router-dom";
+import { useLocation } from "react-router";
 import useRequest from '../hooks/useRequest';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import SendIcon from '@material-ui/icons/Send';
@@ -62,14 +63,6 @@ const useStyles = makeStyles(theme => ({
     img: {
         width: "100%"
     },
-    stickToBottom: {
-        display: 'flex',
-        width: '100%',
-        position: 'fixed',
-        bottom: 0,
-        color: theme.button.text,
-        backgroundColor: theme.general.dark
-    },
     iconButtons: {
         color: "#A9A9A9"
     },
@@ -77,14 +70,13 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        height: '80vh',
-        overflow: 'scroll'
+        overflow: 'scroll',
     },
     inputBox: {
         justifyContent: "center",
         alignItems: "center",
         display: "flex",
-        marginTop: theme.spacing(2),
+        marginTop: theme.spacing(2)
     },
     grid: {
         [theme.breakpoints.up('md')]: {
@@ -115,7 +107,7 @@ const useStyles = makeStyles(theme => ({
     },
     spaceGrid: {
         paddingTop: "48px!important",
-        paddingBottom: "24px!important",
+        paddingBottom: "96px!important",
         paddingLeft: "12px!important",
         paddingRight: "12px!important",
     },
@@ -167,15 +159,8 @@ export default function Chat() {
     const [messageBody, setMessageBody] = useState("");
     const [file, setFile] = useState({});
     const messagesRef = useRef(null);
-    //const messagesEndRef = useRef(null);
 
     // Our state change handlers:
-    const handleMessageBodyChange = e => {
-        setMessageBody(e.target.value);
-    };
-    const handleFileChange = file => {
-        setFile(file);
-    };
     const establishConnection = conn => {
         conn.onclose(() => {
             resetConnection();
@@ -193,38 +178,6 @@ export default function Chat() {
         conn.invoke(config.SIGNALR_CONVERSATION_HUB_JOIN_CONVERSATION, id);
         // Dispatch the connection into the store:
         storeConnection(conn);
-    };
-    //const scrollToBottom = () => {
-    //  messagesEndRef.current.scrollIntoView();
-    //}
-
-    // Method for sending a new message:
-    const sendMessage = async () => {
-        // Create form data object and append data:
-        let formData = new FormData();
-        if (file) {
-            formData.append('file', file);
-        }
-        formData.append('conversationId', id);
-        formData.append('userId', userId);
-        formData.append('messageBody', messageBody);
-        // Send post request to send the message:
-        let response = await Axios.post(
-            config.MESSAGING_SEND_MESSAGE_POST,
-            formData,
-            {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: "Bearer " + userToken
-                }
-            });
-        // Upon success set the new data, and invoke the SignalR Hub for real-time delivery:
-        if (response.data.success) {
-            connection.invoke(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, {
-                Id: id,
-                Data: response.data.data
-            });
-        }
     };
 
     // useEffect hook for getting the conversation and setting up the SignalR connection:
@@ -263,10 +216,10 @@ export default function Chat() {
     return (
         <>
             <div className={classes.hidden}>{update}</div>
-            <Box className={classes.box}>
-                <Grid className={classes.grid} container spacing={3}>
-                    <Grid id='message-box' item xs={12} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
-                        <ScrollToBottom>
+            <ScrollToBottom checkInterval={150} mode="bottom">
+                <Box className={classes.box}>
+                    <Grid className={classes.grid} container spacing={3}>
+                        <Grid id='message-box' item xs={12} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
                             {messagesRef.current && messagesRef.current.length > 0 ? messagesRef.current.map(message =>
                                 <Card key={message.id} className={userId === message.userId ? classes.rightCard : classes.leftCard}>
                                     <CardHeader
@@ -300,10 +253,10 @@ export default function Chat() {
                                 </Card>
                             ) :
                                 <></>}
-                        </ScrollToBottom>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </Box>
+                </Box>
+            </ScrollToBottom>
         </>
     );
 }

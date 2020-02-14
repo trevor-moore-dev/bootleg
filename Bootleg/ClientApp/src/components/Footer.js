@@ -6,6 +6,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ExploreIcon from '@material-ui/icons/Explore';
+import { useLocation } from "react-router";
 import { makeStyles } from "@material-ui/core/styles";
 import EditIcon from '@material-ui/icons/Edit';
 import CloseIcon from '@material-ui/icons/Close';
@@ -15,13 +16,13 @@ import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
 import AddIcon from '@material-ui/icons/Add';
 import { FilePicker } from "react-file-picker";
 import useAuth from "../hooks/useAuth";
-import { Link as RouterLink } from 'react-router-dom';
-import SendIcon from '@material-ui/icons/Send';
+import { Link as RouterLink, useParams } from 'react-router-dom';
 import {
     Fab,
     IconButton,
     Snackbar,
     SnackbarContent,
+    Badge,
     Box,
     TextField,
     Tooltip,
@@ -41,6 +42,12 @@ const useStyles = makeStyles(theme => ({
             display: 'flex',
         },
     },
+    sectionMobile: {
+        display: 'flex',
+        [theme.breakpoints.up('md')]: {
+            display: 'none',
+        },
+    },
     stickToBottom: {
         display: 'flex',
         [theme.breakpoints.up('md')]: {
@@ -49,12 +56,6 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         position: 'fixed',
         bottom: 0,
-        color: theme.button.text,
-        backgroundColor: theme.general.dark
-    },
-    chatStickToBottom: {
-        display: 'flex',
-        width: '100%',
         color: theme.button.text,
         backgroundColor: theme.general.dark
     },
@@ -142,11 +143,14 @@ export default function Footer() {
     const classes = useStyles();
     const [contentBody, setContentBody] = useState("");
     const [open, setOpen] = useState(false);
-    const [file, setFile] = useState({});
-    const { getUserId, getToken } = useAuth();
+    const [file, setFile] = useState(null);
+    const { getUserId, getToken, getConnection } = useAuth();
     const userToken = getToken();
     const userId = getUserId();
+    const { id } = useParams();
+    const connection = getConnection();
     const [value, setValue] = React.useState('recents');
+    const location = useLocation();
 
     // Our state change handlers:
     const handleFileChange = file => {
@@ -163,6 +167,38 @@ export default function Footer() {
     };
     const handleClose = () => {
         setOpen(false);
+        setContentBody("");
+        setFile(null);
+    };
+
+    // Method for sending a new message:
+    const sendMessage = async () => {
+        // Create form data object and append data:
+        let formData = new FormData();
+        if (file) {
+            formData.append('file', file);
+        }
+        formData.append('conversationId', id);
+        formData.append('userId', userId);
+        formData.append('messageBody', contentBody);
+        // Send post request to send the message:
+        let response = await Axios.post(
+            config.MESSAGING_SEND_MESSAGE_POST,
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: "Bearer " + userToken
+                }
+            });
+        // Upon success set the new data, and invoke the SignalR Hub for real-time delivery:
+        if (response.data.success) {
+            connection.invoke(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, {
+                Id: id,
+                Data: response.data.data
+            });
+            handleClose();
+        }
     };
 
     // Method for uploading a post:
@@ -187,8 +223,7 @@ export default function Footer() {
                 }
             });
         if (response.data.success) {
-            setFile(file);
-            setContentBody("");
+            handleClose();
         }
     };
 
@@ -197,40 +232,13 @@ export default function Footer() {
         <>
 
             <BottomNavigation value={value} onChange={handleChange} className={classes.stickToBottom}>
-                <Box className={classes.inputBox}>
-                    <Grid className={classes.grid} container>
-                        <Grid item className={classes.innerGrid}>
-                            <TextField
-                                className={classes.postInput}
-                                rowsMax="8"
-                                label="Send a nice message :)"
-                                variant="outlined"
-                            />
-                            <FilePicker
-                                extensions={["jpeg", "mov", "mp4", "jpg", "img", "png", "wmv", "avi"]}
-                                className={classes.fileUpload}
-                            >
-                                <IconButton color="inherit" className={classes.filePickerButton}>
-                                    <AddPhotoAlternateIcon />
-                                </IconButton>
-                            </FilePicker>
-                            <IconButton
-                                className={classes.uploadButton}
-                            >
-                                <SendIcon />
-                            </IconButton>
-                        </Grid>
-                    </Grid>
-                </Box>
-                <div>
-                    <BottomNavigationAction component={RouterLink} to="/" icon={<HomeIcon className={classes.footerIcon} />} />
-                    <BottomNavigationAction component={RouterLink} to="/explore" icon={<ExploreIcon className={classes.footerIcon} />} />
-                    <BottomNavigationAction onClick={handleOpen} icon={<AddCircleOutlineIcon className={classes.footerIcon} />} />
-                    <BottomNavigationAction component={RouterLink} to="/messages" icon={<MailIcon className={classes.footerIcon} />} />
-                    <BottomNavigationAction component={RouterLink} to="/my-account" icon={<AccountCircleIcon className={classes.footerIcon} />} />
-                </div>
+                <BottomNavigationAction component={RouterLink} to="/" icon={<HomeIcon className={classes.footerIcon} />} />
+                <BottomNavigationAction component={RouterLink} to="/explore" icon={<ExploreIcon className={classes.footerIcon} />} />
+                <BottomNavigationAction onClick={handleOpen} icon={<AddCircleOutlineIcon className={classes.footerIcon} />} />
+                <BottomNavigationAction component={RouterLink} to="/messages" icon={<MailIcon className={classes.footerIcon} />} />
+                <BottomNavigationAction component={RouterLink} to="/my-account" icon={<AccountCircleIcon className={classes.footerIcon} />} />
             </BottomNavigation>
-            <Tooltip title="Create New Post" className={classes.sectionDesktop}>
+            <Tooltip title={location.pathname.includes("/chat") ? "Create a New Post" : "Send a Message"} className={classes.sectionDesktop}>
                 <Fab className={classes.fab} onClick={handleOpen}>
                     <EditIcon />
                 </Fab>
@@ -248,7 +256,7 @@ export default function Footer() {
                                     value={contentBody}
                                     onChange={handleContentBodyChange}
                                     rowsMax="8"
-                                    label="Write some stuff..."
+                                    label={location.pathname.includes("/chat") ? "Create a New Post :)" : "Send a Message :)"}
                                     variant="outlined"
                                 />
                                 <FilePicker
@@ -257,12 +265,15 @@ export default function Footer() {
                                     className={classes.fileUpload}
                                 >
                                     <IconButton color="inherit" className={classes.filePickerButton}>
-                                        <AddPhotoAlternateIcon />
+                                        {file && file.length > 0 ?
+                                            <Badge badgeContent={1} color='secondary'>
+                                                <AddPhotoAlternateIcon />
+                                            </Badge> : <AddPhotoAlternateIcon />}
                                     </IconButton>
                                 </FilePicker>
                                 <IconButton
                                     className={classes.uploadButton}
-                                    onClick={uploadPost}>
+                                    onClick={location.pathname.includes("/chat") ? sendMessage : uploadPost}>
                                     <AddIcon />
                                 </IconButton>
                             </Box>
