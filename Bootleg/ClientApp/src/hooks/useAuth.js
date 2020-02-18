@@ -61,6 +61,11 @@ export default function useAuth() {
     // Return the connection (it will be null if it isn't there):
     return authState.signalRConnection;
   };
+  // Function for getting the current important id for the current page if it's there:
+  const getId = () => {
+    // Return the id (it will be null if it isn't there):
+    return authState.currentId;
+  };
   // Function for dispatching the authorization token which updates the state in the store:
   const login = token => {
     // Dispatch the token and the payload:
@@ -80,6 +85,14 @@ export default function useAuth() {
       type: "LOGOUT"
     });
   };
+  // Function for storing the current id:
+  const storeId = id => {
+    // Dispatch the id to update the store:
+    dispatch({
+      type: "STORE_ID",
+      currentId: id
+    });
+  };
   // Function for storing the SignalR connection:
   const storeConnection = conn => {
     // Dispatch the connection to update the store:
@@ -97,5 +110,5 @@ export default function useAuth() {
     });
   };
   // Return our functions:
-  return { getAuthFromCookie, authState, login, logout, storeConnection, resetConnection, getToken, getUserId, getConnection };
+  return { getAuthFromCookie, authState, login, logout, storeId, storeConnection, resetConnection, getToken, getUserId, getId, getConnection };
 }

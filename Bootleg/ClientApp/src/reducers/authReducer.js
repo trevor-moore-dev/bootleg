@@ -13,6 +13,7 @@ const initialState = {
     profilePic: "",
     id: ""
   },
+  currentId: "",
   checkedForAuth: false,
   signalRConnection: null
 };
@@ -46,6 +47,13 @@ const authReducer = (state, action) => {
     case "CHECKED_FOR_AUTH":
       // Return the updated state with checkedForAuth as true:
       return { ...state, checkedForAuth: true };
+    // On storing an id:
+    case "STORE_ID":
+      // Return the updated state with the dispatch values:
+      return {
+        ...state,
+        currentId: action.currentId
+      };
     // On SignalR Connection:
     case "SIGNALR_CONNECTION":
       // Return the updated state with the connection:

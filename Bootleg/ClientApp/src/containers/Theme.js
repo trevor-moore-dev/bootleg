@@ -10,6 +10,7 @@ export const lightTheme = createMuiTheme({
   background: "#F8F8F9",
   gradient: "linear-gradient(#091236, #1E215D)",
   text: "rgb(60,60,60)",
+  lightText: "rgb(145,145,145)",
   general: {
     dark: "rgb(255,255,255)",
     medium: "rgb(147,112,219)",
@@ -95,6 +96,7 @@ export const darkTheme = createMuiTheme({
   background: "#363537",
   gradient: "linear-gradient(#DE4DAA, #F6D327)",
   text: "rgb(255,255,255)",
+  lightText: "rgb(145,145,145)",
   general: {
     dark: "#363537",
     medium: "rgb(147,112,219)",
