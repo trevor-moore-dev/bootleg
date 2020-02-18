@@ -266,11 +266,11 @@ export default function Chat() {
                                         </LazyLoad>
                                         {message.mediaType == 0 ? (
                                             <LazyLoad>
-                                                <img src={message.mediaUri} alt="Image couldn't load or was deleted :(" className={classes.img} />
+                                                <img src={message.mediaUri} alt="Image couldn't load or was deleted :(" className={userId === message.userId ? `${classes.img} ${classes.right}` : `${classes.img} ${classes.left}`} />
                                             </LazyLoad>
                                         ) : (
                                                 <LazyLoad>
-                                                    <video className={classes.video} loop controls autoPlay>
+                                                    <video className={userId === message.userId ? `${classes.video} ${classes.right}` : `${classes.video} ${classes.left}`} loop controls autoPlay>
                                                         <source src={message.mediaUri} type="video/mp4" />
                                                         <source src={message.mediaUri} type="video/webm" />
                                                         <source src={message.mediaUri} type="video/ogg" />
