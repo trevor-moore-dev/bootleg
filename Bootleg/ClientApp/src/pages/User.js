@@ -96,7 +96,6 @@ export default function User() {
     const [uploads, setUploads] = useState([]);
     const { get, post } = useRequest();
     const [user, setUser] = useState({});
-    const [loggedInUser, setLoggedInUser] = useState({});
     const [isFollowing, setIsFollowing] = useState(false);
 
     // useEffect hook for getting the user and all the content they should have on their feet.
@@ -108,7 +107,6 @@ export default function User() {
             });
             // On success set the data:
             if (response.success) {
-                setLoggedInUser(response.data);
                 if (response.data.followingIds) {
                     setIsFollowing(response.data.followingIds.includes(id));
                 }
@@ -139,7 +137,6 @@ export default function User() {
         });
         // On success set the data:
         if (response.success) {
-            setLoggedInUser(response.data);
             if (response.data.followingIds) {
                 setIsFollowing(response.data.followingIds.includes(id));
             }
@@ -155,7 +152,6 @@ export default function User() {
         });
         // On success set the data:
         if (response.success) {
-            setLoggedInUser(response.data);
             if (response.data.followingIds) {
                 setIsFollowing(response.data.followingIds.includes(id));
             }

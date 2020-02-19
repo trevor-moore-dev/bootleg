@@ -5,7 +5,6 @@ import useAuth from "../hooks/useAuth";
 import useRequest from '../hooks/useRequest';
 import config from '../config.json';
 import { Link as RouterLink } from 'react-router-dom';
-import LazyLoad from 'react-lazyload';
 import {
 	IconButton,
 	Toolbar,
@@ -95,7 +94,8 @@ export default function NavigationBar() {
 	// Create our styles and declare our state properties:
 	const classes = useStyles();
 	const themeState = useTheme();
-	const { logout, authState } = useAuth();
+	const { logout, getUserId } = useAuth();
+	const userId = getUserId();
 	const { get } = useRequest();
 	const [value, setValue] = useState("");
 	const [suggestions, setSuggestions] = useState([]);
@@ -120,10 +120,9 @@ export default function NavigationBar() {
 		logout();
 	};
 
-	// https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
 	const escapeRegexCharacters = str => {
 		return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-	}
+	};
 
 	const getSuggestions = val => {
 		const escapedValue = escapeRegexCharacters(val.trim());
@@ -132,23 +131,27 @@ export default function NavigationBar() {
 		}
 		const regex = new RegExp('\\b' + escapedValue, 'i');
 		return users.filter(user => regex.test(getSuggestionValue(user)));
-	}
+	};
 
 	const getSuggestionValue = suggestion => {
 		return `${suggestion.username}`;
-	}
+	};
 
 	// Use your imagination to render suggestions.
 	const renderSuggestion = suggestion => {
 		return (
-			<span className='suggestion-content'>
-				<span className='name'>
-					<img src={suggestion.profilePicUri} className={classes.img} />
-					<div className={classes.text}>
-						{suggestion.username}
-					</div>
+			<Link
+				component={RouterLink}
+				to={userId === suggestion.id ? `/my-account` : `/account/${suggestion.id}`}>
+				<span className='suggestion-content'>
+					<span className='name'>
+						<img src={suggestion.profilePicUri} className={classes.img} />
+						<div className={classes.text}>
+							{suggestion.username}
+						</div>
+					</span>
 				</span>
-			</span>
+			</Link>
 		);
 	};
 

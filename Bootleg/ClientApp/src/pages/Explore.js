@@ -147,7 +147,6 @@ export default function Explore() {
                                         to={`/account/${user.id}`}>
                                         <p className={classes.text}>{user.username}</p>
                                     </Link>
-
                                     {loggedInUser && loggedInUser.followingIds && loggedInUser.followingIds.length > 0 ?
                                         (loggedInUser.followingIds.includes(user.id) ?
                                             <Button variant="contained" onClick={() => unfollowUser(user.id)}>Unfollow</Button> :
