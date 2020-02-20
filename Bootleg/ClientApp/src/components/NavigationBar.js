@@ -186,7 +186,7 @@ export default function NavigationBar() {
 			>
 				<Toolbar disableGutters={true}>
 					<Logo />
-					<div className={classes.search}>
+					<div className={`${classes.search} ${classes.sectionDesktop}`}>
 						<Autosuggest
 							className={classes.searchInput}
 							suggestions={suggestions}
