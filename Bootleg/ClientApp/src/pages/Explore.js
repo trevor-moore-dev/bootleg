@@ -18,6 +18,7 @@ import {
 // 2/9/2020
 // This is my own work.
 
+// Making our styles:
 const useStyles = makeStyles(theme => ({
     card: {
         width: "auto",

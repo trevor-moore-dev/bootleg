@@ -69,7 +69,7 @@ namespace Bootleg.Services.Business
 		/// <summary>
 		/// Method for getting a specific User.
 		/// </summary>
-		/// <param name="userId">User id to get.</param>
+		/// <param name="userID">User id to get.</param>
 		/// <returns>DTO containing User.</returns>
 		public async Task<DTO<User>> GetUser(string userID)
 		{
@@ -122,7 +122,7 @@ namespace Bootleg.Services.Business
 		/// Method for following a User.
 		/// </summary>
 		/// <param name="user">User object.</param>
-		/// <param name="userId">String user id.</param>
+		/// <param name="userID">String user id.</param>
 		/// <returns>DTO containing the User.</returns>
 		public async Task<DTO<User>> FollowUser(User user, string userID)
 		{
@@ -153,7 +153,7 @@ namespace Bootleg.Services.Business
 		/// Method for unfollowing a User.
 		/// </summary>
 		/// <param name="user">User object.</param>
-		/// <param name="userId">String user id.</param>
+		/// <param name="userID">String user id.</param>
 		/// <returns>DTO containing the User.</returns>
 		public async Task<DTO<User>> UnfollowUser(User user, string userID)
 		{

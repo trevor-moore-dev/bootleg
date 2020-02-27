@@ -158,7 +158,7 @@ namespace Bootleg.Services.Business
 		/// <summary>
 		/// Method for getting all conversations for a user.
 		/// </summary>
-		/// <param name="userID">String of user id.</param>
+		/// <param name="userId">String of user id.</param>
 		/// <returns>DTO containing list of Conversations.</returns>
 		public async Task<DTO<List<Conversation>>> GetAllConversations(string userId)
 		{

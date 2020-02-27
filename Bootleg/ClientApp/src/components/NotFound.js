@@ -13,6 +13,12 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles(theme => ({
   text: {
     color: theme.text
+  },
+  box: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 }));
 
@@ -20,11 +26,7 @@ const useStyles = makeStyles(theme => ({
 export default function NotFound() {
   const classes = useStyles();
   return (
-    <Box
-      display='flex'
-      flexDirection='column'
-      alignItems='center'
-      justifyContent='center'>
+    <Box className={classes.box}>
       <div className={classes.text}>404 Page Not found :(</div>
     </Box>
   );

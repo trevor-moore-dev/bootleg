@@ -75,6 +75,7 @@ namespace Bootleg.Services.Data
 		/// <summary>
 		/// Method for getting all data.
 		/// </summary>
+		/// <param name="indexes">List of strings of indexes to get.</param>
 		/// <returns>DTO encapsulating a List of type User.</returns>
 		public async Task<List<Content>> GetAllFromIndexes(List<string> indexes)
 		{

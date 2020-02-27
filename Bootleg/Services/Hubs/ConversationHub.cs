@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Bootleg.Helpers;
 using Bootleg.Models.Documents;
 using Bootleg.Models.DTO;
-using Bootleg.Services.Business.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 
 // Trevor Moore
@@ -18,17 +17,6 @@ namespace SecretSanta2._0.Services.Hubs
     /// </summary>
     public class ConversationHub : Hub
     {
-        // Private readonly conversation service dependency:
-        //private readonly IConversationService _conversationService;
-        /// <summary>
-        /// Constructor for initializing our dependencies.
-        /// </summary>
-        /// <param name="_conversationService">Conversation service.</param>
-        //public ConversationHub(IConversationService _conversationService)
-        //{
-        // Set our dependencies:
-        //this._conversationService = _conversationService;
-        //}
         /// <summary>
         /// Method for joining a connection from the SignalR group for conversations.
         /// </summary>

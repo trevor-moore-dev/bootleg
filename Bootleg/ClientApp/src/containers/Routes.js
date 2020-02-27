@@ -19,17 +19,12 @@ export default function Routes() {
   return (
     <Switch>
       <Route exact path="/" component={Home} />
-
       <Route path="/login" component={Login} />
-
       <Route path="/my-account" component={Account} />
       <Route path="/account/:id" component={User} />
-
       <Route path="/messages" component={Messages} />
       <Route path="/chat/:id" component={Chat} />
-
       <Route path="/explore" component={Explore} />
-
       <Route component={NotFound} />
     </Switch>
   );

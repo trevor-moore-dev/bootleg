@@ -42,7 +42,7 @@ namespace Bootleg.Services.Business.Interfaces
 		/// Method for authenticating Google OAuth tokens.
 		/// </summary>
 		/// <param name="token">Token as type of TokenModel.</param>
-		/// <param name="response">Response as type of HttpResponse.</param>
+		/// <param name="httpContext">HttpContext as type of HttpContext.</param>
 		/// <returns>DTO encapsulating a list of strings of validated token.</returns>
 		public async Task<DTO<List<string>>> AuthenticateGoogleToken(TokenModel token, HttpContext httpContext)
 		{
@@ -163,8 +163,8 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <summary>
 		/// Method for logging in a user.
 		/// </summary>
-		/// <param name="token">User as type of User.</param>
-		/// <param name="response">Response as type of HttpResponse.</param>
+		/// <param name="user">User as type of User.</param>
+		/// <param name="httpContext">HttpContext as type of HttpContext.</param>
 		/// <returns>DTO encapsulating a list of strings of validated token.</returns>
 		public async Task<DTO<List<string>>> AuthenticateUser(User user, HttpContext httpContext)
 		{
@@ -210,8 +210,8 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <summary>
 		/// Method for registering a user into the db.
 		/// </summary>
-		/// <param name="token">User as type of User.</param>
-		/// <param name="response">Response as type of HttpResponse.</param>
+		/// <param name="user">User as type of User.</param>
+		/// <param name="httpContext">HttpContext as type of HttpContext.</param>
 		/// <returns>DTO encapsulating a list of strings of validated token.</returns>
 		public async Task<DTO<List<string>>> RegisterUser(User user, HttpContext httpContext)
 		{

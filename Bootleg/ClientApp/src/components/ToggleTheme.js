@@ -47,8 +47,7 @@ export default function ToggleTheme() {
         <Tooltip title={themeState.isDark ? 'Light Mode' : 'Dark Mode'}>
             <button
                 className={classes.toggleTheme}
-                onClick={() => themeState.toggle()}
-            >
+                onClick={() => themeState.toggle()}>
                 <SunIcon className={themeState.isDark ? `${classes.svg} ${classes.displayModeSvg}` : `${classes.svg} ${classes.hideModeSvg}`} />
                 <MoonIcon className={themeState.isDark ? `${classes.svg} ${classes.hideModeSvg}` : `${classes.svg} ${classes.displayModeSvg}`} />
             </button>

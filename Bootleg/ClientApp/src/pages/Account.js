@@ -21,7 +21,6 @@ import {
     Avatar,
     TextField,
     Divider,
-    Tooltip,
     Grid,
     Link
 } from '@material-ui/core';
