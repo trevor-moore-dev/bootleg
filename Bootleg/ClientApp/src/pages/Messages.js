@@ -121,7 +121,7 @@ export default function Messages() {
                             key={conversation.id}
                             className={classes.link}
                             component={RouterLink}
-                            to={`/Chat/${conversation.id}`}>
+                            to={`/chat/${conversation.id}`}>
                             <Card className={classes.card} key={conversation.id}>
                                 <CardHeader
                                     key={conversation.id}

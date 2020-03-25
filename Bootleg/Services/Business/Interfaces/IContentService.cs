@@ -35,5 +35,11 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <param name="user">User object to get data for.</param>
 		/// <returns>DTO containing Tuple of the User and list of their Content.</returns>
 		Task<DTO<Tuple<User, List<Content>>>> GetUserContent(User user);
+		/// <summary>
+		/// Method for getting the Content of the id passed in.
+		/// </summary>
+		/// <param name="contentId">The id of the Content to get.</param>
+		/// <returns>DTO containing the Content.</returns>
+		Task<DTO<Content>> GetContent(string contentId);
 	}
 }

@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import config from '../config.json';
 import useRequest from '../hooks/useRequest';
 import useAuth from "../hooks/useAuth";
 import LazyLoad from 'react-lazyload';
 import { formatDate } from "../helpers/dateHelper";
+import { Link as RouterLink } from 'react-router-dom';
 import {
 	Box,
 	IconButton,
@@ -40,6 +40,7 @@ const useStyles = makeStyles(theme => ({
 		color: theme.text
 	},
 	link: {
+		textDecoration: "none",
 		color: theme.general.medium,
 		cursor: "pointer"
 	},
@@ -122,43 +123,50 @@ export default function Home() {
 				<Grid item xs={8} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
 					{uploads && uploads.length > 0 ? uploads.map(content => (
 						<Card key={content.id} className={classes.card}>
-							<CardHeader
-								avatar={
-									<LazyLoad>
-										<Avatar className={classes.avatar} src={content.userProfilePicUri} />
-									</LazyLoad>
-								}
-								action={
-									<IconButton color="inherit">
-										<MoreVertIcon />
-									</IconButton>
-								}
-								title={content.userName}
-								subheader={formatDate(content.datePostedUTC)}
-								className={classes.text}
-							/>
-							{content.mediaUri ? (
-								<CardMedia>
-									{content.mediaType == 0 ? (
+							<Link
+								key={content.id}
+								className={classes.link}
+								component={RouterLink}
+								to={`/account/${content.userId}`}>
+								<CardHeader
+									avatar={
 										<LazyLoad>
-											<img src={content.mediaUri} alt="Image couldn't load or was deleted :(" className={classes.img} />
+											<Avatar className={classes.avatar} src={content.userProfilePicUri} />
 										</LazyLoad>
-									) : (
+									}
+									title={content.userName}
+									subheader={formatDate(content.datePostedUTC)}
+									className={classes.text}
+								/>
+							</Link>
+							<Link
+								key={content.id}
+								className={classes.link}
+								component={RouterLink}
+								to={`/post/${content.id}`}>
+								{content.mediaUri ? (
+									<CardMedia>
+										{content.mediaType == 0 ? (
 											<LazyLoad>
-												<video className={classes.video} loop controls autoPlay>
-													<source src={content.mediaUri} type="video/mp4" />
-													<source src={content.mediaUri} type="video/webm" />
-													<source src={content.mediaUri} type="video/ogg" />
-													<p className={classes.text}>Your browser does not support our videos :(</p>
-												</video>
+												<img src={content.mediaUri} alt="Image couldn't load or was deleted :(" className={classes.img} />
 											</LazyLoad>
-										)}
-								</CardMedia>) : (
-									<></>
-								)}
-							<CardContent>
-								<p className={classes.text}>{content.contentBody}</p>
-							</CardContent>
+										) : (
+												<LazyLoad>
+													<video className={classes.video} loop controls autoPlay>
+														<source src={content.mediaUri} type="video/mp4" />
+														<source src={content.mediaUri} type="video/webm" />
+														<source src={content.mediaUri} type="video/ogg" />
+														<p className={classes.text}>Your browser does not support our videos :(</p>
+													</video>
+												</LazyLoad>
+											)}
+									</CardMedia>) : (
+										<></>
+									)}
+								<CardContent>
+									<p className={classes.text}>{content.contentBody}</p>
+								</CardContent>
+							</Link>
 							<CardActions disableSpacing>
 								<IconButton color="primary">
 									<ThumbUpAltIcon />
@@ -195,6 +203,6 @@ export default function Home() {
 					</Card>
 				</Grid>
 			</Grid>
-		</Box>
+		</Box >
 	);
 }

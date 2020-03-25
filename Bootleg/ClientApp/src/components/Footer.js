@@ -17,6 +17,7 @@ import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
 import AddIcon from '@material-ui/icons/Add';
 import { FilePicker } from "react-file-picker";
 import useAuth from "../hooks/useAuth";
+import LazyLoad from 'react-lazyload';
 import { Link as RouterLink } from 'react-router-dom';
 import {
     Fab,
@@ -25,6 +26,7 @@ import {
     SnackbarContent,
     Badge,
     Box,
+    Avatar,
     TextField,
     Tooltip,
 } from '@material-ui/core';
@@ -151,7 +153,11 @@ const useStyles = makeStyles(theme => ({
         },
     },
     lukeypookey: {
-        width: "95%"
+        width: '95%'
+    },
+    avatar: {
+        height: '24px',
+        width: '24px'
     }
 }));
 
@@ -164,7 +170,7 @@ export default function Footer() {
     const [open, setOpen] = useState(false);
     const [messageBody, setMessageBody] = useState("");
     const [messageFile, setMessageFile] = useState(null);
-    const { getUserId, getToken, getId, getConnection } = useAuth();
+    const { getUserId, getToken, getId, getConnection, authState } = useAuth();
     const userToken = getToken();
     const userId = getUserId();
     const chatId = getId();
@@ -297,7 +303,7 @@ export default function Footer() {
                         <BottomNavigationAction component={RouterLink} to="/explore" icon={<ExploreIcon className={classes.footerIcon} />} />
                         <BottomNavigationAction onClick={handleOpen} icon={<AddCircleOutlineIcon className={classes.footerIcon} />} />
                         <BottomNavigationAction component={RouterLink} to="/messages" icon={<MailIcon className={classes.footerIcon} />} />
-                        <BottomNavigationAction component={RouterLink} to="/my-account" icon={<AccountCircleIcon className={classes.footerIcon} />} />
+                        <BottomNavigationAction component={RouterLink} to="/my-account" icon={<Avatar className={classes.avatar} src={authState.user.profilePic} />} />
                     </div>
                 </div>
             </BottomNavigation>

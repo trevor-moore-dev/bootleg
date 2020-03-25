@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DoneOutlineIcon from '@material-ui/icons/DoneOutline';
 import EditIcon from '@material-ui/icons/Edit';
 import CancelIcon from '@material-ui/icons/Cancel';
 import config from '../config.json';
+import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
+import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt';
+import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import useRequest from '../hooks/useRequest';
 import useAuth from "../hooks/useAuth";
 import LazyLoad from 'react-lazyload';
@@ -20,6 +22,7 @@ import {
     CardContent,
     Avatar,
     TextField,
+    CardActions,
     Divider,
     Grid,
     Link
@@ -42,13 +45,11 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'center',
     },
     card: {
-        [theme.breakpoints.up('sm')]: {
-            width: '80%',
-        },
-        [theme.breakpoints.up('md')]: {
-            width: '25%',
-        },
-        margin: '10px'
+        width: "auto",
+        marginBottom: theme.spacing(4)
+    },
+    cardAvatar: {
+        backgroundColor: 'rgb(147,112,219)',
     },
     avatar: {
         backgroundColor: 'rgb(147,112,219)',
@@ -73,8 +74,7 @@ const useStyles = makeStyles(theme => ({
         height: '100%'
     },
     img: {
-        maxHeight: '300px',
-        maxWidth: '100%',
+        width: '100%',
         verticalAlign: 'middle',
     },
     media: {
@@ -247,11 +247,12 @@ export default function Account() {
                     {uploads && uploads.length > 0 ? uploads.map(content => (
                         <Card key={content.id} className={classes.card}>
                             <CardHeader
-                                action={
-                                    <IconButton color="inherit">
-                                        <MoreVertIcon />
-                                    </IconButton>
+                                avatar={
+                                    <LazyLoad>
+                                        <Avatar className={classes.cardAvatar} src={content.userProfilePicUri} />
+                                    </LazyLoad>
                                 }
+                                title={content.userName}
                                 subheader={formatDate(content.datePostedUTC)}
                                 className={classes.text}
                             />
@@ -276,6 +277,20 @@ export default function Account() {
                                 </CardMedia>) : (
                                     <></>
                                 )}
+                            <CardContent>
+                                <p className={classes.text}>{content.contentBody}</p>
+                            </CardContent>
+                            <CardActions disableSpacing>
+                                <IconButton color="primary">
+                                    <ThumbUpAltIcon />
+                                </IconButton>
+                                <IconButton color="primary">
+                                    <ThumbDownAltIcon />
+                                </IconButton>
+                                <IconButton className={classes.iconButtons}>
+                                    <ChatBubbleIcon />
+                                </IconButton>
+                            </CardActions>
                         </Card>
                     )) :
                         <Card className={classes.card}>

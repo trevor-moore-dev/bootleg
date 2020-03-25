@@ -115,5 +115,35 @@ namespace Bootleg.Controllers
                 };
             }
         }
+        /// <summary>
+        /// Method for getting a posted content.
+        /// </summary>
+        /// <param name="contentId">The content id of the post.</param>
+        /// <returns>DTO containing a Content objects.</returns>
+        [HttpGet("[action]")]
+        public async Task<DTO<Content>> GetContent(string contentId)
+        {
+            // Surround with try/catch:
+            try
+            {
+                // Return the content using the content service, passing in the desired id:
+                return await _contentService.GetContent(contentId);
+            }
+            // Catch any exceptions:
+            catch (Exception ex)
+            {
+                // Log the exception:
+                LoggerHelper.Log(ex);
+                // Return the error and set success to false, encapsulated in a DTO:
+                return new DTO<Content>()
+                {
+                    Errors = new Dictionary<string, List<string>>()
+                    {
+                        ["*"] = new List<string> { ex.Message },
+                    },
+                    Success = false
+                };
+            }
+        }
     }
 }

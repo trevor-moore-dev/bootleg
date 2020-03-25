@@ -149,5 +149,33 @@ namespace Bootleg.Services.Business
 				throw e;
 			}
 		}
+		/// <summary>
+		/// Method for getting the Content of the id passed in.
+		/// </summary>
+		/// <param name="contentId">The id of the Content to get.</param>
+		/// <returns>DTO containing the Content.</returns>
+		public async Task<DTO<Content>> GetContent(string contentId)
+		{
+			// Surround with try/catch:
+			try
+			{
+				// Get the content of the id:
+				var content = await _contentDAO.Get(contentId);
+				// Return list of Content inside DTO:
+				return new DTO<Content>()
+				{
+					Data = content,
+					Success = true
+				};
+			}
+			// Catch any exceptions:
+			catch (Exception e)
+			{
+				// Log the exception:
+				LoggerHelper.Log(e);
+				// Throw the exception:
+				throw e;
+			}
+		}
 	}
 }

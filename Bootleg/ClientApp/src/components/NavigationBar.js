@@ -5,11 +5,13 @@ import useAuth from "../hooks/useAuth";
 import useRequest from '../hooks/useRequest';
 import config from '../config.json';
 import { Link as RouterLink } from 'react-router-dom';
+import LazyLoad from 'react-lazyload';
 import {
 	IconButton,
 	Toolbar,
 	AppBar,
 	Link,
+	Avatar,
 	Badge,
 	Tooltip
 } from "@material-ui/core";
@@ -83,6 +85,13 @@ const useStyles = makeStyles(theme => ({
 	iconButtons: {
 		color: theme.general.light
 	},
+	avatarHeader: {
+		height: '24px',
+		width: '24px',
+	},
+	avatarPic: {
+		padding: '12px'
+	},
 	img: {
 		maxHeight: "45px",
 		borderRadius: "50%"
@@ -94,7 +103,7 @@ export default function NavigationBar() {
 	// Create our styles and declare our state properties:
 	const classes = useStyles();
 	const themeState = useTheme();
-	const { logout, getUserId } = useAuth();
+	const { logout, getUserId, authState } = useAuth();
 	const userId = getUserId();
 	const { get } = useRequest();
 	const [value, setValue] = useState("");
@@ -137,7 +146,6 @@ export default function NavigationBar() {
 		return `${suggestion.username}`;
 	};
 
-	// Use your imagination to render suggestions.
 	const renderSuggestion = suggestion => {
 		return (
 			<Link
@@ -159,13 +167,10 @@ export default function NavigationBar() {
 		setValue(newValue);
 	};
 
-	// Autosuggest will call this function every time you need to update suggestions.
-	// You already implemented this logic above, so just use it.
 	const onSuggestionsFetchRequested = ({ value }) => {
 		setSuggestions(getSuggestions(value));
 	};
 
-	// Autosuggest will call this function every time you need to clear suggestions.
 	const onSuggestionsClearRequested = () => {
 		setSuggestions([]);
 	};
@@ -201,31 +206,26 @@ export default function NavigationBar() {
 						<Link
 							component={RouterLink}
 							to="/explore">
-							<Tooltip title="Explore">
-								<IconButton className={classes.iconButtons}>
-									<ExploreIcon />
-								</IconButton>
-							</Tooltip>
+							<IconButton className={classes.iconButtons}>
+								<ExploreIcon />
+							</IconButton>
 						</Link>
 						<Link
 							component={RouterLink}
 							to="/messages">
-							<Tooltip title="Messages">
-								<IconButton className={classes.iconButtons}>
-									<Badge badgeContent={4} color='secondary'>
-										<MailIcon />
-									</Badge>
-								</IconButton>
-							</Tooltip>
+							<IconButton className={classes.iconButtons}>
+								<Badge color='secondary'>
+									<MailIcon />
+								</Badge>
+							</IconButton>
 						</Link>
 						<Link
+							className={classes.avatarPic}
 							component={RouterLink}
 							to="/my-account">
-							<Tooltip title="Account">
-								<IconButton className={classes.iconButtons}>
-									<AccountCircle />
-								</IconButton>
-							</Tooltip>
+							<LazyLoad>
+								<Avatar className={classes.avatarHeader} src={authState.user.profilePic} />
+							</LazyLoad>
 						</Link>
 					</div>
 					<div className={classes.sectionDesktop}>
