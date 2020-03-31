@@ -145,5 +145,34 @@ namespace Bootleg.Controllers
                 };
             }
         }
+        /// <summary>
+        /// Method for posting comments to a post.
+        /// </summary>
+        /// <returns>DTO containing a list of comments for the poste.</returns>
+        [HttpPost("[action]")]
+        public async Task<DTO<List<Content>>> PostComment([FromBody] DTO<string> comment)
+        {
+            // Surround with try/catch:
+            try
+            {
+                // Return the comments of the content using the content service, passing in the desired id and comment:
+                return await _contentService.PostComment(comment.Id, comment.Data);
+            }
+            // Catch any exceptions:
+            catch (Exception ex)
+            {
+                // Log the exception:
+                LoggerHelper.Log(ex);
+                // Return the error and set success to false, encapsulated in a DTO:
+                return new DTO<List<Content>>()
+                {
+                    Errors = new Dictionary<string, List<string>>()
+                    {
+                        ["*"] = new List<string> { ex.Message },
+                    },
+                    Success = false
+                };
+            }
+        }
     }
 }

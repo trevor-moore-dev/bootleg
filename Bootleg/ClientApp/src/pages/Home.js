@@ -144,7 +144,7 @@ export default function Home() {
 								className={classes.link}
 								component={RouterLink}
 								to={`/post/${content.id}`}>
-								{content.mediaUri ? (
+								{content.mediaUri &&
 									<CardMedia>
 										{content.mediaType == 0 ? (
 											<LazyLoad>
@@ -160,9 +160,7 @@ export default function Home() {
 													</video>
 												</LazyLoad>
 											)}
-									</CardMedia>) : (
-										<></>
-									)}
+									</CardMedia>}
 								<CardContent>
 									<p className={classes.text}>{content.contentBody}</p>
 								</CardContent>

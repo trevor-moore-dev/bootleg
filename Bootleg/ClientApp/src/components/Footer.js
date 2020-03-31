@@ -268,7 +268,7 @@ export default function Footer() {
         <>
             <BottomNavigation value={value} onChange={handleChange} className={classes.stickToBottom}>
                 <div className={classes.lukeypookey}>
-                    {location.pathname.toLowerCase().includes("/chat") ?
+                    {location.pathname.toLowerCase().includes("/chat") &&
                         <div className={classes.messageInput}>
                             <Box className={classes.messageBox}>
                                 <TextField
@@ -296,8 +296,7 @@ export default function Footer() {
                                     <SendIcon />
                                 </IconButton>
                             </Box>
-                        </div>
-                        : <></>}
+                        </div>}
                     <div className={classes.navigation}>
                         <BottomNavigationAction component={RouterLink} to="/" icon={<HomeIcon className={classes.footerIcon} />} />
                         <BottomNavigationAction component={RouterLink} to="/explore" icon={<ExploreIcon className={classes.footerIcon} />} />

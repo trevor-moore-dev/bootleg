@@ -6,6 +6,7 @@ import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import config from '../config.json';
 import useRequest from '../hooks/useRequest';
 import useAuth from "../hooks/useAuth";
+import SendIcon from '@material-ui/icons/Send';
 import { useParams } from "react-router-dom";
 import LazyLoad from 'react-lazyload';
 import { formatDate } from "../helpers/dateHelper";
@@ -16,11 +17,11 @@ import {
     CardMedia,
     CardHeader,
     Card,
+    TextField,
     CardActions,
     CardContent,
     Avatar,
-    Grid,
-    Link
+    Grid
 } from '@material-ui/core';
 
 // Trevor Moore
@@ -38,11 +39,19 @@ const useStyles = makeStyles(theme => ({
         width: "auto",
         maxHeight: "80vh"
     },
+    commentContent: {
+        overflow: 'scroll'
+    },
     avatar: {
         backgroundColor: "rgb(147,112,219)"
     },
+    contentText: {
+        color: theme.text,
+    },
     text: {
-        color: theme.text
+        color: theme.text,
+        textAlign: 'center',
+        marginBottom: '10px'
     },
     link: {
         color: theme.general.medium,
@@ -69,6 +78,13 @@ const useStyles = makeStyles(theme => ({
             width: "70%"
         },
     },
+    commentContainer: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+    commentInput: {
+        width: "100%"
+    },
     contentGrid: {
         [theme.breakpoints.down('sm')]: {
             width: "100%",
@@ -93,34 +109,64 @@ const useStyles = makeStyles(theme => ({
         paddingBottom: "24px!important",
         paddingLeft: "12px!important",
         paddingRight: "12px!important",
-    }
+    },
+    uploadButton: {
+        marginLeft: "10px",
+        backgroundColor: theme.general.medium,
+        color: "rgb(255,255,255)",
+        "&:hover": {
+            backgroundColor: "rgb(113,80,181)"
+        }
+    },
 }));
 
 // Home component for rendering the home page:
 export default function Post() {
     // Create our styles and such, and create our state:
     const classes = useStyles();
-    const [content, setContent] = useState([]);
+    const [postedContent, setPostedContent] = useState({});
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState('');
     const { id } = useParams();
-    const { get } = useRequest();
+    const { get, post } = useRequest();
     const { authState } = useAuth();
     const location = useLocation();
 
     // useEffect hook for getting the content:
     useEffect(() => {
-        async function getContent() {
+        async function getPost() {
             // Send post request to get the content
             const response = await get(config.CONTENT_GET_CONTENT_GET, {
                 contentId: id
             });
             // On success set the data:
             if (response.success) {
-                setContent(response.data);
+                setPostedContent(response.data);
+                setComments(response.data.comments)
             }
         }
-        getContent();
+        getPost();
         return () => { };
     }, []);
+
+    const handleNewCommentChange = e => {
+        setNewComment(e.target.value);
+    };
+
+    const postComment = async () => {
+        // If newComment is truthy, post it:
+        if (newComment) {
+            // Send post request to AUTHENTICATION_AUTHENTICATE_USER_POST endpoint and await response:
+            const response = await post(config.CONTENT_POST_COMMENT_POST, {
+                Id: id,
+                Data: newComment
+            });
+            // If Request was successful:
+            if (response.success) {
+                setComments(response.data);
+            }
+        }
+    };
 
     // Return our markup:
     return (
@@ -131,34 +177,32 @@ export default function Post() {
                         <CardHeader
                             avatar={
                                 <LazyLoad>
-                                    <Avatar className={classes.avatar} src={content.userProfilePicUri} />
+                                    <Avatar className={classes.avatar} src={postedContent.userProfilePicUri} />
                                 </LazyLoad>
                             }
-                            title={content.userName}
-                            subheader={formatDate(content.datePostedUTC)}
-                            className={classes.text}
+                            title={postedContent.userName}
+                            subheader={formatDate(postedContent.datePostedUTC)}
+                            className={classes.contentText}
                         />
-                        {content.mediaUri ? (
+                        {postedContent.mediaUri &&
                             <CardMedia>
-                                {content.mediaType == 0 ? (
+                                {postedContent.mediaType == 0 ? (
                                     <LazyLoad>
-                                        <img src={content.mediaUri} alt="Image couldn't load or was deleted :(" className={classes.img} />
+                                        <img src={postedContent.mediaUri} alt="Image couldn't load or was deleted :(" className={classes.img} />
                                     </LazyLoad>
                                 ) : (
                                         <LazyLoad>
                                             <video className={classes.video} loop controls autoPlay>
-                                                <source src={content.mediaUri} type="video/mp4" />
-                                                <source src={content.mediaUri} type="video/webm" />
-                                                <source src={content.mediaUri} type="video/ogg" />
-                                                <p className={classes.text}>Your browser does not support our videos :(</p>
+                                                <source src={postedContent.mediaUri} type="video/mp4" />
+                                                <source src={postedContent.mediaUri} type="video/webm" />
+                                                <source src={postedContent.mediaUri} type="video/ogg" />
+                                                <p className={classes.contentText}>Your browser does not support our videos :(</p>
                                             </video>
                                         </LazyLoad>
                                     )}
-                            </CardMedia>) : (
-                                <></>
-                            )}
+                            </CardMedia>}
                         <CardContent>
-                            <p className={classes.text}>{content.contentBody}</p>
+                            <p className={classes.contentText}>{postedContent.contentBody}</p>
                         </CardContent>
                         <CardActions disableSpacing>
                             <IconButton color="primary">
@@ -167,34 +211,44 @@ export default function Post() {
                             <IconButton color="primary">
                                 <ThumbDownAltIcon />
                             </IconButton>
-                            <IconButton className={classes.iconButtons}>
-                                <ChatBubbleIcon />
-                            </IconButton>
                         </CardActions>
                     </Card>
                 </Grid>
                 <Grid item xs={4} className={`${classes.profileGrid} ${classes.spaceGrid}`}>
                     <Card className={classes.rightCard}>
-                        <CardContent>
-                            {content.comments && content.comments.length > 0 ? content.comments.map(comment => (
-
-
-
-                                <div className={userId === message.userId ? classes.right : classes.left}>
+                        <CardContent className={classes.commentContent}>
+                            {comments && comments.length > 0 ? comments.map(comment =>
+                                <div className={classes.comment}>
                                     <LazyLoad>
-                                        <Avatar className={userId === message.userId ? classes.rightAvatar : classes.leftAvatar} src={message.profilePicUri} />
+                                        <Avatar className={classes.commentAvatar} src={comment.userProfilePicUri} />
                                     </LazyLoad>
-                                    <Card className={userId === message.userId ? classes.rightCard : classes.leftCard}>
+                                    <Card className={classes.commentCard}>
                                         <CardHeader
                                             disableTypography={true}
-                                            title={<div className={userId === message.userId ? classes.darkHeaderText : classes.lightHeaderText}>{message.username}</div>}
-                                            subheader={<div className={userId === message.userId ? classes.darkText : classes.lightText}>{message.messageBody}</div>}
+                                            title={<div className={classes.commentUsername}>{comment.userName}</div>}
+                                            subheader={<div className={classes.commentBody}>{comment.contentBody}</div>}
                                         />
                                     </Card>
-                                    <p className={classes.text}>Hello There! :)</p>
                                 </div>
-
-                            )) : <></>}
+                            ) : (
+                                    <div className={classes.text}>No comments yet...</div>
+                                )}
+                            <Box className={classes.commentContainer}>
+                                <TextField
+                                    multiline
+                                    rowsMax="8"
+                                    className={classes.commentInput}
+                                    value={newComment}
+                                    onChange={handleNewCommentChange}
+                                    label="Post a Comment :)"
+                                    variant="outlined"
+                                />
+                                <IconButton
+                                    className={classes.uploadButton}
+                                    onClick={postComment}>
+                                    <SendIcon />
+                                </IconButton>
+                            </Box>
                         </CardContent>
                     </Card>
                 </Grid>

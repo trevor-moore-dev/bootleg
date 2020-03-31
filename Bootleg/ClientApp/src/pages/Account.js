@@ -234,11 +234,10 @@ export default function Account() {
                     <IconButton color="inherit" onClick={handleEditAccount}>
                         {editAccount ? <CancelIcon /> : <EditIcon />}
                     </IconButton>
-                    {editAccount ?
+                    {editAccount &&
                         <IconButton color="inherit" onClick={handleUpdateAccount}>
                             <DoneOutlineIcon />
-                        </IconButton> :
-                        <></>}
+                        </IconButton>}
                 </div>
             </div>
             <Divider className={classes.divider} ariant="middle" />
@@ -256,7 +255,7 @@ export default function Account() {
                                 subheader={formatDate(content.datePostedUTC)}
                                 className={classes.text}
                             />
-                            {content.mediaUri ? (
+                            {content.mediaUri &&
                                 <CardMedia
                                     className={classes.media}
                                 >
@@ -274,9 +273,7 @@ export default function Account() {
                                                 </video>
                                             </LazyLoad>
                                         )}
-                                </CardMedia>) : (
-                                    <></>
-                                )}
+                                </CardMedia>}
                             <CardContent>
                                 <p className={classes.text}>{content.contentBody}</p>
                             </CardContent>

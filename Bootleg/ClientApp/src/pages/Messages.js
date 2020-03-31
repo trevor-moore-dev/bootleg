@@ -116,7 +116,7 @@ export default function Messages() {
         <Box className={classes.box}>
             <Grid className={classes.grid} container spacing={3}>
                 <Grid item xs={12} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
-                    {conversations && conversations.length > 0 ? conversations.map(conversation =>
+                    {conversations && conversations.length > 0 && conversations.map(conversation =>
                         <Link
                             key={conversation.id}
                             className={classes.link}
@@ -127,26 +127,19 @@ export default function Messages() {
                                     key={conversation.id}
                                     avatar={
                                         <AvatarGroup>
-                                            {conversation.users && conversation.users.length > 0 ?
-                                                (conversation.users[0].id !== userId ?
-                                                    <Avatar className={classes.avatar} src={conversation.users[0].profilePicUri} />
-                                                    : <></>)
-                                                : <></>}
-                                            {conversation.users && conversation.users.length > 1 ?
-                                                (conversation.users[1].id !== userId ?
-                                                    <Avatar className={classes.avatar} src={conversation.users[1].profilePicUri} />
-                                                    : <></>)
-                                                : <></>}
-                                            {conversation.users && conversation.users.length > 2 ?
-                                                (conversation.users[2].id !== userId ?
-                                                    <Avatar className={classes.avatar} src={conversation.users[2].profilePicUri} />
-                                                    : <></>)
-                                                : <></>}
-                                            {conversation.users && conversation.users.length > 3 ?
+                                            {conversation.users && conversation.users.length > 0 &&
+                                                (conversation.users[0].id !== userId &&
+                                                    <Avatar className={classes.avatar} src={conversation.users[0].profilePicUri} />)}
+                                            {conversation.users && conversation.users.length > 1 &&
+                                                (conversation.users[1].id !== userId &&
+                                                    <Avatar className={classes.avatar} src={conversation.users[1].profilePicUri} />)}
+                                            {conversation.users && conversation.users.length > 2 &&
+                                                (conversation.users[2].id !== userId &&
+                                                    <Avatar className={classes.avatar} src={conversation.users[2].profilePicUri} />)}
+                                            {conversation.users && conversation.users.length > 3 &&
                                                 <Tooltip>
                                                     <Avatar>+{conversation.users.length - 3}</Avatar>
-                                                </Tooltip>
-                                                : <></>}
+                                                </Tooltip>}
                                         </AvatarGroup>
                                     }
                                     action={
@@ -155,20 +148,15 @@ export default function Messages() {
                                         </IconButton>
                                     }
                                     title={conversation.users && conversation.users.length == 2 ? conversation.users.map(user =>
-                                        (user.id !== userId ?
-                                            user.username
-                                            : <></>)
-                                    )
+                                        (user.id !== userId &&
+                                            user.username))
                                         : conversation.conversationName}
-                                    subheader={conversation.messages && conversation.messages.length > 0 ?
-                                        conversation.messages[conversation.messages.length - 1].messageBody
-                                        : <></>}
+                                    subheader={conversation.messages && conversation.messages.length > 0 &&
+                                        conversation.messages[conversation.messages.length - 1].messageBody}
                                     className={classes.text}
                                 />
                             </Card>
-                        </Link>
-                    ) :
-                        <></>}
+                        </Link>)}
                 </Grid>
             </Grid>
         </Box>

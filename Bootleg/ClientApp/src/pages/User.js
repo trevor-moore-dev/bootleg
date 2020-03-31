@@ -194,7 +194,7 @@ export default function User() {
             <Divider className={classes.divider} ariant="middle" />
             <Grid container spacing={3}>
                 <Grid item xs className={classes.container}>
-                    {uploads && uploads.length > 0 ? uploads.map(content => (
+                    {uploads && uploads.length > 0 && uploads.map(content => (
                         <Card key={content.id} className={classes.card}>
                             <CardHeader
                                 action={
@@ -205,10 +205,8 @@ export default function User() {
                                 subheader={formatDate(content.datePostedUTC)}
                                 className={classes.text}
                             />
-                            {content.mediaUri ? (
-                                <CardMedia
-                                    className={classes.media}
-                                >
+                            {content.mediaUri &&
+                                <CardMedia className={classes.media}>
                                     {content.mediaType == 0 ? (
                                         <LazyLoad>
                                             <img src={content.mediaUri} alt="Image couldn't load or was deleted :(" className={classes.img} />
@@ -223,12 +221,8 @@ export default function User() {
                                                 </video>
                                             </LazyLoad>
                                         )}
-                                </CardMedia>) : (
-                                    <></>
-                                )}
-                        </Card>
-                    )) :
-                        <></>}
+                                </CardMedia>}
+                        </Card>))}
                 </Grid>
             </Grid>
         </Box>

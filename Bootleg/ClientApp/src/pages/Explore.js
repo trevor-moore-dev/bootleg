@@ -139,7 +139,7 @@ export default function Explore() {
         <Box className={classes.box}>
             <Grid className={classes.grid} container spacing={3}>
                 <Grid item xs={12} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
-                    {users && users.length > 0 ? users.map(user =>
+                    {users && users.length > 0 && users.map(user =>
                         (user.id !== userId ?
                             <Card key={user.id} className={classes.card}>
                                 <CardContent>
@@ -154,9 +154,8 @@ export default function Explore() {
                                             <Button variant="contained" onClick={() => followUser(user.id)}>Follow</Button>) :
                                         <Button variant="contained" onClick={() => followUser(user.id)}>Follow</Button>}
                                 </CardContent>
-                            </Card> : <div key={user.id}></div>)
-                    ) :
-                        <></>}
+                            </Card> : <div key={user.id} />)
+                    )}
                 </Grid>
             </Grid>
         </Box>

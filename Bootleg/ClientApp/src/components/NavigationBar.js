@@ -44,6 +44,9 @@ const useStyles = makeStyles(theme => ({
 			width: 'auto',
 		},
 	},
+	toggleTheme: {
+		margin: '0 10px'
+	},
 	searchIcon: {
 		width: theme.spacing(7),
 		height: '100%',
@@ -228,7 +231,7 @@ export default function NavigationBar() {
 							</LazyLoad>
 						</Link>
 					</div>
-					<div className={classes.sectionDesktop}>
+					<div className={`${classes.sectionDesktop} ${classes.toggleTheme}`}>
 						<ToggleTheme />
 					</div>
 					<IconButton

@@ -240,12 +240,12 @@ export default function Chat() {
             <Box className={classes.box}>
                 <Grid className={classes.grid} container spacing={3}>
                     <Grid id='message-box' item xs={12} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
-                        {messagesRef.current && messagesRef.current.length > 0 ? messagesRef.current.map(message =>
+                        {messagesRef.current && messagesRef.current.length > 0 && messagesRef.current.map(message =>
                             <div key={message.id} className={classes.messageContainer}>
                                 <div className={classes.center}>
                                     {formatDateWithTime(message.datePostedUTC)}
                                 </div>
-                                {message.messageBody ?
+                                {message.messageBody &&
                                     <div className={userId === message.userId ? classes.right : classes.left}>
                                         <LazyLoad>
                                             <Avatar className={userId === message.userId ? classes.rightAvatar : classes.leftAvatar} src={message.profilePicUri} />
@@ -257,9 +257,8 @@ export default function Chat() {
                                                 subheader={<div className={userId === message.userId ? classes.darkText : classes.lightText}>{message.messageBody}</div>}
                                             />
                                         </Card>
-                                    </div>
-                                    : <></>}
-                                {message.mediaUri ?
+                                    </div>}
+                                {message.mediaUri &&
                                     <div className={userId === message.userId ? classes.right : classes.left}>
                                         <LazyLoad>
                                             <Avatar className={userId === message.userId ? classes.rightAvatar : classes.leftAvatar} src={message.profilePicUri} />
@@ -278,10 +277,8 @@ export default function Chat() {
                                                     </video>
                                                 </LazyLoad>
                                             )}
-                                    </div>
-                                    : <></>}
-                            </div>
-                        ) : <></>}
+                                    </div>}
+                            </div>)}
                         <FadeIn>
                             <div className={classes.center} ref={bottomRef}><Emoji text=":zap:" />You're all up to date :)</div>
                         </FadeIn>

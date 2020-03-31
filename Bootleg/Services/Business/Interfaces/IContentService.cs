@@ -41,5 +41,12 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <param name="contentId">The id of the Content to get.</param>
 		/// <returns>DTO containing the Content.</returns>
 		Task<DTO<Content>> GetContent(string contentId);
+		/// <summary>
+		/// Method for posting a new comment and returning the resultant list of comments for that post.
+		/// </summary>
+		/// <param name="contentId">The contentId that the comment is being posted to.</param>
+		/// <param name="comment">The actual comment itself.</param>
+		/// <returns>DTO containing a list of the Content's comments.</returns>
+		Task<DTO<List<Content>>> PostComment(string contentId, string comment);
 	}
 }

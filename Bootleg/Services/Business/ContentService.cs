@@ -177,5 +177,45 @@ namespace Bootleg.Services.Business
 				throw e;
 			}
 		}
+		/// <summary>
+		/// Method for posting a new comment and returning the resultant list of comments for that post.
+		/// </summary>
+		/// <param name="contentId">The contentId that the comment is being posted to.</param>
+		/// <param name="comment">The actual comment itself.</param>
+		/// <returns>DTO containing a list of the Content's comments.</returns>
+		public async Task<DTO<List<Content>>> PostComment(string contentId, string comment)
+		{
+			// Surround with try/catch:
+			try
+			{
+				// Grab the content:
+				var response = await GetContent(contentId);
+				var content = response.Data;
+
+				if (content.Comments == null)
+				{
+					content.Comments = new List<Content>();
+				}
+
+				content.Comments.Add(new Content() { ContentBody = comment });
+
+				await _contentDAO.Update(contentId, content);
+
+				// Return list of Content inside DTO:
+				return new DTO<List<Content>>()
+				{
+					Data = orderedList,
+					Success = true
+				};
+			}
+			// Catch any exceptions:
+			catch (Exception e)
+			{
+				// Log the exception:
+				LoggerHelper.Log(e);
+				// Throw the exception:
+				throw e;
+			}
+		}
 	}
 }
