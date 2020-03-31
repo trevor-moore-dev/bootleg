@@ -148,15 +148,18 @@ namespace Bootleg.Controllers
         /// <summary>
         /// Method for posting comments to a post.
         /// </summary>
-        /// <returns>DTO containing a list of comments for the poste.</returns>
+        /// <param name="comment">DTO of the comment being posted.</param>
+        /// <returns>DTO containing a list of comments for the post.</returns>
         [HttpPost("[action]")]
-        public async Task<DTO<List<Content>>> PostComment([FromBody] DTO<string> comment)
+        public async Task<DTO<List<Content>>> PostComment([FromBody] DTO<Content> comment)
         {
             // Surround with try/catch:
             try
             {
+                // Get the user who's posting the comment:
+                var result = await _userService.GetUser(comment.Data.UserId);
                 // Return the comments of the content using the content service, passing in the desired id and comment:
-                return await _contentService.PostComment(comment.Id, comment.Data);
+                return await _contentService.PostComment(comment.Id, comment.Data.ContentBody, result.Data);
             }
             // Catch any exceptions:
             catch (Exception ex)

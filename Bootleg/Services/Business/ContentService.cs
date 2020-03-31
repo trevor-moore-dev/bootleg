@@ -3,6 +3,7 @@ using Bootleg.Models.Documents;
 using Bootleg.Models.DTO;
 using Bootleg.Services.Business.Interfaces;
 using Bootleg.Services.Data.Interfaces;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -182,8 +183,9 @@ namespace Bootleg.Services.Business
 		/// </summary>
 		/// <param name="contentId">The contentId that the comment is being posted to.</param>
 		/// <param name="comment">The actual comment itself.</param>
+		/// <param name="user">The user who is posting the comment.</param>
 		/// <returns>DTO containing a list of the Content's comments.</returns>
-		public async Task<DTO<List<Content>>> PostComment(string contentId, string comment)
+		public async Task<DTO<List<Content>>> PostComment(string contentId, string comment, User user)
 		{
 			// Surround with try/catch:
 			try
@@ -192,19 +194,30 @@ namespace Bootleg.Services.Business
 				var response = await GetContent(contentId);
 				var content = response.Data;
 
+				// Initialize the comments if need be:
 				if (content.Comments == null)
 				{
 					content.Comments = new List<Content>();
 				}
 
-				content.Comments.Add(new Content() { ContentBody = comment });
+				// Add the comment to the post:
+				content.Comments.Add(new Content()
+				{
+					Id = ObjectId.GenerateNewId().ToString(),
+					UserId = user.Id,
+					DatePostedUTC = DateTime.UtcNow,
+					UserName = user.Username,
+					UserProfilePicUri = user.ProfilePicUri,
+					ContentBody = comment
+				});
 
+				// Update the post:
 				await _contentDAO.Update(contentId, content);
 
-				// Return list of Content inside DTO:
+				// Return list of comments inside DTO:
 				return new DTO<List<Content>>()
 				{
-					Data = orderedList,
+					Data = content.Comments,
 					Success = true
 				};
 			}

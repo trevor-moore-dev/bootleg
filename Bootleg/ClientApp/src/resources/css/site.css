@@ -27,6 +27,7 @@ html {
 
 .react-autosuggest__input:focus {
     outline: none;
+    text-decoration: none;
 }
 
 .react-autosuggest__container--open .react-autosuggest__input {
@@ -39,6 +40,7 @@ html {
 }
 
 .react-autosuggest__container--open .react-autosuggest__suggestions-container {
+    text-decoration: none;
     display: block;
     position: absolute;
     width: 100%;
@@ -53,30 +55,42 @@ html {
 
 .react-autosuggest__container.react-autosuggest__container--open {
     background-color: inherit;
+    text-decoration: none;
 }
 
 .react-autosuggest__suggestions-list {
     margin: 0;
     padding: 0;
     list-style-type: none;
+    text-decoration: none;
 }
 
 .react-autosuggest__suggestion {
     cursor: pointer;
+    text-decoration: none;
     padding: 10px 20px;
 }
 
 .react-autosuggest__suggestion {
-    /**/
+    text-decoration: none;
 }
 
 .suggestion-content {
     display: flex;
     align-items: center;
     background-repeat: no-repeat;
+    text-decoration: none;
 }
 
 .name {
     display: flex;
-    line-height: 45px;
+    line-height: 40px;
+}
+
+.name:hover {
+    text-decoration: none;
+}
+
+.suggestion-link:hover {
+    text-decoration: none;
 }

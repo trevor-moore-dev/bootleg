@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt';
-import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import config from '../config.json';
 import useRequest from '../hooks/useRequest';
 import useAuth from "../hooks/useAuth";
@@ -10,7 +9,7 @@ import SendIcon from '@material-ui/icons/Send';
 import { useParams } from "react-router-dom";
 import LazyLoad from 'react-lazyload';
 import { formatDate } from "../helpers/dateHelper";
-import { useLocation } from "react-router";
+import { Link as RouterLink } from 'react-router-dom';
 import {
     Box,
     IconButton,
@@ -21,6 +20,7 @@ import {
     CardActions,
     CardContent,
     Avatar,
+    Link,
     Grid
 } from '@material-ui/core';
 
@@ -37,9 +37,9 @@ const useStyles = makeStyles(theme => ({
     },
     rightCard: {
         width: "auto",
-        maxHeight: "80vh"
     },
     commentContent: {
+        maxHeight: "70vh",
         overflow: 'scroll'
     },
     avatar: {
@@ -54,8 +54,12 @@ const useStyles = makeStyles(theme => ({
         marginBottom: '10px'
     },
     link: {
+        textDecoration: "none",
         color: theme.general.medium,
-        cursor: "pointer"
+        cursor: "pointer",
+        "&:hover": {
+            textDecoration: "none",
+        }
     },
     video: {
         outline: "none",
@@ -80,10 +84,14 @@ const useStyles = makeStyles(theme => ({
     },
     commentContainer: {
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        margin: '0 16px 16px 16px'
     },
     commentInput: {
         width: "100%"
+    },
+    commentCard: {
+        marginBottom: '15px',
     },
     contentGrid: {
         [theme.breakpoints.down('sm')]: {
@@ -129,8 +137,8 @@ export default function Post() {
     const [newComment, setNewComment] = useState('');
     const { id } = useParams();
     const { get, post } = useRequest();
-    const { authState } = useAuth();
-    const location = useLocation();
+    const { getUserId } = useAuth();
+    const userId = getUserId();
 
     // useEffect hook for getting the content:
     useEffect(() => {
@@ -159,10 +167,14 @@ export default function Post() {
             // Send post request to AUTHENTICATION_AUTHENTICATE_USER_POST endpoint and await response:
             const response = await post(config.CONTENT_POST_COMMENT_POST, {
                 Id: id,
-                Data: newComment
+                Data: {
+                    UserId: userId,
+                    ContentBody: newComment
+                }
             });
             // If Request was successful:
             if (response.success) {
+                setNewComment('');
                 setComments(response.data);
             }
         }
@@ -174,16 +186,21 @@ export default function Post() {
             <Grid className={classes.grid} container spacing={3}>
                 <Grid item xs={8} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
                     <Card className={classes.card}>
-                        <CardHeader
-                            avatar={
-                                <LazyLoad>
-                                    <Avatar className={classes.avatar} src={postedContent.userProfilePicUri} />
-                                </LazyLoad>
-                            }
-                            title={postedContent.userName}
-                            subheader={formatDate(postedContent.datePostedUTC)}
-                            className={classes.contentText}
-                        />
+                        <Link
+                            className={classes.link}
+                            component={RouterLink}
+                            to={`/account/${postedContent.userId}`}>
+                            <CardHeader
+                                avatar={
+                                    <LazyLoad>
+                                        <Avatar className={classes.avatar} src={postedContent.userProfilePicUri} />
+                                    </LazyLoad>
+                                }
+                                title={postedContent.userName}
+                                subheader={formatDate(postedContent.datePostedUTC)}
+                                className={classes.contentText}
+                            />
+                        </Link>
                         {postedContent.mediaUri &&
                             <CardMedia>
                                 {postedContent.mediaType == 0 ? (
@@ -218,38 +235,38 @@ export default function Post() {
                     <Card className={classes.rightCard}>
                         <CardContent className={classes.commentContent}>
                             {comments && comments.length > 0 ? comments.map(comment =>
-                                <div className={classes.comment}>
-                                    <LazyLoad>
-                                        <Avatar className={classes.commentAvatar} src={comment.userProfilePicUri} />
-                                    </LazyLoad>
-                                    <Card className={classes.commentCard}>
-                                        <CardHeader
-                                            disableTypography={true}
-                                            title={<div className={classes.commentUsername}>{comment.userName}</div>}
-                                            subheader={<div className={classes.commentBody}>{comment.contentBody}</div>}
-                                        />
-                                    </Card>
-                                </div>
+                                <Card key={comment.id} className={classes.commentCard}>
+                                    <CardHeader
+                                        avatar={
+                                            <LazyLoad>
+                                                <Avatar className={classes.commentAvatar} src={comment.userProfilePicUri} />
+                                            </LazyLoad>
+                                        }
+                                        title={comment.userName + ' - ' + formatDate(comment.datePostedUTC)}
+                                        subheader={comment.contentBody}
+                                        className={classes.contentText}
+                                    />
+                                </Card>
                             ) : (
                                     <div className={classes.text}>No comments yet...</div>
                                 )}
-                            <Box className={classes.commentContainer}>
-                                <TextField
-                                    multiline
-                                    rowsMax="8"
-                                    className={classes.commentInput}
-                                    value={newComment}
-                                    onChange={handleNewCommentChange}
-                                    label="Post a Comment :)"
-                                    variant="outlined"
-                                />
-                                <IconButton
-                                    className={classes.uploadButton}
-                                    onClick={postComment}>
-                                    <SendIcon />
-                                </IconButton>
-                            </Box>
                         </CardContent>
+                        <Box className={classes.commentContainer}>
+                            <TextField
+                                multiline
+                                rowsMax="8"
+                                className={classes.commentInput}
+                                value={newComment}
+                                onChange={handleNewCommentChange}
+                                label="Post a Comment :)"
+                                variant="outlined"
+                            />
+                            <IconButton
+                                className={classes.uploadButton}
+                                onClick={postComment}>
+                                <SendIcon />
+                            </IconButton>
+                        </Box>
                     </Card>
                 </Grid>
             </Grid>

@@ -84,6 +84,15 @@ const useStyles = makeStyles(theme => ({
 	text: {
 		color: "dimgrey",
 		marginLeft: "10px",
+		"&:hover": {
+			textDecoration: "none",
+		}
+	},
+	noUnderline: {
+		textDecoration: "none",
+		"&:hover": {
+			textDecoration: "none",
+		}
 	},
 	iconButtons: {
 		color: theme.general.light
@@ -95,9 +104,16 @@ const useStyles = makeStyles(theme => ({
 	avatarPic: {
 		padding: '12px'
 	},
+	avatarContainer: {
+		height: '40px',
+		width: '40px'
+	},
 	img: {
-		maxHeight: "45px",
-		borderRadius: "50%"
+		height: "100%",
+		width: "100%",
+		borderRadius: "50%",
+		textAlign: 'center',
+		objectFit: 'cover'
 	},
 }));
 
@@ -152,11 +168,14 @@ export default function NavigationBar() {
 	const renderSuggestion = suggestion => {
 		return (
 			<Link
+				className={classes.noUnderline}
 				component={RouterLink}
 				to={userId === suggestion.id ? `/my-account` : `/account/${suggestion.id}`}>
 				<span className='suggestion-content'>
 					<span className='name'>
-						<img src={suggestion.profilePicUri} className={classes.img} />
+						<div className={classes.avatarContainer}>
+							<img src={suggestion.profilePicUri} className={classes.img} />
+						</div>
 						<div className={classes.text}>
 							{suggestion.username}
 						</div>

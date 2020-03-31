@@ -46,7 +46,8 @@ namespace Bootleg.Services.Business.Interfaces
 		/// </summary>
 		/// <param name="contentId">The contentId that the comment is being posted to.</param>
 		/// <param name="comment">The actual comment itself.</param>
+		/// <param name="user">The user who is posting the comment.</param>
 		/// <returns>DTO containing a list of the Content's comments.</returns>
-		Task<DTO<List<Content>>> PostComment(string contentId, string comment);
+		Task<DTO<List<Content>>> PostComment(string contentId, string comment, User user);
 	}
 }

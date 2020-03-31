@@ -37,12 +37,19 @@ const useStyles = makeStyles(theme => ({
 		backgroundColor: "rgb(147,112,219)"
 	},
 	text: {
-		color: theme.text
+		textDecoration: "none",
+		color: theme.text,
+		"&:hover": {
+			textDecoration: "none",
+		}
 	},
 	link: {
 		textDecoration: "none",
 		color: theme.general.medium,
-		cursor: "pointer"
+		cursor: "pointer",
+		"&:hover": {
+			textDecoration: "none",
+		}
 	},
 	video: {
 		outline: "none",
@@ -124,7 +131,6 @@ export default function Home() {
 					{uploads && uploads.length > 0 ? uploads.map(content => (
 						<Card key={content.id} className={classes.card}>
 							<Link
-								key={content.id}
 								className={classes.link}
 								component={RouterLink}
 								to={`/account/${content.userId}`}>
@@ -140,7 +146,6 @@ export default function Home() {
 								/>
 							</Link>
 							<Link
-								key={content.id}
 								className={classes.link}
 								component={RouterLink}
 								to={`/post/${content.id}`}>
