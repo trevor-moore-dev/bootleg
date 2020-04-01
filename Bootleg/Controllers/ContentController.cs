@@ -177,5 +177,69 @@ namespace Bootleg.Controllers
                 };
             }
         }
+        /// <summary>
+        /// Method for liking posts.
+        /// </summary>
+        /// <param name="post">String as the id of the post liked.</param>
+        /// <returns>DTO containing bool indicating success/failure.</returns>
+        [HttpPost("[action]")]
+        public async Task<DTO<bool>> LikePost([FromBody] DTO<string> request)
+        {
+            // Surround with try/catch:
+            try
+            {
+                // Add like for the User:
+                await _userService.AddUserLike(request.Id, request.Data);
+                // Add like to the Content:
+                return await _contentService.LikePost(request.Data);
+            }
+            // Catch any exceptions:
+            catch (Exception ex)
+            {
+                // Log the exception:
+                LoggerHelper.Log(ex);
+                // Return the error and set success to false, encapsulated in a DTO:
+                return new DTO<bool>()
+                {
+                    Errors = new Dictionary<string, List<string>>()
+                    {
+                        ["*"] = new List<string> { ex.Message },
+                    },
+                    Success = false
+                };
+            }
+        }
+        /// <summary>
+        /// Method for liking posts.
+        /// </summary>
+        /// <param name="post">String as the id of the post liked.</param>
+        /// <returns>DTO containing bool indicating success/failure.</returns>
+        [HttpPost("[action]")]
+        public async Task<DTO<bool>> DisikePost([FromBody] DTO<string> request)
+        {
+            // Surround with try/catch:
+            try
+            {
+                // Add like for the User:
+                await _userService.AddUserDislike(request.Id, request.Data);
+                // Add like to the Content:
+                return await _contentService.DislikePost(request.Data);
+            }
+            // Catch any exceptions:
+            catch (Exception ex)
+            {
+                // Log the exception:
+                LoggerHelper.Log(ex);
+                // Return the error and set success to false, encapsulated in a DTO:
+                return new DTO<bool>()
+                {
+                    Errors = new Dictionary<string, List<string>>()
+                    {
+                        ["*"] = new List<string> { ex.Message },
+                    },
+                    Success = false
+                };
+            }
+        }
     }
 }

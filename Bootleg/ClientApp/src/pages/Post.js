@@ -97,7 +97,8 @@ const useStyles = makeStyles(theme => ({
         [theme.breakpoints.down('sm')]: {
             width: "100%",
             maxWidth: "100%",
-            flexBasis: "100%"
+            flexBasis: "100%",
+            marginBottom: "120px"
         },
         '&::-webkit-scrollbar': {
             display: 'none'
@@ -110,6 +111,12 @@ const useStyles = makeStyles(theme => ({
         width: '24%',
         [theme.breakpoints.up('md')]: {
             display: 'block',
+        },
+    },
+    mobileOnly: {
+        display: 'block',
+        [theme.breakpoints.up('md')]: {
+            display: 'none',
         },
     },
     spaceGrid: {
@@ -137,12 +144,14 @@ export default function Post() {
     const [newComment, setNewComment] = useState('');
     const { id } = useParams();
     const { get, post } = useRequest();
-    const { getUserId } = useAuth();
+    const { getUserId, storeId } = useAuth();
     const userId = getUserId();
 
     // useEffect hook for getting the content:
     useEffect(() => {
         async function getPost() {
+            // Save the id in the store so other components can use it:
+            storeId(id);
             // Send post request to get the content
             const response = await get(config.CONTENT_GET_CONTENT_GET, {
                 contentId: id
@@ -229,6 +238,24 @@ export default function Post() {
                                 <ThumbDownAltIcon />
                             </IconButton>
                         </CardActions>
+                        <CardContent className={classes.mobileOnly}>
+                            {comments && comments.length > 0 ? comments.map(comment =>
+                                <Card key={comment.id} className={classes.commentCard}>
+                                    <CardHeader
+                                        avatar={
+                                            <LazyLoad>
+                                                <Avatar className={classes.commentAvatar} src={comment.userProfilePicUri} />
+                                            </LazyLoad>
+                                        }
+                                        title={comment.userName + ' - ' + formatDate(comment.datePostedUTC)}
+                                        subheader={comment.contentBody}
+                                        className={classes.contentText}
+                                    />
+                                </Card>
+                            ) : (
+                                    <div className={classes.text}>No comments yet...</div>
+                                )}
+                        </CardContent>
                     </Card>
                 </Grid>
                 <Grid item xs={4} className={`${classes.profileGrid} ${classes.spaceGrid}`}>

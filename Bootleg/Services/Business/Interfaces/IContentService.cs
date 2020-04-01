@@ -49,5 +49,17 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <param name="user">The user who is posting the comment.</param>
 		/// <returns>DTO containing a list of the Content's comments.</returns>
 		Task<DTO<List<Content>>> PostComment(string contentId, string comment, User user);
+		/// <summary>
+		/// Method so users can like posts.
+		/// </summary>
+		/// <param name="contentId">The contentId of the post that is being liked.</param>
+		/// <returns>DTO bool indicating success/failure.</returns>
+		Task<DTO<bool>> LikePost(string contentId);
+		/// <summary>
+		/// Method so users can dislike posts.
+		/// </summary>
+		/// <param name="contentId">The contentId of the post that is being disliked.</param>
+		/// <returns>DTO bool indicating success/failure.</returns>
+		Task<DTO<bool>> DislikePost(string contentId);
 	}
 }

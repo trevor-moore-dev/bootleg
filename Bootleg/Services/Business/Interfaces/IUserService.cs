@@ -68,5 +68,19 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <param name="userID">String user id.</param>
 		/// <returns>DTO containing User.</returns>
 		Task<DTO<User>> DeleteUser(string userID);
+		/// <summary>
+		/// Method for adding a like for a user.
+		/// </summary>
+		/// <param name="userID">String user id.</param>
+		/// <param name="contentID">String content id.</param>
+		/// <returns>DTO containing bool.</returns>
+		Task<DTO<bool>> AddUserLike(string userID, string contentID);
+		/// <summary>
+		/// Method for adding a dislike for a user.
+		/// </summary>
+		/// <param name="userID">String user id.</param>
+		/// <param name="contentID">String content id.</param>
+		/// <returns>DTO containing bool.</returns>
+		Task<DTO<bool>> AddUserDislike(string userID, string contentID);
 	}
 }

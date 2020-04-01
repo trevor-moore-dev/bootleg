@@ -309,5 +309,75 @@ namespace Bootleg.Services.Business
 				throw e;
 			}
 		}
+		/// <summary>
+		/// Method for adding a like for a user.
+		/// </summary>
+		/// <param name="userID">String user id.</param>
+		/// <param name="contentID">String content id.</param>
+		/// <returns>DTO containing bool.</returns>
+		public async Task<DTO<bool>> AddUserLike(string userID, string contentID)
+		{
+			// Surround with try/catch:
+			try
+			{
+				// Get the user:
+				var user = await _userDAO.Get(userID);
+				// Initialize the liked content ids list if need be:
+				if (user.LikedContentIds == null)
+				{
+					user.LikedContentIds = new List<string>();
+				}
+				// Add the contentID to the list:
+				user.LikedContentIds.Add(contentID);
+				// Update the user:
+				await UpdateUser(user);
+				// Return success if no exception is thrown:
+				return new DTO<bool>()
+				{
+					Success = true
+				};
+			}
+			// Catch any exceptions:
+			catch (Exception e)
+			{
+				// Throw it up:
+				throw e;
+			}
+		}
+		/// <summary>
+		/// Method for adding a dislike for a user.
+		/// </summary>
+		/// <param name="userID">String user id.</param>
+		/// <param name="contentID">String content id.</param>
+		/// <returns>DTO containing bool.</returns>
+		public async Task<DTO<bool>> AddUserDislike(string userID, string contentID)
+		{
+			// Surround with try/catch:
+			try
+			{
+				// Get the user:
+				var user = await _userDAO.Get(userID);
+				// Initialize the disliked content ids list if need be:
+				if (user.DislikedContentIds == null)
+				{
+					user.DislikedContentIds = new List<string>();
+				}
+				// Add the contentID to the list:
+				user.DislikedContentIds.Add(contentID);
+				// Update the user:
+				await UpdateUser(user);
+				// Return success if no exception is thrown:
+				return new DTO<bool>()
+				{
+					Success = true
+				};
+			}
+			// Catch any exceptions:
+			catch (Exception e)
+			{
+				// Throw it up:
+				throw e;
+			}
+		}
 	}
 }

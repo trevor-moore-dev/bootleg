@@ -178,7 +178,7 @@ export default function Chat() {
 
     // Our state change handlers:
     const scrollToBottom = () => {
-        bottomRef.current.scrollIntoView({ behavior: "smooth" })
+        bottomRef.current.scrollIntoView()
     };
 
     const establishConnection = conn => {

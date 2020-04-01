@@ -177,9 +177,14 @@ export default function Home() {
 								<IconButton color="primary">
 									<ThumbDownAltIcon />
 								</IconButton>
-								<IconButton className={classes.iconButtons}>
-									<ChatBubbleIcon />
-								</IconButton>
+								<Link
+									className={classes.link}
+									component={RouterLink}
+									to={`/post/${content.id}`}>
+									<IconButton className={classes.iconButtons}>
+										<ChatBubbleIcon />
+									</IconButton>
+								</Link>
 							</CardActions>
 						</Card>
 					)) :

@@ -4,7 +4,6 @@ import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import MailIcon from '@material-ui/icons/Mail';
 import HomeIcon from '@material-ui/icons/Home';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ExploreIcon from '@material-ui/icons/Explore';
 import { useLocation } from "react-router";
 import { makeStyles } from "@material-ui/core/styles";
@@ -16,8 +15,8 @@ import config from '../config.json';
 import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
 import AddIcon from '@material-ui/icons/Add';
 import { FilePicker } from "react-file-picker";
+import useRequest from '../hooks/useRequest';
 import useAuth from "../hooks/useAuth";
-import LazyLoad from 'react-lazyload';
 import { Link as RouterLink } from 'react-router-dom';
 import {
     Fab,
@@ -117,6 +116,14 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: "rgb(113,80,181)"
         }
     },
+    commentButton: {
+        backgroundColor: theme.general.medium,
+        marginLeft: "5px",
+        color: "rgb(255,255,255)",
+        "&:hover": {
+            backgroundColor: "rgb(113,80,181)"
+        }
+    },
     footerIcon: {
         color: "#A9A9A9"
     },
@@ -145,6 +152,12 @@ const useStyles = makeStyles(theme => ({
             margin: "10px auto"
         },
     },
+    commentInput: {
+        display: 'block',
+        [theme.breakpoints.up('md')]: {
+            display: 'none',
+        }
+    },
     navigation: {
         display: "flex",
         marginBottom: "5px",
@@ -170,13 +183,15 @@ export default function Footer() {
     const [open, setOpen] = useState(false);
     const [messageBody, setMessageBody] = useState("");
     const [messageFile, setMessageFile] = useState(null);
+    const [commentBody, setCommentBody] = useState("");
     const { getUserId, getToken, getId, getConnection, authState } = useAuth();
     const userToken = getToken();
     const userId = getUserId();
-    const chatId = getId();
+    const currentId = getId();
     const connection = getConnection();
     const [value, setValue] = React.useState('recents');
     const location = useLocation();
+    const { post } = useRequest();
 
     // Our state change handlers:
     const handleContentFileChange = file => {
@@ -190,6 +205,9 @@ export default function Footer() {
     };
     const handleMessageBodyChange = e => {
         setMessageBody(e.target.value);
+    };
+    const handleCommentBodyChange = e => {
+        setCommentBody(e.target.value);
     };
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -214,7 +232,7 @@ export default function Footer() {
         if (messageFile) {
             formData.append('file', messageFile);
         }
-        formData.append('conversationId', chatId);
+        formData.append('conversationId', currentId);
         formData.append('userId', userId);
         formData.append('messageBody', messageBody);
         // Send post request to send the message:
@@ -230,10 +248,29 @@ export default function Footer() {
         // Upon success set the new data, and invoke the SignalR Hub for real-time delivery:
         if (response.data.success) {
             connection.invoke(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, {
-                Id: chatId,
+                Id: currentId,
                 Data: response.data.data
             });
             handleMessageClose();
+        }
+    };
+
+    // Method for posting a new comment:
+    const postComment = async () => {
+        // If commentBody is truthy, post it:
+        if (commentBody) {
+            // Send post request to AUTHENTICATION_AUTHENTICATE_USER_POST endpoint and await response:
+            const response = await post(config.CONTENT_POST_COMMENT_POST, {
+                Id: currentId,
+                Data: {
+                    UserId: userId,
+                    ContentBody: commentBody
+                }
+            });
+            // If Request was successful:
+            if (response.success) {
+                setCommentBody('');
+            }
         }
     };
 
@@ -293,6 +330,23 @@ export default function Footer() {
                                 <IconButton
                                     className={classes.uploadButton}
                                     onClick={sendMessage}>
+                                    <SendIcon />
+                                </IconButton>
+                            </Box>
+                        </div>}
+                    {location.pathname.toLowerCase().includes("/post") &&
+                        <div className={classes.commentInput}>
+                            <Box className={classes.messageBox}>
+                                <TextField
+                                    className={classes.postInput}
+                                    value={commentBody}
+                                    onChange={handleCommentBodyChange}
+                                    label="Post a Comment :)"
+                                    variant="outlined"
+                                />
+                                <IconButton
+                                    className={classes.commentButton}
+                                    onClick={postComment}>
                                     <SendIcon />
                                 </IconButton>
                             </Box>
