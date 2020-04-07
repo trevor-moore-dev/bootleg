@@ -96,6 +96,10 @@ const useStyles = makeStyles(theme => ({
 		paddingBottom: "24px!important",
 		paddingLeft: "12px!important",
 		paddingRight: "12px!important",
+	},
+	stats: {
+		paddingLeft: '4px',
+		fontSize: '16px'
 	}
 }));
 
@@ -104,7 +108,11 @@ export default function Home() {
 	// Create our styles and such, and create our state:
 	const classes = useStyles();
 	const [uploads, setUploads] = useState([]);
-	const { get } = useRequest();
+	const [likes, setLikes] = useState([]);
+	const [dislikes, setDislikes] = useState([]);
+	const [originalLikes, setOriginalLikes] = useState([]);
+	const [originalDislikes, setOriginalDislikes] = useState([]);
+	const { get, post } = useRequest();
 	const { authState } = useAuth();
 
 	// useEffect hook for getting all content that a user should have showing up on their feed:
@@ -119,9 +127,77 @@ export default function Home() {
 				setUploads(response.data);
 			}
 		}
+		async function getUserLikesAndDislikes() {
+			// Send get request to get the user:
+			const response = await get(config.USER_GET_USER_GET, {
+				userId: authState.user.id
+			});
+			// On success set the data:
+			if (response.success) {
+				setOriginalLikes(response.data.likedContentIds || []);
+				setOriginalDislikes(response.data.dislikedContentIds || []);
+				setLikes(response.data.likedContentIds || []);
+				setDislikes(response.data.dislikedContentIds || []);
+			}
+		}
 		getUploads();
+		getUserLikesAndDislikes();
 		return () => { };
 	}, []);
+
+	// Method for updating uploads active likes:
+	const setActiveLike = (id, active) => {
+		let newUploads = uploads;
+		let objIndex = newUploads.findIndex(obj => obj.id == id);
+		newUploads[objIndex].activeLike = active;
+		setUploads(newUploads);
+	};
+
+	// Method for updating uploads active dislikes:
+	const setActiveDislike = (id, active) => {
+		let newUploads = uploads;
+		let objIndex = newUploads.findIndex(obj => obj.id == id);
+		newUploads[objIndex].activeDisike = active;
+		setUploads(newUploads);
+	};
+
+	// Methods for liking, unliking, disliking, and undisliking posts:
+	const likePost = async (contentId) => {
+		await post(config.CONTENT_LIKE_POST_POST, {
+			Id: authState.user.id,
+			Data: contentId
+		});
+		let newLikes = [...likes, contentId];
+		setLikes(newLikes);
+		setActiveLike(contentId, true);
+	};
+	const unlikePost = async (contentId) => {
+		await post(config.CONTENT_UNLIKE_POST_POST, {
+			Id: authState.user.id,
+			Data: contentId
+		});
+		let newLikes = likes.filter(id => id !== contentId);
+		setLikes(newLikes);
+		setActiveLike(contentId, false);
+	};
+	const dislikePost = async (contentId) => {
+		await post(config.CONTENT_DISLIKE_POST_POST, {
+			Id: authState.user.id,
+			Data: contentId
+		});
+		let newDislikes = [...dislikes, contentId];
+		setDislikes(newDislikes);
+		setActiveDislike(contentId, true);
+	};
+	const undislikePost = async (contentId) => {
+		await post(config.CONTENT_UNDISLIKE_POST_POST, {
+			Id: authState.user.id,
+			Data: contentId
+		});
+		let newDislikes = dislikes.filter(id => id !== contentId);
+		setDislikes(newDislikes);
+		setActiveDislike(contentId, false);
+	};
 
 	// Return our markup:
 	return (
@@ -171,11 +247,21 @@ export default function Home() {
 								</CardContent>
 							</Link>
 							<CardActions disableSpacing>
-								<IconButton color="primary">
+								<IconButton color={likes.includes(content.id) ? "primary" : ""} className={likes.includes(content.id) ? "" : classes.iconButtons} onClick={likes.includes(content.id) ? () => unlikePost(content.id) : () => likePost(content.id)}>
 									<ThumbUpAltIcon />
+									<div className={classes.stats}>
+										{originalLikes.includes(content.id) ?
+											(likes.includes(content.id) ? content.likes : (content.likes - 1)) :
+											(likes.includes(content.id) ? (content.likes + 1) : content.likes)}
+									</div>
 								</IconButton>
-								<IconButton color="primary">
+								<IconButton color={dislikes.includes(content.id) ? "primary" : ""} className={dislikes.includes(content.id) ? "" : classes.iconButtons} onClick={dislikes.includes(content.id) ? () => undislikePost(content.id) : () => dislikePost(content.id)}>
 									<ThumbDownAltIcon />
+									<div className={classes.stats}>
+										{originalDislikes.includes(content.id) ?
+											(dislikes.includes(content.id) ? content.dislikes : (content.dislikes - 1)) :
+											(dislikes.includes(content.id) ? (content.dislikes + 1) : content.dislikes)}
+									</div>
 								</IconButton>
 								<Link
 									className={classes.link}

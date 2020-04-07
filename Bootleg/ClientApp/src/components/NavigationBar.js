@@ -122,7 +122,7 @@ export default function NavigationBar() {
 	// Create our styles and declare our state properties:
 	const classes = useStyles();
 	const themeState = useTheme();
-	const { logout, getUserId, authState } = useAuth();
+	const { getUserId, authState } = useAuth();
 	const userId = getUserId();
 	const { get } = useRequest();
 	const [value, setValue] = useState("");
@@ -142,11 +142,6 @@ export default function NavigationBar() {
 		getUsers();
 		return () => { };
 	}, []);
-
-	// Method for handling when the user logs out:
-	const handleLogout = () => {
-		logout();
-	};
 
 	const escapeRegexCharacters = str => {
 		return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

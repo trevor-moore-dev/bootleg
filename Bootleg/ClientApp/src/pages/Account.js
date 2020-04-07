@@ -17,6 +17,7 @@ import {
     Box,
     IconButton,
     CardMedia,
+    Button,
     CardHeader,
     Card,
     CardContent,
@@ -96,7 +97,7 @@ export default function Account() {
     const classes = useStyles();
     const [uploads, setUploads] = useState([]);
     const { get } = useRequest();
-    const { getUserId, getToken } = useAuth();
+    const { logout, getUserId, getToken } = useAuth();
     const userToken = getToken();
     const userId = getUserId();
     const [editAccount, setEditAccount] = useState(false);
@@ -105,8 +106,6 @@ export default function Account() {
     const [username, setUsername] = useState("");
     const [profilePicUri, setProfilePicUri] = useState("");
     const [bio, setBio] = useState("");
-    const [oldPassword, setOldPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
 
     // useEffect hook for getting all the user's content:
     useEffect(() => {
@@ -129,6 +128,11 @@ export default function Account() {
         return () => { };
     }, []);
 
+    // Method for handling when the user logs out:
+    const handleLogout = () => {
+        logout();
+    };
+
     // State handler methods on change:
     const handleEmailChange = e => {
         setEmail(e.target.value);
@@ -141,12 +145,6 @@ export default function Account() {
     };
     const handleBioChange = e => {
         setBio(e.target.value);
-    };
-    const handleOldPasswordChange = e => {
-        setOldPassword(e.target.value);
-    };
-    const handleNewPasswordChange = e => {
-        setNewPassword(e.target.value);
     };
     const handleEditAccount = () => {
         setEditAccount(!editAccount);
@@ -238,6 +236,7 @@ export default function Account() {
                         <IconButton color="inherit" onClick={handleUpdateAccount}>
                             <DoneOutlineIcon />
                         </IconButton>}
+                    <Button variant="contained" onClick={handleLogout}>Logout</Button>
                 </div>
             </div>
             <Divider className={classes.divider} ariant="middle" />

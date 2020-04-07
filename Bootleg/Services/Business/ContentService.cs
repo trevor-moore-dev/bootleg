@@ -292,5 +292,67 @@ namespace Bootleg.Services.Business
 				throw e;
 			}
 		}
+		/// <summary>
+		/// Method so users can unlike posts.
+		/// </summary>
+		/// <param name="contentId">The contentId of the post that is being unliked.</param>
+		/// <returns>DTO bool indicating success/failure.</returns>
+		public async Task<DTO<bool>> UnlikePost(string contentId)
+		{
+			// Surround with try/catch:
+			try
+			{
+				// Get the content of the id:
+				var content = await _contentDAO.Get(contentId);
+				// Subtract from likes:
+				--content.Likes;
+				// Update the post:
+				await _contentDAO.Update(contentId, content);
+				// Return list of Content inside DTO:
+				return new DTO<bool>()
+				{
+					Success = true
+				};
+			}
+			// Catch any exceptions:
+			catch (Exception e)
+			{
+				// Log the exception:
+				LoggerHelper.Log(e);
+				// Throw the exception:
+				throw e;
+			}
+		}
+		/// <summary>
+		/// Method so users can undislike posts.
+		/// </summary>
+		/// <param name="contentId">The contentId of the post that is being undisliked.</param>
+		/// <returns>DTO bool indicating success/failure.</returns>
+		public async Task<DTO<bool>> UndislikePost(string contentId)
+		{
+			// Surround with try/catch:
+			try
+			{
+				// Get the content of the id:
+				var content = await _contentDAO.Get(contentId);
+				// Subtract from dislikes:
+				--content.Dislikes;
+				// Update the post:
+				await _contentDAO.Update(contentId, content);
+				// Return list of Content inside DTO:
+				return new DTO<bool>()
+				{
+					Success = true
+				};
+			}
+			// Catch any exceptions:
+			catch (Exception e)
+			{
+				// Log the exception:
+				LoggerHelper.Log(e);
+				// Throw the exception:
+				throw e;
+			}
+		}
 	}
 }

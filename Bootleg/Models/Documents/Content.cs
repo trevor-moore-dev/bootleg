@@ -35,5 +35,7 @@ namespace Bootleg.Models.Documents
 		public int Likes { get; set; }
 		public int Dislikes { get; set; }
 		public List<Content> Comments { get; set; }
+		public bool ActiveLike { get; set; }
+		public bool ActiveDislike { get; set; }
 	}
 }

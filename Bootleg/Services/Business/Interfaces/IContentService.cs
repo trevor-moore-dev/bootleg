@@ -61,5 +61,17 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <param name="contentId">The contentId of the post that is being disliked.</param>
 		/// <returns>DTO bool indicating success/failure.</returns>
 		Task<DTO<bool>> DislikePost(string contentId);
+		/// <summary>
+		/// Method so users can unlike posts.
+		/// </summary>
+		/// <param name="contentId">The contentId of the post that is being liked.</param>
+		/// <returns>DTO bool indicating success/failure.</returns>
+		Task<DTO<bool>> UnlikePost(string contentId);
+		/// <summary>
+		/// Method so users can undislike posts.
+		/// </summary>
+		/// <param name="contentId">The contentId of the post that is being disliked.</param>
+		/// <returns>DTO bool indicating success/failure.</returns>
+		Task<DTO<bool>> UndislikePost(string contentId);
 	}
 }

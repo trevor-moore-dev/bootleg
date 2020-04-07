@@ -133,6 +133,10 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: "rgb(113,80,181)"
         }
     },
+    stats: {
+        paddingLeft: '4px',
+        fontSize: '16px'
+    }
 }));
 
 // Home component for rendering the home page:
@@ -142,6 +146,10 @@ export default function Post() {
     const [postedContent, setPostedContent] = useState({});
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
+    const [hasLiked, setHasLiked] = useState(false);
+    const [hasDisliked, setHasDisliked] = useState(false);
+    const [likes, setLikes] = useState([]);
+    const [dislikes, setDislikes] = useState([]);
     const { id } = useParams();
     const { get, post } = useRequest();
     const { getUserId, storeId } = useAuth();
@@ -162,14 +170,34 @@ export default function Post() {
                 setComments(response.data.comments)
             }
         }
+        async function getUserLikesAndDislikes() {
+            // Send get request to get the user:
+            const response = await get(config.USER_GET_USER_GET, {
+                userId: userId
+            });
+            // On success set the data:
+            if (response.success) {
+                if (response.data.likedContentIds) {
+                    setHasLiked(response.data.likedContentIds.includes(id));
+                    setLikes(response.data.likedContentIds || []);
+                }
+                if (response.data.dislikedContentIds) {
+                    setHasDisliked(response.data.dislikedContentIds.includes(id));
+                    setDislikes(response.data.dislikedContentIds || []);
+                }
+            }
+        }
         getPost();
+        getUserLikesAndDislikes();
         return () => { };
     }, []);
 
+    // State change method for new comments:
     const handleNewCommentChange = e => {
         setNewComment(e.target.value);
     };
 
+    // Method for posting a new comment:
     const postComment = async () => {
         // If newComment is truthy, post it:
         if (newComment) {
@@ -187,6 +215,36 @@ export default function Post() {
                 setComments(response.data);
             }
         }
+    };
+
+    // Methods for liking, unliking, disliking, and undisliking posts:
+    const likePost = async () => {
+        await post(config.CONTENT_LIKE_POST_POST, {
+            Id: userId,
+            Data: id
+        });
+        setHasLiked(true);
+    };
+    const unlikePost = async () => {
+        await post(config.CONTENT_UNLIKE_POST_POST, {
+            Id: userId,
+            Data: id
+        });
+        setHasLiked(false);
+    };
+    const dislikePost = async () => {
+        await post(config.CONTENT_DISLIKE_POST_POST, {
+            Id: userId,
+            Data: id
+        });
+        setHasDisliked(true);
+    };
+    const undislikePost = async () => {
+        await post(config.CONTENT_UNDISLIKE_POST_POST, {
+            Id: userId,
+            Data: id
+        });
+        setHasDisliked(false);
     };
 
     // Return our markup:
@@ -231,11 +289,21 @@ export default function Post() {
                             <p className={classes.contentText}>{postedContent.contentBody}</p>
                         </CardContent>
                         <CardActions disableSpacing>
-                            <IconButton color="primary">
+                            <IconButton color={hasLiked ? "primary" : ""} className={hasLiked ? "" : classes.iconButtons} onClick={hasLiked ? unlikePost : likePost}>
                                 <ThumbUpAltIcon />
+                                <div className={classes.stats}>
+                                    {likes.includes(id) ?
+                                        (hasLiked ? postedContent.likes : (postedContent.likes - 1)) :
+                                        (hasLiked ? (postedContent.likes + 1) : postedContent.likes)}
+                                </div>
                             </IconButton>
-                            <IconButton color="primary">
+                            <IconButton color={hasDisliked ? "primary" : ""} className={hasDisliked ? "" : classes.iconButtons} onClick={hasDisliked ? undislikePost : dislikePost}>
                                 <ThumbDownAltIcon />
+                                <div className={classes.stats}>
+                                    {dislikes.includes(id) ?
+                                        (hasDisliked ? postedContent.dislikes : (postedContent.dislikes - 1)) :
+                                        (hasDisliked ? (postedContent.dislikes + 1) : postedContent.dislikes)}
+                                </div>
                             </IconButton>
                         </CardActions>
                         <CardContent className={classes.mobileOnly}>
@@ -265,9 +333,7 @@ export default function Post() {
                                 <Card key={comment.id} className={classes.commentCard}>
                                     <CardHeader
                                         avatar={
-                                            <LazyLoad>
-                                                <Avatar className={classes.commentAvatar} src={comment.userProfilePicUri} />
-                                            </LazyLoad>
+                                            <Avatar className={classes.commentAvatar} src={comment.userProfilePicUri} />
                                         }
                                         title={comment.userName + ' - ' + formatDate(comment.datePostedUTC)}
                                         subheader={comment.contentBody}
