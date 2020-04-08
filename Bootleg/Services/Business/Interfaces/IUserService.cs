@@ -35,6 +35,12 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <returns>DTO containing list of Users.</returns>
 		Task<DTO<List<User>>> GetUsers(List<string> userIds);
 		/// <summary>
+		/// Method for getting a list of Users a User followsbased off of the id passesd in.
+		/// </summary>
+		/// <param name="userId">String user id.</param>
+		/// <returns>DTO containing list of Users.</returns>
+		Task<DTO<List<User>>> GetUserFollowings(string userId);
+		/// <summary>
 		/// Method for following a User.
 		/// </summary>
 		/// <param name="user">User object.</param>

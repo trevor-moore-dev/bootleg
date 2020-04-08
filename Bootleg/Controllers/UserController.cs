@@ -69,6 +69,36 @@ namespace Bootleg.Controllers
             }
         }
         /// <summary>
+        /// Method for Getting a User's Followings.
+        /// </summary>
+        /// <param name="userId">The user id of the user you want to get the followings for.</param>
+        /// <returns>DTO containing the List of User objects.</returns>
+        [HttpGet("[action]")]
+        public async Task<DTO<List<User>>> GetFollowings(string userId)
+        {
+            // Surround with try/catch:
+            try
+            {
+                // Return the followings using our User service:
+                return await _userService.GetUserFollowings(userId);
+            }
+            // Catch any exceptions:
+            catch (Exception ex)
+            {
+                // Log the exception:
+                LoggerHelper.Log(ex);
+                // Return the error and set success to false, encapsulated in a DTO:
+                return new DTO<List<User>>()
+                {
+                    Errors = new Dictionary<string, List<string>>()
+                    {
+                        ["*"] = new List<string> { ex.Message },
+                    },
+                    Success = false
+                };
+            }
+        }
+        /// <summary>
         /// Post method for following a user.
         /// </summary>
         /// <param name="user">DTO containing a string (which is the Id of the current user).</param>

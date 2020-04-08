@@ -4,12 +4,15 @@ import config from '../config.json';
 import useRequest from '../hooks/useRequest';
 import useAuth from "../hooks/useAuth";
 import { Link as RouterLink } from 'react-router-dom';
+import Carousel, { Dots } from '@brainhubeu/react-carousel';
+import '@brainhubeu/react-carousel/lib/style.css';
 import {
     Box,
     Card,
     CardContent,
     Grid,
     Button,
+    Avatar,
     Link
 } from '@material-ui/core';
 
@@ -70,7 +73,26 @@ const useStyles = makeStyles(theme => ({
         paddingBottom: "24px!important",
         paddingLeft: "12px!important",
         paddingRight: "12px!important",
-    }
+    },
+    profileThing: {
+        fontSize: '8px',
+        display: 'grid'
+    },
+    mobileAvatar: {
+        margin: 'auto'
+    },
+    ellipsis: {
+        maxWidth: '60px',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden'
+    },
+    lightText: {
+        color: theme.text
+    },
+    carousel: {
+        marginBottom: '15px'
+    },
 }));
 
 // Explore component for rendering the explore page:
@@ -139,6 +161,17 @@ export default function Explore() {
         <Box className={classes.box}>
             <Grid className={classes.grid} container spacing={3}>
                 <Grid item xs={12} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
+                    <Carousel
+                        slidesPerPage='5'
+                        className={`${classes.sectionMobile} ${classes.carousel}`}
+                        infinite
+                    >
+                        {users && users.length > 0 && users.map(user =>
+                            <div key={user.id} className={`${classes.profileThing} ${classes.lightText}`}>
+                                <Avatar className={classes.mobileAvatar} src={user.profilePicUri} />
+                                <div className={classes.ellipsis}>{user.username}</div>
+                            </div>)}
+                    </Carousel>
                     {users && users.length > 0 && users.map(user =>
                         (user.id !== userId ?
                             <Card key={user.id} className={classes.card}>

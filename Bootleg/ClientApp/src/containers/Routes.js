@@ -4,7 +4,6 @@ import NotFound from "../components/NotFound";
 import Home from "../pages/Home";
 import Explore from "../pages/Explore";
 import Messages from "../pages/Messages";
-import Chat from "../pages/Chat";
 import Post from "../pages/Post";
 import User from "../pages/User";
 import Login from "../pages/Login";
@@ -24,7 +23,6 @@ export default function Routes() {
       <Route path="/my-account" component={Account} />
       <Route path="/account/:id" component={User} />
       <Route path="/messages" component={Messages} />
-      <Route path="/chat/:id" component={Chat} />
       <Route path="/post/:id" component={Post} />
       <Route path="/explore" component={Explore} />
       <Route component={NotFound} />

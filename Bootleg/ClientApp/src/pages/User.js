@@ -53,8 +53,8 @@ const useStyles = makeStyles(theme => ({
     },
     mousePointer: {
         '&:hover': {
-            mouse: "pointer"
-        },
+            cursor: "pointer"
+        }
     },
     text: {
         color: theme.text

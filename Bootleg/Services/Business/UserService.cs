@@ -119,6 +119,33 @@ namespace Bootleg.Services.Business
 			}
 		}
 		/// <summary>
+		/// Method for getting a list of Users a User followsbased off of the id passesd in.
+		/// </summary>
+		/// <param name="userId">String user id.</param>
+		/// <returns>DTO containing list of Users.</returns>
+		public async Task<DTO<List<User>>> GetUserFollowings(string userId)
+		{
+			// Surround with try/catch:
+			try
+			{
+				var user = await _userDAO.Get(userId);
+				// Get all indexes of user ids passed in:
+				var result = await _userDAO.GetAllFromIndexes(user.FollowingIds);
+				// Return the result:
+				return new DTO<List<User>>()
+				{
+					Data = result,
+					Success = true
+				};
+			}
+			// Catch any exceptions:
+			catch (Exception e)
+			{
+				// Throw it up:
+				throw e;
+			}
+		}
+		/// <summary>
 		/// Method for following a User.
 		/// </summary>
 		/// <param name="user">User object.</param>

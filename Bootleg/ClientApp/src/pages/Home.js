@@ -9,6 +9,8 @@ import useAuth from "../hooks/useAuth";
 import LazyLoad from 'react-lazyload';
 import { formatDate } from "../helpers/dateHelper";
 import { Link as RouterLink } from 'react-router-dom';
+import Carousel, { Dots } from '@brainhubeu/react-carousel';
+import '@brainhubeu/react-carousel/lib/style.css';
 import {
 	Box,
 	IconButton,
@@ -100,6 +102,25 @@ const useStyles = makeStyles(theme => ({
 	stats: {
 		paddingLeft: '4px',
 		fontSize: '16px'
+	},
+	lightText: {
+		color: theme.text
+	},
+	profileThing: {
+		fontSize: '8px',
+		display: 'grid'
+	},
+	mobileAvatar: {
+		margin: 'auto'
+	},
+	mobileBottom: {
+		marginBottom: '100px'
+	},
+	ellipsis: {
+		maxWidth: '60px',
+		textOverflow: 'ellipsis',
+		whiteSpace: 'nowrap',
+		overflow: 'hidden'
 	}
 }));
 
@@ -108,6 +129,7 @@ export default function Home() {
 	// Create our styles and such, and create our state:
 	const classes = useStyles();
 	const [uploads, setUploads] = useState([]);
+	const [followings, setFollowings] = useState([]);
 	const [likes, setLikes] = useState([]);
 	const [dislikes, setDislikes] = useState([]);
 	const [originalLikes, setOriginalLikes] = useState([]);
@@ -118,13 +140,23 @@ export default function Home() {
 	// useEffect hook for getting all content that a user should have showing up on their feed:
 	useEffect(() => {
 		async function getUploads() {
-			// Send post request to get all profiles
+			// Send post request to get all profiles:
 			const response = await get(config.CONTENT_GET_ALL_CONTENT_GET, {
 				userId: authState.user.id
 			});
 			// On success set the data:
 			if (response.success) {
 				setUploads(response.data);
+			}
+		}
+		async function getUserFollowings() {
+			// Send post request to get all followings:
+			const response = await get(config.USER_GET_FOLLOWINGS_GET, {
+				userId: authState.user.id
+			});
+			// On success set the data:
+			if (response.success) {
+				setFollowings(response.data);
 			}
 		}
 		async function getUserLikesAndDislikes() {
@@ -141,6 +173,7 @@ export default function Home() {
 			}
 		}
 		getUploads();
+		getUserFollowings();
 		getUserLikesAndDislikes();
 		return () => { };
 	}, []);
@@ -288,11 +321,22 @@ export default function Home() {
 									<Avatar className={classes.avatar} src={authState.user.profilePic} />
 								</LazyLoad>
 							}
-							title={authState.user.email}
+							title={'Welcome, ' + authState.user.email}
 							className={classes.text}
 						/>
 						<CardContent>
-							<p className={classes.text}>Hello There! :)</p>
+							<p className={classes.text}>See what's new...</p>
+							<Carousel
+								slidesPerPage='5'
+								className={`${classes.sectionMobile} ${classes.carousel}`}
+								infinite
+							>
+								{followings && followings.length > 0 && followings.map(user =>
+									<div key={user.id} className={`${classes.profileThing} ${classes.lightText}`}>
+										<Avatar className={classes.mobileAvatar} src={user.profilePicUri} />
+										<div className={classes.ellipsis}>{user.username}</div>
+									</div>)}
+							</Carousel>
 						</CardContent>
 					</Card>
 				</Grid>

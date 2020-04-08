@@ -22,6 +22,7 @@ import {
     Fab,
     IconButton,
     Snackbar,
+    Link,
     SnackbarContent,
     Badge,
     Box,
@@ -99,8 +100,8 @@ const useStyles = makeStyles(theme => ({
     },
     fileUpload: {
         '&:hover': {
-            mouse: "pointer"
-        },
+            cursor: "pointer"
+        }
     },
     filePickerButton: {
         marginLeft: "10px",
@@ -147,10 +148,10 @@ const useStyles = makeStyles(theme => ({
         marginTop: "10px",
     },
     messageInput: {
+        display: 'block',
         [theme.breakpoints.up('md')]: {
-            width: "70%",
-            margin: "10px auto"
-        },
+            display: 'none',
+        }
     },
     commentInput: {
         display: 'block',
@@ -180,7 +181,6 @@ export default function Footer() {
     const classes = useStyles();
     const [contentBody, setContentBody] = useState("");
     const [contentFile, setContentFile] = useState(null);
-    const [open, setOpen] = useState(false);
     const [messageBody, setMessageBody] = useState("");
     const [messageFile, setMessageFile] = useState(null);
     const [commentBody, setCommentBody] = useState("");
@@ -212,11 +212,7 @@ export default function Footer() {
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
-    const handleOpen = () => {
-        setOpen(true);
-    };
     const handleContentClose = () => {
-        setOpen(false);
         setContentBody("");
         setContentFile(null);
     };
@@ -305,7 +301,7 @@ export default function Footer() {
         <>
             <BottomNavigation value={value} onChange={handleChange} className={classes.stickToBottom}>
                 <div className={classes.lukeypookey}>
-                    {location.pathname.toLowerCase().includes("/chat") &&
+                    {location.pathname.toLowerCase().includes("/messages") &&
                         <div className={classes.messageInput}>
                             <Box className={classes.messageBox}>
                                 <TextField
@@ -354,18 +350,21 @@ export default function Footer() {
                     <div className={classes.navigation}>
                         <BottomNavigationAction component={RouterLink} to="/" icon={<HomeIcon className={classes.footerIcon} />} />
                         <BottomNavigationAction component={RouterLink} to="/explore" icon={<ExploreIcon className={classes.footerIcon} />} />
-                        <BottomNavigationAction onClick={handleOpen} icon={<AddCircleOutlineIcon className={classes.footerIcon} />} />
+                        <BottomNavigationAction component={RouterLink} to="/new-post" icon={<AddCircleOutlineIcon className={classes.footerIcon} />} />
                         <BottomNavigationAction component={RouterLink} to="/messages" icon={<MailIcon className={classes.footerIcon} />} />
                         <BottomNavigationAction component={RouterLink} to="/my-account" icon={<Avatar className={classes.avatar} src={authState.user.profilePic} />} />
                     </div>
                 </div>
             </BottomNavigation>
-            <Tooltip title="Create a New Post" className={classes.sectionDesktop}>
-                <Fab className={classes.fab} onClick={handleOpen}>
+            <Link
+                className={classes.sectionDesktop}
+                component={RouterLink}
+                to="/new-post">
+                <Fab className={classes.fab}>
                     <EditIcon />
                 </Fab>
-            </Tooltip>
-            <Snackbar open={open} className={classes.snackbar}>
+            </Link>
+            <Snackbar open={false} className={classes.snackbar}>
                 <SnackbarContent
                     className={classes.snackbarContent}
                     message={

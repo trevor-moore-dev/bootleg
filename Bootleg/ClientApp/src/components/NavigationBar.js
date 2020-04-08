@@ -13,12 +13,11 @@ import {
 	Link,
 	Avatar,
 	Badge,
-	Tooltip
 } from "@material-ui/core";
 import clsx from "clsx";
 import ToggleTheme from '../components/ToggleTheme';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
+import SearchTwoToneIcon from '@material-ui/icons/SearchTwoTone';
 import ExploreIcon from '@material-ui/icons/Explore';
 import { useTheme } from "../containers/ThemeContext";
 import Brightness4Icon from '@material-ui/icons/Brightness4';
@@ -248,6 +247,15 @@ export default function NavigationBar() {
 					<div className={`${classes.sectionDesktop} ${classes.toggleTheme}`}>
 						<ToggleTheme />
 					</div>
+					<Link
+						component={RouterLink}
+						to="/search">
+						<IconButton className={classes.sectionMobile}>
+							<Badge color='secondary'>
+								<SearchTwoToneIcon />
+							</Badge>
+						</IconButton>
+					</Link>
 					<IconButton
 						onClick={() => themeState.toggle()}
 						className={classes.sectionMobile}
