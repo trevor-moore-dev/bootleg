@@ -95,7 +95,7 @@ const useStyles = makeStyles(theme => ({
 	},
 	spaceGrid: {
 		paddingTop: "48px!important",
-		paddingBottom: "24px!important",
+		paddingBottom: "48px!important",
 		paddingLeft: "12px!important",
 		paddingRight: "12px!important",
 	},
@@ -121,6 +121,21 @@ const useStyles = makeStyles(theme => ({
 		textOverflow: 'ellipsis',
 		whiteSpace: 'nowrap',
 		overflow: 'hidden'
+	},
+	sectionDesktop: {
+		display: 'none',
+		[theme.breakpoints.up('md')]: {
+			display: 'block',
+		},
+	},
+	sectionMobile: {
+		display: 'block',
+		[theme.breakpoints.up('md')]: {
+			display: 'none',
+		},
+	},
+	carousel: {
+		marginBottom: '24px'
 	}
 }));
 
@@ -237,6 +252,17 @@ export default function Home() {
 		<Box className={classes.box}>
 			<Grid className={classes.grid} container spacing={3}>
 				<Grid item xs={8} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
+					<Carousel
+						slidesPerPage='5'
+						className={`${classes.sectionMobile} ${classes.carousel}`}
+						infinite
+					>
+						{followings && followings.length > 0 && followings.map(user =>
+							<div key={user.id} className={`${classes.profileThing} ${classes.lightText}`}>
+								<Avatar className={classes.mobileAvatar} src={user.profilePicUri} />
+								<div className={classes.ellipsis}>{user.username}</div>
+							</div>)}
+					</Carousel>
 					{uploads && uploads.length > 0 ? uploads.map(content => (
 						<Card key={content.id} className={classes.card}>
 							<Link
@@ -328,7 +354,7 @@ export default function Home() {
 							<p className={classes.text}>See what's new...</p>
 							<Carousel
 								slidesPerPage='5'
-								className={`${classes.sectionMobile} ${classes.carousel}`}
+								className={classes.carousel}
 								infinite
 							>
 								{followings && followings.length > 0 && followings.map(user =>

@@ -91,7 +91,7 @@ const useStyles = makeStyles(theme => ({
         color: theme.text
     },
     carousel: {
-        marginBottom: '15px'
+        marginBottom: '24px'
     },
 }));
 
