@@ -256,7 +256,7 @@ export default function Post() {
                         <Link
                             className={classes.link}
                             component={RouterLink}
-                            to={`/account/${postedContent.userId}`}>
+                            to={`/user/${postedContent.userId}`}>
                             <CardHeader
                                 avatar={
                                     <LazyLoad>

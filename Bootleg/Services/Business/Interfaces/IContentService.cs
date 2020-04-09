@@ -30,6 +30,11 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <returns>DTO containing a list of the User's Content.</returns>
 		Task<DTO<List<Content>>> GetAllContent(User user);
 		/// <summary>
+		/// Method for getting literally all the Content.
+		/// </summary>
+		/// <returns>DTO containing a list of the User's Content.</returns>
+		Task<DTO<List<Content>>> GetLiterallyAllContent();
+		/// <summary>
 		/// Method for getting a User's "profile" data: their User data and their Content data.
 		/// </summary>
 		/// <param name="user">User object to get data for.</param>

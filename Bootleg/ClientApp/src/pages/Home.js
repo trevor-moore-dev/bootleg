@@ -11,6 +11,7 @@ import { formatDate } from "../helpers/dateHelper";
 import { Link as RouterLink } from 'react-router-dom';
 import Carousel, { Dots } from '@brainhubeu/react-carousel';
 import '@brainhubeu/react-carousel/lib/style.css';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import {
 	Box,
 	IconButton,
@@ -136,6 +137,10 @@ const useStyles = makeStyles(theme => ({
 	},
 	carousel: {
 		marginBottom: '24px'
+	},
+	centeralign: {
+		margin: 'auto',
+		display: 'block'
 	}
 }));
 
@@ -253,13 +258,18 @@ export default function Home() {
 			<Grid className={classes.grid} container spacing={3}>
 				<Grid item xs={8} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
 					<Carousel
-						slidesPerPage='5'
+						slidesPerPage='6'
 						className={`${classes.sectionMobile} ${classes.carousel}`}
 						infinite
 					>
 						{followings && followings.length > 0 && followings.map(user =>
 							<div key={user.id} className={`${classes.profileThing} ${classes.lightText}`}>
-								<Avatar className={classes.mobileAvatar} src={user.profilePicUri} />
+								<Link
+									className={classes.link}
+									component={RouterLink}
+									to={`/user/${user.id}`}>
+									<Avatar className={classes.mobileAvatar} src={user.profilePicUri} />
+								</Link>
 								<div className={classes.ellipsis}>{user.username}</div>
 							</div>)}
 					</Carousel>
@@ -268,7 +278,7 @@ export default function Home() {
 							<Link
 								className={classes.link}
 								component={RouterLink}
-								to={`/account/${content.userId}`}>
+								to={`/user/${content.userId}`}>
 								<CardHeader
 									avatar={
 										<LazyLoad>
@@ -333,11 +343,7 @@ export default function Home() {
 							</CardActions>
 						</Card>
 					)) :
-						<Card className={classes.card}>
-							<CardContent>
-								<p className={classes.text}>Welcome Boomer! Feel free to <Link className={classes.link}>post some content</Link>.</p>
-							</CardContent>
-						</Card>}
+						<CircularProgress className={classes.centeralign} />}
 				</Grid>
 				<Grid item xs={4} className={`${classes.profileGrid} ${classes.spaceGrid}`}>
 					<Card className={classes.card}>
@@ -359,7 +365,12 @@ export default function Home() {
 							>
 								{followings && followings.length > 0 && followings.map(user =>
 									<div key={user.id} className={`${classes.profileThing} ${classes.lightText}`}>
-										<Avatar className={classes.mobileAvatar} src={user.profilePicUri} />
+										<Link
+											className={classes.link}
+											component={RouterLink}
+											to={`/user/${user.id}`}>
+											<Avatar className={classes.mobileAvatar} src={user.profilePicUri} />
+										</Link>
 										<div className={classes.ellipsis}>{user.username}</div>
 									</div>)}
 							</Carousel>
@@ -367,6 +378,6 @@ export default function Home() {
 					</Card>
 				</Grid>
 			</Grid>
-		</Box >
+		</Box>
 	);
 }

@@ -7,8 +7,8 @@ import Messages from "../pages/Messages";
 import Post from "../pages/Post";
 import User from "../pages/User";
 import Login from "../pages/Login";
-import Account from "../pages/Account";
 import Search from "../pages/Search";
+import AddPost from "../pages/AddPost";
 
 // Trevor Moore
 // CST-451
@@ -21,10 +21,10 @@ export default function Routes() {
     <Switch>
       <Route exact path="/" component={Home} />
       <Route path="/login" component={Login} />
-      <Route path="/my-account" component={Account} />
-      <Route path="/account/:id" component={User} />
+      <Route path="/user/:id" component={User} />
       <Route path="/messages" component={Messages} />
       <Route path="/post/:id" component={Post} />
+      <Route path="/create" component={AddPost} />
       <Route path="/explore" component={Explore} />
       <Route path="/search" component={Search} />
       <Route component={NotFound} />

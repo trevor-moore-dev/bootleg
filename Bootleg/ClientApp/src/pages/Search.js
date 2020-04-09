@@ -179,7 +179,7 @@ export default function Search() {
             <Link
                 className={classes.noUnderline}
                 component={RouterLink}
-                to={userId === suggestion.id ? `/my-account` : `/account/${suggestion.id}`}>
+                to={`/user/${suggestion.id}`}>
                 <span className='suggestion-content'>
                     <span className='name'>
                         <div className={classes.avatarContainer}>

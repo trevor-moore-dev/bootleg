@@ -350,16 +350,16 @@ export default function Footer() {
                     <div className={classes.navigation}>
                         <BottomNavigationAction component={RouterLink} to="/" icon={<HomeIcon className={classes.footerIcon} />} />
                         <BottomNavigationAction component={RouterLink} to="/explore" icon={<ExploreIcon className={classes.footerIcon} />} />
-                        <BottomNavigationAction component={RouterLink} to="/new-post" icon={<AddCircleOutlineIcon className={classes.footerIcon} />} />
+                        <BottomNavigationAction component={RouterLink} to="/create" icon={<AddCircleOutlineIcon className={classes.footerIcon} />} />
                         <BottomNavigationAction component={RouterLink} to="/messages" icon={<MailIcon className={classes.footerIcon} />} />
-                        <BottomNavigationAction component={RouterLink} to="/my-account" icon={<Avatar className={classes.avatar} src={authState.user.profilePic} />} />
+                        <BottomNavigationAction href={`/user/${userId}`} icon={<Avatar className={classes.avatar} src={authState.user.profilePic} />} />
                     </div>
                 </div>
             </BottomNavigation>
             <Link
                 className={classes.sectionDesktop}
                 component={RouterLink}
-                to="/new-post">
+                to="/create">
                 <Fab className={classes.fab}>
                     <EditIcon />
                 </Fab>

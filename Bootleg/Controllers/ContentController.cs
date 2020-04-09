@@ -116,6 +116,35 @@ namespace Bootleg.Controllers
             }
         }
         /// <summary>
+        /// Method for getting literally all the content.
+        /// </summary>
+        /// <returns>DTO containing a list of Content objects.</returns>
+        [HttpGet("[action]")]
+        public async Task<DTO<List<Content>>> GetLiterallyAllContent()
+        {
+            // Surround with try/catch:
+            try
+            {
+                // Return all their content using the content service:
+                return await _contentService.GetLiterallyAllContent();
+            }
+            // Catch any exceptions:
+            catch (Exception ex)
+            {
+                // Log the exception:
+                LoggerHelper.Log(ex);
+                // Return the error and set success to false, encapsulated in a DTO:
+                return new DTO<List<Content>>()
+                {
+                    Errors = new Dictionary<string, List<string>>()
+                    {
+                        ["*"] = new List<string> { ex.Message },
+                    },
+                    Success = false
+                };
+            }
+        }
+        /// <summary>
         /// Method for getting a posted content.
         /// </summary>
         /// <param name="contentId">The content id of the post.</param>

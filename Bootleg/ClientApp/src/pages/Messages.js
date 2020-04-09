@@ -210,6 +210,11 @@ const useStyles = makeStyles(theme => ({
     left: {
         float: 'left'
     },
+    convoCard: {
+        float: 'left',
+        width: '100%',
+        display: 'flex',
+    },
     messageContainer: {
         width: '100%',
         display: 'inline-grid'
@@ -244,6 +249,11 @@ const useStyles = makeStyles(theme => ({
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
         overflow: 'hidden'
+    },
+    username: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 }));
 
@@ -266,7 +276,9 @@ export default function Messages() {
 
     // Our state change handlers:
     const scrollToBottom = () => {
-        bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+        if (bottomRef.current) {
+            bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
     };
     const handleMessageFileChange = file => {
         setMessageFile(file);
@@ -383,7 +395,7 @@ export default function Messages() {
                     <Grid item xs={3} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
                         <Carousel
                             className={`${classes.sectionMobile} ${classes.carousel}`}
-                            slidesPerPage={conversations && conversations.length < 6 ? conversations.length : 5}
+                            slidesPerPage={conversations && conversations.length < 7 ? conversations.length : 6}
                             infinite
                         >
                             {conversations && conversations.length > 0 && conversations.map(conversation =>
@@ -449,13 +461,13 @@ export default function Messages() {
                         <Card className={`${classes.card} ${classes.sectionDesktop}`}>
                             <CardContent className={classes.conversations}>
                                 {conversations && conversations.length > 0 && conversations.map(conversation =>
-                                    <div key={conversation.id} className={`${classes.left} ${classes.commentCard} ${classes.lightText}`} onClick={() => getConversation(conversation.id)}>
+                                    <div key={conversation.id} className={`${classes.convoCard} ${classes.lightText}`} onClick={() => getConversation(conversation.id)}>
                                         {conversation.users && conversation.users.map(user =>
                                             (user.id !== userId &&
                                                 <Avatar className={classes.leftAvatar} src={user.profilePicUri} />))}
                                         {conversation.users && conversation.users.map(user =>
                                             (user.id !== userId &&
-                                                user.username))}
+                                                <div className={classes.username}>{user.username}</div>))}
                                     </div>)}
                             </CardContent>
                         </Card>

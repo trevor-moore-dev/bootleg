@@ -12,6 +12,7 @@ import {
 	AppBar,
 	Link,
 	Avatar,
+	Tooltip,
 	Badge,
 } from "@material-ui/core";
 import clsx from "clsx";
@@ -23,6 +24,7 @@ import { useTheme } from "../containers/ThemeContext";
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import Brightness5Icon from '@material-ui/icons/Brightness5';
 import Autosuggest from 'react-autosuggest';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 // Trevor Moore
 // CST-451
@@ -80,6 +82,9 @@ const useStyles = makeStyles(theme => ({
 			display: 'none',
 		},
 	},
+	lightIcon: {
+		color: "#A9A9A9"
+	},
 	text: {
 		color: "dimgrey",
 		marginLeft: "10px",
@@ -121,7 +126,7 @@ export default function NavigationBar() {
 	// Create our styles and declare our state properties:
 	const classes = useStyles();
 	const themeState = useTheme();
-	const { getUserId, authState } = useAuth();
+	const { logout, getUserId, authState } = useAuth();
 	const userId = getUserId();
 	const { get } = useRequest();
 	const [value, setValue] = useState("");
@@ -141,6 +146,11 @@ export default function NavigationBar() {
 		getUsers();
 		return () => { };
 	}, []);
+
+	// Method for handling when the user logs out:
+	const handleLogout = () => {
+		logout();
+	};
 
 	const escapeRegexCharacters = str => {
 		return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -163,8 +173,7 @@ export default function NavigationBar() {
 		return (
 			<Link
 				className={classes.noUnderline}
-				component={RouterLink}
-				to={userId === suggestion.id ? `/my-account` : `/account/${suggestion.id}`}>
+				href={`/user/${suggestion.id}`}>
 				<span className='suggestion-content'>
 					<span className='name'>
 						<div className={classes.avatarContainer}>
@@ -207,61 +216,72 @@ export default function NavigationBar() {
 			>
 				<Toolbar disableGutters={true}>
 					<Logo />
-					<div className={`${classes.search} ${classes.sectionDesktop}`}>
-						<Autosuggest
-							className={classes.searchInput}
-							suggestions={suggestions}
-							onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-							onSuggestionsClearRequested={onSuggestionsClearRequested}
-							getSuggestionValue={getSuggestionValue}
-							renderSuggestion={renderSuggestion}
-							inputProps={inputProps}
-						/>
-					</div>
-					<div className={classes.sectionDesktop}>
-						<Link
-							component={RouterLink}
-							to="/explore">
-							<IconButton className={classes.iconButtons}>
-								<ExploreIcon />
-							</IconButton>
-						</Link>
-						<Link
-							component={RouterLink}
-							to="/messages">
-							<IconButton className={classes.iconButtons}>
-								<Badge color='secondary'>
-									<MailIcon />
-								</Badge>
-							</IconButton>
-						</Link>
-						<Link
-							className={classes.avatarPic}
-							component={RouterLink}
-							to="/my-account">
-							<LazyLoad>
-								<Avatar className={classes.avatarHeader} src={authState.user.profilePic} />
-							</LazyLoad>
-						</Link>
-					</div>
+					{authState.isAuthenticated &&
+						<div className={`${classes.search} ${classes.sectionDesktop}`}>
+							<Autosuggest
+								className={classes.searchInput}
+								suggestions={suggestions}
+								onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+								onSuggestionsClearRequested={onSuggestionsClearRequested}
+								getSuggestionValue={getSuggestionValue}
+								renderSuggestion={renderSuggestion}
+								inputProps={inputProps}
+							/>
+						</div>}
+					{authState.isAuthenticated &&
+						<div className={classes.sectionDesktop}>
+							<Link
+								component={RouterLink}
+								to="/explore">
+								<IconButton className={classes.iconButtons}>
+									<ExploreIcon />
+								</IconButton>
+							</Link>
+							<Link
+								component={RouterLink}
+								to="/messages">
+								<IconButton className={classes.iconButtons}>
+									<Badge color='secondary'>
+										<MailIcon />
+									</Badge>
+								</IconButton>
+							</Link>
+							<Link
+								className={classes.avatarPic}
+								href={`/user/${userId}`}>
+								<LazyLoad>
+									<Avatar className={classes.avatarHeader} src={authState.user.profilePic} />
+								</LazyLoad>
+							</Link>
+						</div>}
 					<div className={`${classes.sectionDesktop} ${classes.toggleTheme}`}>
 						<ToggleTheme />
 					</div>
-					<Link
-						component={RouterLink}
-						to="/search">
-						<IconButton className={classes.sectionMobile}>
-							<Badge color='secondary'>
+					{authState.isAuthenticated &&
+						<Link
+							component={RouterLink}
+							to="/search"
+							className={classes.sectionMobile}>
+							<IconButton className={classes.lightIcon}>
 								<SearchTwoToneIcon />
-							</Badge>
-						</IconButton>
-					</Link>
+							</IconButton>
+						</Link>}
 					<IconButton
 						onClick={() => themeState.toggle()}
 						className={classes.sectionMobile}
 					>
 						{themeState.isDark ? <Brightness5Icon /> : <Brightness4Icon />}
 					</IconButton>
+					{authState.isAuthenticated &&
+						<Tooltip title='Logout'>
+							<IconButton
+								onClick={handleLogout}
+								className={classes.lightIcon}>
+								<Badge color='secondary'>
+									<ExitToAppIcon />
+								</Badge>
+							</IconButton>
+						</Tooltip>}
 				</Toolbar>
 			</AppBar>
 		</div>

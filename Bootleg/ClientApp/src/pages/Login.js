@@ -33,7 +33,16 @@ const useStyles = makeStyles(theme => ({
 		flexDirection: 'column',
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingTop: theme.spacing(3)
+		paddingTop: theme.spacing(8)
+	},
+	gridContainer: {
+		[theme.breakpoints.up('md')]: {
+			width: '30%'
+		},
+	},
+	card: {
+		width: "auto",
+		marginBottom: theme.spacing(8)
 	},
 }));
 
@@ -266,9 +275,9 @@ export default function Login() {
 	// Return the login and register markup:
 	return (
 		<Box className={classes.root}>
-			<Grid container spacing={3}>
-				<Grid item xs={12} sm={6}>
-					<Card>
+			<Grid className={classes.gridContainer} container spacing={3}>
+				<Grid item xs={12}>
+					<Card className={classes.card}>
 						<CardContent>
 							<Box display="flex" flexDirection="column">
 								<Typography variant="h6" align="center">Login</Typography>
@@ -305,9 +314,7 @@ export default function Login() {
 							</Box>
 						</CardContent>
 					</Card>
-				</Grid>
-				<Grid item xs={12} sm={6}>
-					<Card>
+					<Card className={classes.card}>
 						<CardContent>
 							<Box display="flex" flexDirection="column">
 								<Typography variant="h6" align="center">Sign Up</Typography>

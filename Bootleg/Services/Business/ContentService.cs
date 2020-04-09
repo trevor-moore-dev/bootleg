@@ -121,6 +121,35 @@ namespace Bootleg.Services.Business
 			}
 		}
 		/// <summary>
+		/// Method for getting literally all the Content.
+		/// </summary>
+		/// <returns>DTO containing a list of the User's Content.</returns>
+		public async Task<DTO<List<Content>>> GetLiterallyAllContent()
+		{
+			// Surround with try/catch:
+			try
+			{
+				// Get all the content:
+				var literallyAllContent = await _contentDAO.GetAll();
+				// Order the content by date latest posted:
+				var orderedList = literallyAllContent?.OrderByDescending(x => x?.DatePostedUTC)?.Take(100)?.ToList();
+				// Return list of Content inside DTO:
+				return new DTO<List<Content>>()
+				{
+					Data = orderedList,
+					Success = true
+				};
+			}
+			// Catch any exceptions:
+			catch (Exception e)
+			{
+				// Log the exception:
+				LoggerHelper.Log(e);
+				// Throw the exception:
+				throw e;
+			}
+		}
+		/// <summary>
 		/// Method for getting a User's "profile" data: their User data and their Content data.
 		/// </summary>
 		/// <param name="user">User object to get data for.</param>
