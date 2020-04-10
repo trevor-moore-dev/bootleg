@@ -257,11 +257,59 @@ export default function Login() {
 			}
 		}
 	};
+	const loginKeyPressed = (e) => {
+		if (e.key === 'Enter') {
+			handleLoginSubmit();
+		}
+	};
+	const registerKeyPressed = (e) => {
+		if (e.key === 'Enter') {
+			handleRegisterSubmit();
+		}
+	};
 	// Return the login and register markup:
 	return (
 		<Box className={classes.root}>
 			<Grid className={classes.gridContainer} container spacing={3}>
 				<Grid item xs={12}>
+					<Card className={classes.card}>
+						<CardContent>
+							<Box display="flex" flexDirection="column">
+								<Typography variant="h6" align="center">Login</Typography>
+								<TextField
+									autoFocus
+									label="Username or Email"
+									value={loginUsername}
+									onChange={handleLoginUsernameChange}
+									onKeyPress={loginKeyPressed}
+									margin="normal"
+									variant="filled"
+								/>
+								<div style={{ color: "red", marginTop: "5px" }}>
+									{loginUsernameValidationError}
+								</div>
+								<TextField
+									label="Password"
+									type="password"
+									value={loginPassword}
+									onChange={handleLoginPasswordChange}
+									onKeyPress={loginKeyPressed}
+									margin="normal"
+									variant="filled"
+								/>
+								<div style={{ color: "red", marginTop: "5px" }}>
+									{loginPasswordValidationError}
+								</div>
+								<Button
+									variant="contained"
+									onClick={handleLoginSubmit}
+									disabled={submitting}
+								>
+									Login
+								</Button>
+							</Box>
+						</CardContent>
+					</Card>
 					<Card className={classes.card}>
 						<CardContent>
 							<Box display="flex" flexDirection="column">
@@ -271,6 +319,7 @@ export default function Login() {
 									type="email"
 									value={email}
 									onChange={handleEmailChange}
+									onKeyPress={registerKeyPressed}
 									margin="normal"
 									variant="outlined"
 								/>
@@ -281,6 +330,7 @@ export default function Login() {
 									label="Username"
 									value={username}
 									onChange={handleUsernameChange}
+									onKeyPress={registerKeyPressed}
 									margin="normal"
 									variant="outlined"
 								/>
@@ -292,6 +342,7 @@ export default function Login() {
 									type="password"
 									value={password}
 									onChange={handlePasswordChange}
+									onKeyPress={registerKeyPressed}
 									margin="normal"
 									variant="outlined"
 								/>
@@ -316,42 +367,6 @@ export default function Login() {
 										onFailure={responseGoogle}
 									/>
 								</div>
-							</Box>
-						</CardContent>
-					</Card>
-					<Card className={classes.card}>
-						<CardContent>
-							<Box display="flex" flexDirection="column">
-								<Typography variant="h6" align="center">Login</Typography>
-								<TextField
-									autoFocus
-									label="Username or Email"
-									value={loginUsername}
-									onChange={handleLoginUsernameChange}
-									margin="normal"
-									variant="filled"
-								/>
-								<div style={{ color: "red", marginTop: "5px" }}>
-									{loginUsernameValidationError}
-								</div>
-								<TextField
-									label="Password"
-									type="password"
-									value={loginPassword}
-									onChange={handleLoginPasswordChange}
-									margin="normal"
-									variant="filled"
-								/>
-								<div style={{ color: "red", marginTop: "5px" }}>
-									{loginPasswordValidationError}
-								</div>
-								<Button
-									variant="contained"
-									onClick={handleLoginSubmit}
-									disabled={submitting}
-								>
-									Login
-								</Button>
 							</Box>
 						</CardContent>
 					</Card>

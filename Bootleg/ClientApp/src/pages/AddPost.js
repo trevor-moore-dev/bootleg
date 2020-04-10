@@ -215,6 +215,11 @@ export default function AddPost() {
             setNewPostId(response.data.id);
         }
     };
+    const keyPressed = (e) => {
+        if (e.key === 'Enter') {
+            uploadPost();
+        }
+    };
 
     // useEffect hook for getting the current user's followings:
     useEffect(() => {
@@ -249,7 +254,7 @@ export default function AddPost() {
                                 <>
                                     {isImage &&
                                         <LazyLoad>
-                                            <img src={media} alt="Image couldn't load or was deleted :(" className={classes.img} />
+                                            <img src={media} className={classes.img} />
                                         </LazyLoad>}
                                     {isVideo &&
                                         <LazyLoad>
@@ -270,6 +275,7 @@ export default function AddPost() {
                                     multiline
                                     rows="2"
                                     value={contentBody}
+                                    onKeyPress={keyPressed}
                                     onChange={handleContentBodyChange}
                                     rowsMax="8"
                                     label="What's on your mind?"
@@ -288,6 +294,8 @@ export default function AddPost() {
                                         <FilePicker
                                             extensions={["jpeg", "mov", "mp4", "jpg", "img", "png", "wmv", "avi"]}
                                             onChange={handleContentFileChange}
+                                            onKeyPress={keyPressed}
+                                            maxSize='999999'
                                         >
                                             <Tooltip title='Add Picture or Video'>
                                                 <IconButton className={classes.iconButtons}>
@@ -319,9 +327,9 @@ export default function AddPost() {
                             className={classes.text}
                         />
                         <CardContent>
-                            <p className={classes.text}>See what's new...</p>
+                            {followings && followings.length > 0 && <p className={classes.text}>See what's new...</p>}
                             <Carousel
-                                slidesPerPage='5'
+                                slidesPerPage={followings && followings.length < 6 ? followings.length : 5}
                                 className={classes.carousel}
                                 infinite
                             >

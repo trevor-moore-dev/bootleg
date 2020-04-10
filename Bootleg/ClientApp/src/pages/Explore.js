@@ -173,7 +173,7 @@ export default function Explore() {
                 <Grid item xs className={classes.container}>
                     <div className={classes.carousel}>
                         <Carousel
-                            slidesPerPage='6'
+                            slidesPerPage={users && users.length < 7 ? users.length : 6}
                             infinite
                         >
                             {users && users.length > 0 && users.map(user =>

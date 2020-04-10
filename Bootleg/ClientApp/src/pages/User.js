@@ -338,7 +338,11 @@ export default function User() {
             setSendMessage(true);
         }
     };
-
+    const keyPressed = (e) => {
+        if (e.key === 'Enter') {
+            handleUpdateAccount();
+        }
+    };
     // Return our markup:
     return (
         <Box className={classes.root}>
@@ -349,12 +353,13 @@ export default function User() {
                         <FilePicker
                             extensions={["jpeg", "mov", "mp4", "jpg", "img", "png", "wmv", "avi"]}
                             onChange={handleProfilePicChange}
+                            maxSize='999999'
                         >
                             <Avatar className={classes.avatar} src={profilePicUri} />
                         </FilePicker>
                     </div>
                     <div className={classes.accountDetailsContainer}>
-                        {editAccount ? <TextField value={username} onChange={handleUsernameChange} className={classes.info} variant="filled" /> :
+                        {editAccount ? <TextField value={username} label='Username' onChange={handleUsernameChange} onKeyPress={keyPressed} className={classes.info} variant="filled" /> :
                             <div className={classes.username}>
                                 {username}
                                 <Tooltip title='Edit' placement='right'>
@@ -363,8 +368,8 @@ export default function User() {
                                     </IconButton>
                                 </Tooltip>
                             </div>}
-                        {editAccount ? <TextField value={bio} onChange={handleBioChange} className={classes.info} variant="filled" /> : <div className={classes.info}>{bio}</div>}
-                        {editAccount ? <TextField value={email} onChange={handleEmailChange} className={classes.info} variant="filled" /> : <div className={classes.info}>{email}</div>}
+                        {editAccount ? <TextField value={bio} label='Bio' onChange={handleBioChange} onKeyPress={keyPressed} className={classes.info} variant="filled" /> : <div className={classes.info}>{bio}</div>}
+                        {editAccount ? <TextField value={email} label='Email' onChange={handleEmailChange} onKeyPress={keyPressed} className={classes.info} variant="filled" /> : <div className={classes.info}>{email}</div>}
                         {editAccount &&
                             <div className={classes.actionsContainer}>
                                 <Tooltip title='Cancel'>
@@ -416,6 +421,15 @@ export default function User() {
                 </div>}
             <Grid container spacing={3}>
                 <Grid item xs className={classes.container}>
+                    {id === userId && !(uploads && uploads.length > 0) &&
+                        <Link
+                            className={classes.link}
+                            component={RouterLink}
+                            to="/create">
+                            <Button variant="contained">
+                                Add Post
+                            </Button>
+                        </Link>}
                     {uploads && uploads.length > 0 && uploads.map(content =>
                         <div key={content.id} className={`${classes.media} ${classes.card}`}>
                             <Link

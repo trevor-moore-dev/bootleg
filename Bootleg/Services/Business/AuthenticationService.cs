@@ -75,6 +75,7 @@ namespace Bootleg.Services.Business.Interfaces
 					// Instantiate new User to be inserted into the database using credentials:
 					var user = new User()
 					{
+						ProfilePicUri = payload.Picture,
 						Email = payload.Email,
 						Username = payload.Email,
 						Password = securePassword,

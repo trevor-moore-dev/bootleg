@@ -14,7 +14,9 @@ import config from '../config.json';
 import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
 import { FilePicker } from "react-file-picker";
 import useRequest from '../hooks/useRequest';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import useAuth from "../hooks/useAuth";
+import LazyLoad from 'react-lazyload';
 import { Link as RouterLink, Redirect } from 'react-router-dom';
 import {
     Fab,
@@ -99,8 +101,13 @@ const useStyles = makeStyles(theme => ({
         }
     },
     filePickerButton: {
+        color: "#A9A9A9",
         marginLeft: "10px",
-        marginRight: "10px"
+        marginRight: "10px",
+        '&:hover': {
+            cursor: "pointer"
+        },
+        cursor: "pointer",
     },
     postInput: {
         width: "100%"
@@ -164,6 +171,15 @@ const useStyles = makeStyles(theme => ({
     lukeypookey: {
         width: '95%'
     },
+    filePreview: {
+        transform: 'translateY(-103%)',
+        position: 'absolute',
+    },
+    mediaPreview: {
+        maxHeight: '40vh',
+        maxWidth: '90vw',
+        outline: 'none',
+    },
     avatar: {
         height: '24px',
         width: '24px'
@@ -185,11 +201,10 @@ export default function Footer() {
     const [value, setValue] = React.useState('recents');
     const location = useLocation();
     const { post } = useRequest();
-
+    const [media, setMedia] = useState(null);
+    const [isImage, setIsImage] = useState(false);
+    const [isVideo, setIsVideo] = useState(false);
     // Our state change handlers:
-    const handleMessageFileChange = file => {
-        setMessageFile(file);
-    };
     const handleMessageBodyChange = e => {
         setMessageBody(e.target.value);
     };
@@ -199,9 +214,31 @@ export default function Footer() {
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+    const handleMessageFileChange = file => {
+        let reader = new FileReader();
+        reader.onloadend = () => {
+            setMessageFile(file);
+            setMedia(reader.result);
+        }
+        reader.readAsDataURL(file);
+        let extension = file.name.split('.').pop().toLowerCase(),
+            image = ["jpeg", "jpg", "img", "png"].indexOf(extension) > -1,
+            video = ["mov", "mp4", "wmv", "avi"].indexOf(extension) > -1;
+        setIsImage(image);
+        setIsVideo(video);
+    };
+    const removeFile = () => {
+        setMessageFile(null);
+        setMedia(null);
+        setIsImage(false);
+        setIsVideo(false);
+    };
     const handleMessageClose = () => {
         setMessageBody("");
         setMessageFile(null);
+        setMedia(null);
+        setIsImage(false);
+        setIsVideo(false);
     };
     // Method for sending a new message:
     const sendMessage = async () => {
@@ -251,34 +288,66 @@ export default function Footer() {
             }
         }
     };
-
+    const sendMessageKeyPressed = (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    };
+    const commentKeyPressed = (e) => {
+        if (e.key === 'Enter') {
+            postComment();
+        }
+    };
     // Return our footer:
     return (
         <>
             <BottomNavigation value={value} onChange={handleChange} className={classes.stickToBottom}>
+                {media &&
+                    <div className={classes.filePreview}>
+                        {isImage &&
+                            <LazyLoad>
+                                <img src={media} className={classes.mediaPreview} />
+                            </LazyLoad>}
+                        {isVideo &&
+                            <LazyLoad>
+                                <video className={classes.mediaPreview} loop controls autoPlay>
+                                    <source src={media} type="video/mp4" />
+                                    <source src={media} type="video/webm" />
+                                    <source src={media} type="video/ogg" />
+                                    <p className={classes.text}>Your browser does not support our videos :(</p>
+                                </video>
+                            </LazyLoad>}
+                    </div>}
                 <div className={classes.lukeypookey}>
                     {location.pathname.toLowerCase().includes("/messages") &&
                         <div className={classes.messageInput}>
                             <Box className={classes.messageBox}>
                                 <TextField
                                     className={classes.postInput}
+                                    onKeyPress={sendMessageKeyPressed}
                                     value={messageBody}
                                     onChange={handleMessageBodyChange}
                                     label="Send a Message :)"
                                     variant="outlined"
                                 />
-                                <FilePicker
-                                    extensions={["jpeg", "mov", "mp4", "jpg", "img", "png", "wmv", "avi"]}
-                                    onChange={handleMessageFileChange}
-                                    className={classes.fileUpload}
-                                >
-                                    <IconButton color="inherit" className={classes.filePickerButton}>
-                                        {messageFile && messageFile.length > 0 ?
-                                            <Badge badgeContent={1} color='secondary'>
-                                                <AddPhotoAlternateIcon />
-                                            </Badge> : <AddPhotoAlternateIcon />}
+                                {messageFile ?
+                                    <IconButton
+                                        className={classes.filePickerButton}
+                                        onClick={removeFile}>
+                                        <HighlightOffIcon />
                                     </IconButton>
-                                </FilePicker>
+                                    :
+                                    <FilePicker
+                                        extensions={["jpeg", "mov", "mp4", "jpg", "img", "png", "wmv", "avi"]}
+                                        onChange={handleMessageFileChange}
+                                        onKeyPress={sendMessageKeyPressed}
+                                        className={classes.fileUpload}
+                                        maxSize='999999'
+                                    >
+                                        <IconButton color="inherit" className={classes.filePickerButton}>
+                                            <AddPhotoAlternateIcon />
+                                        </IconButton>
+                                    </FilePicker>}
                                 <IconButton
                                     className={classes.uploadButton}
                                     onClick={sendMessage}>
@@ -292,6 +361,7 @@ export default function Footer() {
                                 <TextField
                                     className={classes.postInput}
                                     value={commentBody}
+                                    onKeyPress={commentKeyPressed}
                                     onChange={handleCommentBodyChange}
                                     label="Post a Comment :)"
                                     variant="outlined"

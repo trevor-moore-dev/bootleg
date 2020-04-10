@@ -9,6 +9,7 @@ import useAuth from "../hooks/useAuth";
 import LazyLoad from 'react-lazyload';
 import { formatDate } from "../helpers/dateHelper";
 import { Link as RouterLink } from 'react-router-dom';
+import Emoji from 'react-emoji-render';
 import Carousel, { Dots } from '@brainhubeu/react-carousel';
 import '@brainhubeu/react-carousel/lib/style.css';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -141,6 +142,10 @@ const useStyles = makeStyles(theme => ({
 	centeralign: {
 		margin: 'auto',
 		display: 'block'
+	},
+	textCenter: {
+		textAlign: 'center',
+		color: theme.superb
 	}
 }));
 
@@ -258,7 +263,7 @@ export default function Home() {
 			<Grid className={classes.grid} container spacing={3}>
 				<Grid item xs={8} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
 					<Carousel
-						slidesPerPage='6'
+						slidesPerPage={followings && followings.length < 7 ? followings.length : 6}
 						className={`${classes.sectionMobile} ${classes.carousel}`}
 						infinite
 					>
@@ -343,7 +348,10 @@ export default function Home() {
 							</CardActions>
 						</Card>
 					)) :
-						<CircularProgress className={classes.centeralign} />}
+						(followings && followings.length > 0 ?
+							<CircularProgress className={classes.centeralign} />
+							:
+							<div className={classes.textCenter}>You aren't following anyone... <Link className={classes.link} component={RouterLink} to="/explore">explore</Link> and get connected! <Emoji text=":sunglasses:" /></div>)}
 				</Grid>
 				<Grid item xs={4} className={`${classes.profileGrid} ${classes.spaceGrid}`}>
 					<Card className={classes.card}>
@@ -357,9 +365,9 @@ export default function Home() {
 							className={classes.text}
 						/>
 						<CardContent>
-							<p className={classes.text}>See what's new...</p>
+							{followings && followings.length > 0 && <p className={classes.text}>See what's new <Emoji text=":zap:" /></p>}
 							<Carousel
-								slidesPerPage='5'
+								slidesPerPage={followings && followings.length < 6 ? followings.length : 5}
 								className={classes.carousel}
 								infinite
 							>

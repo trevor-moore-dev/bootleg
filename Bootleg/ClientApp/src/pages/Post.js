@@ -246,7 +246,11 @@ export default function Post() {
         });
         setHasDisliked(false);
     };
-
+    const keyPressed = (e) => {
+        if (e.key === 'Enter') {
+            postComment();
+        }
+    };
     // Return our markup:
     return (
         <Box className={classes.box}>
@@ -351,6 +355,7 @@ export default function Post() {
                                 className={classes.commentInput}
                                 value={newComment}
                                 onChange={handleNewCommentChange}
+                                onKeyPress={keyPressed}
                                 label="Post a Comment :)"
                                 variant="outlined"
                             />

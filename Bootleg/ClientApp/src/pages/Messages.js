@@ -14,8 +14,10 @@ import LazyLoad from 'react-lazyload';
 import Emoji from 'react-emoji-render';
 import Carousel, { Dots } from '@brainhubeu/react-carousel';
 import '@brainhubeu/react-carousel/lib/style.css';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import {
     Box,
+    Tooltip,
     CardHeader,
     IconButton,
     CardContent,
@@ -65,6 +67,7 @@ const useStyles = makeStyles(theme => ({
         fontSize: '16px',
         alignItems: 'center',
         margin: '16px 16px 16px 16px',
+        color: theme.text,
     },
     commentInput: {
         width: "100%",
@@ -77,6 +80,18 @@ const useStyles = makeStyles(theme => ({
             cursor: 'pointer'
         }
     },
+    filePreview: {
+        transform: 'translateY(-103%)',
+        position: 'absolute',
+        display: 'flex',
+        alignItems: 'center',
+        margin: '14px 16px 16px 16px'
+    },
+    mediaPreview: {
+        maxHeight: '40vh',
+        maxWidth: '40vw',
+        outline: 'none',
+    },
     text: {
         color: theme.text
     },
@@ -85,7 +100,7 @@ const useStyles = makeStyles(theme => ({
         cursor: "pointer"
     },
     iconButtons: {
-        color: "#A9A9A9"
+        color: theme.general.light,
     },
     box: {
         display: 'flex',
@@ -135,6 +150,14 @@ const useStyles = makeStyles(theme => ({
         textAlign: 'center',
         margin: 'auto',
         color: theme.lightText
+    },
+    otherThingy: {
+        marginBottom: theme.spacing(2),
+        fontSize: '16px',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        margin: 'auto',
+        color: theme.lightText,
     },
     lightText: {
         color: theme.text
@@ -277,6 +300,9 @@ export default function Messages() {
     const [messageBody, setMessageBody] = useState("");
     const [messageFile, setMessageFile] = useState(null);
     const [convoSelected, setConvoSelected] = useState(false);
+    const [media, setMedia] = useState(null);
+    const [isImage, setIsImage] = useState(false);
+    const [isVideo, setIsVideo] = useState(false);
     const { getUserId, getConnection, storeId, storeConnection, resetConnection, getId, getToken } = useAuth();
     const userId = getUserId();
     const { get } = useRequest();
@@ -292,7 +318,23 @@ export default function Messages() {
         }
     };
     const handleMessageFileChange = file => {
-        setMessageFile(file);
+        let reader = new FileReader();
+        reader.onloadend = () => {
+            setMessageFile(file);
+            setMedia(reader.result);
+        }
+        reader.readAsDataURL(file);
+        let extension = file.name.split('.').pop().toLowerCase(),
+            image = ["jpeg", "jpg", "img", "png"].indexOf(extension) > -1,
+            video = ["mov", "mp4", "wmv", "avi"].indexOf(extension) > -1;
+        setIsImage(image);
+        setIsVideo(video);
+    };
+    const removeFile = () => {
+        setMessageFile(null);
+        setMedia(null);
+        setIsImage(false);
+        setIsVideo(false);
     };
     const handleMessageBodyChange = e => {
         setMessageBody(e.target.value);
@@ -300,6 +342,9 @@ export default function Messages() {
     const handleMessageClose = () => {
         setMessageBody("");
         setMessageFile(null);
+        setMedia(null);
+        setIsImage(false);
+        setIsVideo(false);
     };
     // Method for sending a new message:
     const sendMessage = async () => {
@@ -387,6 +432,11 @@ export default function Messages() {
             setConversations(response.data);
         }
     };
+    const keyPressed = (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    };
     // useEffect hook for getting all a user's conversations:
     useEffect(() => {
         async function getSignalRConnection() {
@@ -439,6 +489,10 @@ export default function Messages() {
                                             <div className={classes.ellipsis}>{user.username}</div>))}
                                 </div>)}
                         </Carousel>
+                        {convoSelected ?
+                            (conversations && conversations.length > 0 && conversations.find(convo => convo.id === currentId).users.map(user => (user.id !== userId) && <div className={classes.otherThingy}>{user.username}</div>))
+                            :
+                            <div className={classes.otherThingy}>Messages</div>}
                         <div className={classes.sectionMobile}>
                             {messagesRef.current && messagesRef.current.length > 0 ?
                                 <>
@@ -471,7 +525,7 @@ export default function Messages() {
                                                         </LazyLoad>
                                                     ) : (
                                                             <LazyLoad>
-                                                                <video className={userId === message.userId ? `${classes.video} ${classes.right}` : `${classes.video} ${classes.left}`} loop controls autoPlay>
+                                                                <video className={userId === message.userId ? `${classes.messageVideo} ${classes.right}` : `${classes.messageVideo} ${classes.left}`} loop controls autoPlay>
                                                                     <source src={message.mediaUri} type="video/mp4" />
                                                                     <source src={message.mediaUri} type="video/webm" />
                                                                     <source src={message.mediaUri} type="video/ogg" />
@@ -492,7 +546,10 @@ export default function Messages() {
                                     </div>
                                     :
                                     <div className={classes.thingy}>
-                                        Select a conversation to see your messages <Emoji text=":zap:" />
+                                        {conversations && conversations.length > 0 ?
+                                            <>Select a conversation to see your messages <Emoji text=":zap:" /></>
+                                            :
+                                            <>You have no messages... find a friend to send your first message! <Emoji text=":smile:" /></>}
                                     </div>)}
                         </div>
                         <Card className={`${classes.card} ${classes.sectionDesktop}`}>
@@ -562,31 +619,59 @@ export default function Messages() {
                                         </div>
                                         :
                                         <div className={classes.thingy}>
-                                            Select a conversation to see your messages <Emoji text=":zap:" />
+                                            {conversations && conversations.length > 0 ?
+                                                <>Select a conversation to see your messages <Emoji text=":zap:" /></>
+                                                :
+                                                <>You have no messages... find a friend to send your first message! <Emoji text=":smile:" /></>}
                                         </div>)}
                             </CardContent>
+                            {media &&
+                                <div className={classes.filePreview}>
+                                    {isImage &&
+                                        <LazyLoad>
+                                            <img src={media} className={classes.mediaPreview} />
+                                        </LazyLoad>}
+                                    {isVideo &&
+                                        <LazyLoad>
+                                            <video className={classes.mediaPreview} loop controls autoPlay>
+                                                <source src={media} type="video/mp4" />
+                                                <source src={media} type="video/webm" />
+                                                <source src={media} type="video/ogg" />
+                                                <p className={classes.text}>Your browser does not support our videos :(</p>
+                                            </video>
+                                        </LazyLoad>}
+                                </div>}
                             <Box className={classes.commentContainer}>
                                 <TextField
-                                    multiline
-                                    rowsMax="8"
                                     className={classes.commentInput}
                                     value={messageBody}
                                     onChange={handleMessageBodyChange}
+                                    onKeyPress={keyPressed}
                                     label="Send a Message :)"
                                     variant="outlined"
                                 />
-                                <FilePicker
-                                    extensions={["jpeg", "mov", "mp4", "jpg", "img", "png", "wmv", "avi"]}
-                                    onChange={handleMessageFileChange}
-                                    className={classes.fileUpload}
-                                >
-                                    <IconButton color="inherit" className={classes.filePickerButton}>
-                                        {messageFile && messageFile.length > 0 ?
-                                            <Badge badgeContent={1} color='secondary'>
+                                {messageFile ?
+                                    <Tooltip title='Remove File'>
+                                        <IconButton
+                                            className={classes.iconButtons}
+                                            onClick={removeFile}>
+                                            <HighlightOffIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                    :
+                                    <FilePicker
+                                        extensions={["jpeg", "mov", "mp4", "jpg", "img", "png", "wmv", "avi"]}
+                                        onChange={handleMessageFileChange}
+                                        onKeyPress={keyPressed}
+                                        className={classes.fileUpload}
+                                        maxSize='999999'
+                                    >
+                                        <Tooltip title='Add Picture or Video'>
+                                            <IconButton className={classes.iconButtons}>
                                                 <AddPhotoAlternateIcon />
-                                            </Badge> : <AddPhotoAlternateIcon />}
-                                    </IconButton>
-                                </FilePicker>
+                                            </IconButton>
+                                        </Tooltip>
+                                    </FilePicker>}
                                 <IconButton
                                     className={classes.uploadButton}
                                     onClick={sendMessage}>
