@@ -139,33 +139,32 @@ namespace Bootleg
 				// Inject our DAOs as Singletons using our DEV parameters:
 				services.AddSingleton<IDAO<User>>(service => new UserDAO(
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
-					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
-					Configuration["ConnectionStrings:LocalMongoDBCollectionOne"]));
+					Configuration["ConnectionStrings:MongoDBDatabase"],
+					Configuration["ConnectionStrings:MongoDBCollectionOne"]));
 				services.AddSingleton<IDAO<Content>>(service => new ContentDAO(
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
-					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
-					Configuration["ConnectionStrings:LocalMongoDBCollectionTwo"]));
+					Configuration["ConnectionStrings:MongoDBDatabase"],
+					Configuration["ConnectionStrings:MongoDBCollectionTwo"]));
 				services.AddSingleton<IDAO<Conversation>>(service => new ConversationDAO(
 					Configuration["ConnectionStrings:LocalMongoDBConnection"],
-					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
-					Configuration["ConnectionStrings:LocalMongoDBCollectionThree"]));
+					Configuration["ConnectionStrings:MongoDBDatabase"],
+					Configuration["ConnectionStrings:MongoDBCollectionThree"]));
 			}
 			else
 			{
 				// Inject our DAO as a Singleton using our LIVE parameters:
-				// TO DOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO NEED TO CHANGE THESE CONNECTION STRINGS:
 				services.AddSingleton<IDAO<User>>(service => new UserDAO(
-					Configuration["ConnectionStrings:LocalMongoDBConnection"],
-					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
-					Configuration["ConnectionStrings:LocalMongoDBCollectionOne"]));
+					Configuration["ConnectionStrings:AzureMongoDBConnection"],
+					Configuration["ConnectionStrings:MongoDBDatabase"],
+					Configuration["ConnectionStrings:MongoDBCollectionOne"]));
 				services.AddSingleton<IDAO<Content>>(service => new ContentDAO(
-					Configuration["ConnectionStrings:LocalMongoDBConnection"],
-					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
-					Configuration["ConnectionStrings:LocalMongoDBCollectionTwo"]));
+					Configuration["ConnectionStrings:AzureMongoDBConnection"],
+					Configuration["ConnectionStrings:MongoDBDatabase"],
+					Configuration["ConnectionStrings:MongoDBCollectionTwo"]));
 				services.AddSingleton<IDAO<Conversation>>(service => new ConversationDAO(
-					Configuration["ConnectionStrings:LocalMongoDBConnection"],
-					Configuration["ConnectionStrings:LocalMongoDBDatabase"],
-					Configuration["ConnectionStrings:LocalMongoDBCollectionThree"]));
+					Configuration["ConnectionStrings:AzureMongoDBConnection"],
+					Configuration["ConnectionStrings:MongoDBDatabase"],
+					Configuration["ConnectionStrings:MongoDBCollectionThree"]));
 			}
 			// Inject our Blob service as a Singleton:
 			services.AddSingleton<IBlobService, BlobService>(service => new BlobService(

@@ -64,6 +64,7 @@ namespace Bootleg.Controllers
                 // Return success if no exceptions are thrown:
                 return new DTO<bool>()
                 {
+                    Id = content.Data.Item1.Id,
                     Success = true
                 };
             }
