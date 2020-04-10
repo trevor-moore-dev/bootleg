@@ -281,11 +281,6 @@ namespace Bootleg.Services.Business
 					currentUser.Password = securePassword;
 					currentUser.Salt = salt;
 				}
-				// If form keys contain phone, set the phone:
-				if (request.Form.Keys.Contains("phone"))
-				{
-					currentUser.Phone = request.Form["phone"];
-				}
 				// If form keys contain bio, set the bio:
 				if (request.Form.Keys.Contains("bio"))
 				{

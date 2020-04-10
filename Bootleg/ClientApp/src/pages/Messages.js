@@ -51,16 +51,23 @@ const useStyles = makeStyles(theme => ({
         height: "80vh",
     },
     messages: {
-        height: "72vh",
+        height: "64vh",
         overflow: 'scroll'
     },
     commentContainer: {
         display: 'flex',
         alignItems: 'center',
-        margin: '0 16px 16px 16px'
+        margin: '14px 16px 16px 16px'
+    },
+    convoTitleContainer: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: '16px',
+        alignItems: 'center',
+        margin: '16px 16px 16px 16px',
     },
     commentInput: {
-        width: "100%"
+        width: "100%",
     },
     commentCard: {
         marginBottom: '15px',
@@ -214,6 +221,10 @@ const useStyles = makeStyles(theme => ({
         float: 'left',
         width: '100%',
         display: 'flex',
+        cursor: "pointer",
+        '&:hover': {
+            cursor: "pointer"
+        }
     },
     messageContainer: {
         width: '100%',
@@ -236,7 +247,7 @@ const useStyles = makeStyles(theme => ({
     },
     profileThing: {
         fontSize: '8px',
-        display: 'grid'
+        display: 'grid',
     },
     mobileAvatar: {
         margin: 'auto'
@@ -265,6 +276,7 @@ export default function Messages() {
     const [update, setUpdate] = useState(currentTicks());
     const [messageBody, setMessageBody] = useState("");
     const [messageFile, setMessageFile] = useState(null);
+    const [convoSelected, setConvoSelected] = useState(false);
     const { getUserId, getConnection, storeId, storeConnection, resetConnection, getId, getToken } = useAuth();
     const userId = getUserId();
     const { get } = useRequest();
@@ -273,7 +285,6 @@ export default function Messages() {
     const currentId = getId();
     const userToken = getToken();
     const bottomRef = useRef(null);
-
     // Our state change handlers:
     const scrollToBottom = () => {
         if (bottomRef.current) {
@@ -290,7 +301,6 @@ export default function Messages() {
         setMessageBody("");
         setMessageFile(null);
     };
-
     // Method for sending a new message:
     const sendMessage = async () => {
         // Create form data object and append data:
@@ -320,27 +330,15 @@ export default function Messages() {
             handleMessageClose();
         }
     };
-
     const establishConnection = (conn, id) => {
-        conn.onclose(() => {
-            resetConnection();
-            alert('Please refresh the page :)');
-            console.log('Connection with SignalR has closed.');
-        });
-        // Set the on event so that data will update on invocation:
-        conn.on(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, (response) => {
-            messagesRef.current.push(response);
-            setUpdate(currentTicks());
-            scrollToBottom();
-        });
         // Invoke joining the current conversation:
         conn.invoke(config.SIGNALR_CONVERSATION_HUB_JOIN_CONVERSATION, id);
         // Dispatch the connection into the store:
         storeConnection(conn);
     };
-
     // For getting the conversation and setting up the SignalR connection:
     const getConversation = async (id) => {
+        setConvoSelected(true);
         // Save the id in the store so other components can use it:
         storeId(id);
         // Get the conversation:
@@ -364,11 +362,21 @@ export default function Messages() {
             await conn.start()
                 .catch((error) => console.log('Error while starting connection :(  Error:' + error));
             console.log('Connected to SignalR!');
+            conn.onclose(() => {
+                resetConnection();
+                alert('Please refresh the page :)');
+                console.log('Connection with SignalR has closed.');
+            });
+            // Set the on event so that data will update on invocation:
+            conn.on(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, (response) => {
+                messagesRef.current.push(response);
+                setUpdate(currentTicks());
+                scrollToBottom();
+            });
             establishConnection(conn, id);
         }
         scrollToBottom();
     };
-
     const getConversations = async () => {
         // Send get request for conversations:
         const response = await get(config.MESSAGING_GET_ALL_CONVERSATIONS_GET, {
@@ -378,14 +386,37 @@ export default function Messages() {
         if (response.success) {
             setConversations(response.data);
         }
-    }
-
+    };
     // useEffect hook for getting all a user's conversations:
     useEffect(() => {
+        async function getSignalRConnection() {
+            if (!connection) {
+                // Build the SignalR connection and start it:
+                const conn = new HubConnectionBuilder()
+                    .withUrl(config.SIGNALR_CONVERSATION_HUB)
+                    .build();
+                // Start the SignalR connection and start it:
+                await conn.start()
+                    .catch((error) => console.log('Error while starting connection :(  Error:' + error));
+                console.log('Connected to SignalR!');
+                conn.onclose(() => {
+                    resetConnection();
+                    alert('Please refresh the page :)');
+                    console.log('Connection with SignalR has closed.');
+                });
+                // Set the on event so that data will update on invocation:
+                conn.on(config.SIGNALR_CONVERSATION_HUB_SEND_MESSAGE, (response) => {
+                    messagesRef.current.push(response);
+                    setUpdate(currentTicks());
+                    scrollToBottom();
+                });
+                storeConnection(conn);
+            }
+        }
+        getSignalRConnection();
         getConversations();
         return () => { };
     }, []);
-
     // Return our markup:
     return (
         <>
@@ -455,9 +486,15 @@ export default function Messages() {
                                     </FadeIn>
                                 </>
                                 :
-                                <div className={classes.thingy}><Emoji text=":zap:" />Select a conversation to see your messages :)</div>}
+                                (convoSelected ?
+                                    <div className={classes.thingy}>
+                                        Conversation is empty... send your first message! <Emoji text=":smile:" />
+                                    </div>
+                                    :
+                                    <div className={classes.thingy}>
+                                        Select a conversation to see your messages <Emoji text=":zap:" />
+                                    </div>)}
                         </div>
-
                         <Card className={`${classes.card} ${classes.sectionDesktop}`}>
                             <CardContent className={classes.conversations}>
                                 {conversations && conversations.length > 0 && conversations.map(conversation =>
@@ -474,6 +511,12 @@ export default function Messages() {
                     </Grid>
                     <Grid item xs={9} className={`${classes.profileGrid} ${classes.spaceGrid}`}>
                         <Card className={classes.messagesContainer}>
+                            <Box className={classes.convoTitleContainer}>
+                                {convoSelected ?
+                                    (conversations && conversations.length > 0 && conversations.find(convo => convo.id === currentId).users.map(user => (user.id !== userId) && user.username))
+                                    :
+                                    'Messages'}
+                            </Box>
                             <CardContent className={classes.messages}>
                                 {messagesRef.current && messagesRef.current.length > 0 ?
                                     <>
@@ -513,7 +556,14 @@ export default function Messages() {
                                         </FadeIn>
                                     </>
                                     :
-                                    <div className={classes.thingy}><Emoji text=":zap:" />Select a conversation to see your messages :)</div>}
+                                    (convoSelected ?
+                                        <div className={classes.thingy}>
+                                            Conversation is empty... send your first message! <Emoji text=":smile:" />
+                                        </div>
+                                        :
+                                        <div className={classes.thingy}>
+                                            Select a conversation to see your messages <Emoji text=":zap:" />
+                                        </div>)}
                             </CardContent>
                             <Box className={classes.commentContainer}>
                                 <TextField

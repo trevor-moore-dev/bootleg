@@ -9,26 +9,21 @@ import { useLocation } from "react-router";
 import { makeStyles } from "@material-ui/core/styles";
 import EditIcon from '@material-ui/icons/Edit';
 import SendIcon from '@material-ui/icons/Send';
-import CloseIcon from '@material-ui/icons/Close';
 import Axios from "axios";
 import config from '../config.json';
 import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
-import AddIcon from '@material-ui/icons/Add';
 import { FilePicker } from "react-file-picker";
 import useRequest from '../hooks/useRequest';
 import useAuth from "../hooks/useAuth";
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, Redirect } from 'react-router-dom';
 import {
     Fab,
     IconButton,
-    Snackbar,
     Link,
-    SnackbarContent,
     Badge,
     Box,
     Avatar,
     TextField,
-    Tooltip,
 } from '@material-ui/core';
 
 // Trevor Moore
@@ -179,8 +174,6 @@ const useStyles = makeStyles(theme => ({
 export default function Footer() {
     // Create our styles and declare our state properties:
     const classes = useStyles();
-    const [contentBody, setContentBody] = useState("");
-    const [contentFile, setContentFile] = useState(null);
     const [messageBody, setMessageBody] = useState("");
     const [messageFile, setMessageFile] = useState(null);
     const [commentBody, setCommentBody] = useState("");
@@ -194,12 +187,6 @@ export default function Footer() {
     const { post } = useRequest();
 
     // Our state change handlers:
-    const handleContentFileChange = file => {
-        setContentFile(file);
-    };
-    const handleContentBodyChange = e => {
-        setContentBody(e.target.value);
-    };
     const handleMessageFileChange = file => {
         setMessageFile(file);
     };
@@ -212,15 +199,10 @@ export default function Footer() {
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
-    const handleContentClose = () => {
-        setContentBody("");
-        setContentFile(null);
-    };
     const handleMessageClose = () => {
         setMessageBody("");
         setMessageFile(null);
     };
-
     // Method for sending a new message:
     const sendMessage = async () => {
         // Create form data object and append data:
@@ -250,7 +232,6 @@ export default function Footer() {
             handleMessageClose();
         }
     };
-
     // Method for posting a new comment:
     const postComment = async () => {
         // If commentBody is truthy, post it:
@@ -266,33 +247,8 @@ export default function Footer() {
             // If Request was successful:
             if (response.success) {
                 setCommentBody('');
+                window.location.reload();
             }
-        }
-    };
-
-    // Method for uploading a post:
-    const uploadPost = async () => {
-        // Create new FormData object to hold files:
-        let formData = new FormData();
-        // Append file if it's there:
-        if (contentFile) {
-            formData.append('file', contentFile);
-        }
-        // Append contentBody and userId:
-        formData.append('contentBody', contentBody);
-        formData.append('userId', userId);
-        // Send post request:
-        let response = await Axios.post(
-            config.CONTENT_UPLOAD_CONTENT_POST,
-            formData,
-            {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: "Bearer " + userToken
-                }
-            });
-        if (response.data.success) {
-            handleContentClose();
         }
     };
 
@@ -364,47 +320,6 @@ export default function Footer() {
                     <EditIcon />
                 </Fab>
             </Link>
-            <Snackbar open={false} className={classes.snackbar}>
-                <SnackbarContent
-                    className={classes.snackbarContent}
-                    message={
-                        <>
-                            <Box className={classes.box}>
-                                <TextField
-                                    className={classes.postInput}
-                                    autoFocus
-                                    multiline
-                                    value={contentBody}
-                                    onChange={handleContentBodyChange}
-                                    rowsMax="8"
-                                    label="Create a New Post :)"
-                                    variant="outlined"
-                                />
-                                <FilePicker
-                                    extensions={["jpeg", "mov", "mp4", "jpg", "img", "png", "wmv", "avi"]}
-                                    onChange={handleContentFileChange}
-                                    className={classes.fileUpload}
-                                >
-                                    <IconButton color="inherit" className={classes.filePickerButton}>
-                                        {contentFile && contentFile.length > 0 ?
-                                            <Badge badgeContent={1} color='secondary'>
-                                                <AddPhotoAlternateIcon />
-                                            </Badge> : <AddPhotoAlternateIcon />}
-                                    </IconButton>
-                                </FilePicker>
-                                <IconButton
-                                    className={classes.uploadButton}
-                                    onClick={uploadPost}>
-                                    <AddIcon />
-                                </IconButton>
-                            </Box>
-                        </>}
-                    action={
-                        <IconButton className={classes.closeButton} onClick={handleContentClose}>
-                            <CloseIcon />
-                        </IconButton>}
-                />
-            </Snackbar>
         </>
     );
 }

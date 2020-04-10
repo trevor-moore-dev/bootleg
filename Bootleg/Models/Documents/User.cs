@@ -28,8 +28,6 @@ namespace Bootleg.Models.Documents
 		public string Password { get; set; }
 		[EmailAddress]
 		public string Email { get; set; }
-		[Phone]
-		public string Phone { get; set; }
 		[BsonRequired]
 		public byte[] Salt { get; set; }
 		public string Bio { get; set; }

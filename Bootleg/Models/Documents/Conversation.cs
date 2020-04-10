@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 
 // Trevor Moore
@@ -19,7 +20,7 @@ namespace Bootleg.Models.Documents
 		public string Id { get; set; }
 		[BsonRequired]
 		public List<User> Users { get; set; }
-		public string ConversationName { get; set; } = "Group Conversation";
+		public DateTime DatePostedUTC { get; set; }
 		public List<Message> Messages { get; set; }
 	}
 }

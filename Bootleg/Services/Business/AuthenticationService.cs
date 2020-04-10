@@ -77,7 +77,6 @@ namespace Bootleg.Services.Business.Interfaces
 					{
 						Email = payload.Email,
 						Username = payload.Email,
-						Phone = string.Empty,
 						Password = securePassword,
 						Salt = salt
 					};
@@ -85,7 +84,6 @@ namespace Bootleg.Services.Business.Interfaces
 					await _userDAO.Add(user);
 					// Generate a JWT so that the user can login:
 					jwt = TokenHelper.GenerateToken(payload.Email, AppSettingsModel.AppSettings.JwtSecret, user.Id, payload.Picture);
-
 				}
 				// Add the token to a cookie:
 				CookieHelper.AddCookie(httpContext.Response, "Authorization-Token", jwt);
@@ -221,11 +219,11 @@ namespace Bootleg.Services.Business.Interfaces
 				// Get all users from the database using dao:
 				var users = await _userDAO.GetAll();
 				// Run validation rules:
-				// Validate that email and phone are not null:
-				if (string.IsNullOrEmpty(user.Email) && string.IsNullOrEmpty(user.Phone))
+				// Validate that email is not null:
+				if (string.IsNullOrEmpty(user.Email))
 				{
 					// Throw exception if they're null:
-					throw new Exception("Email OR Phone is required.");
+					throw new Exception("Email is required.");
 				}
 				// Validate that the new email is not existent in the database:
 				if (users.Any(u => u.Email.EqualsIgnoreCase(user.Email)))
@@ -239,7 +237,7 @@ namespace Bootleg.Services.Business.Interfaces
 					// Throw exception if it is:
 					throw new Exception("Username is already taken. Please try again.");
 				}
-				// TODO: Add in Email, Phone, Username, and Password length/complexity requirements.
+				// TODO: Add in Email, Username, and Password length/complexity requirements.
 				// Else validation has passed:
 				else
 				{

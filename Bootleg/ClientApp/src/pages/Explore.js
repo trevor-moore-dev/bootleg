@@ -178,7 +178,12 @@ export default function Explore() {
                         >
                             {users && users.length > 0 && users.map(user =>
                                 <div key={user.id} className={`${classes.profileThing} ${classes.lightText}`}>
-                                    <Avatar className={classes.mobileAvatar} src={user.profilePicUri} />
+                                    <Link
+                                        className={classes.link}
+                                        component={RouterLink}
+                                        to={`/user/${user.id}`}>
+                                        <Avatar className={classes.mobileAvatar} src={user.profilePicUri} />
+                                    </Link>
                                     <div className={classes.ellipsis}>{user.username}</div>
                                 </div>)}
                         </Carousel>

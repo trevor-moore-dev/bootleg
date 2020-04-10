@@ -42,18 +42,28 @@ namespace Bootleg.Services.Business
 			// Surround with try/catch:
 			try
 			{
-				// Instantiate new Conversation:
-				var conversation = new Conversation()
+				// Get all conversations:
+				var conversations = await _conversationDAO.GetAll();
+				// Get all conversations for the first user:
+				var user1Convos = conversations?.Where(convo => convo?.Users?.Any(user => user.Id.Equals(users[0].Id)) == true)?.ToList() ?? new List<Conversation>();
+				// See if that user already has a conversation with the second user:
+				var convoExists = user1Convos?.Any(convo => convo?.Users?.Any(user => user.Id.Equals(users[1].Id)) == true);
+				// If conversations doesn't already exist, make it:
+				if (convoExists.GetValueOrDefault(false) == false)
 				{
-					Users = users,
-					Messages = new List<Message>()
-				};
-				// Add it to the database:
-				var result = await _conversationDAO.Add(conversation);
+					// Instantiate new Conversation:
+					var conversation = new Conversation()
+					{
+						DatePostedUTC = DateTime.UtcNow,
+						Users = users,
+						Messages = new List<Message>()
+					};
+					// Add it to the database:
+					var result = await _conversationDAO.Add(conversation);
+				}
 				// Return the result:
 				return new DTO<Conversation>()
 				{
-					Data = result,
 					Success = true
 				};
 			}
@@ -169,10 +179,12 @@ namespace Bootleg.Services.Business
 				var conversations = await _conversationDAO.GetAll();
 				// Grab all conversations that a user is connected to:
 				var result = conversations?.Where(convo => convo?.Users?.Any(user => user.Id.Equals(userId)) == true)?.ToList() ?? new List<Conversation>();
+				// Order the conversations by the most recent:
+				var orderedList = result?.OrderByDescending(x => x?.Messages?.LastOrDefault()?.DatePostedUTC)?.ToList() ?? new List<Conversation>();
 				// Return the result:
 				return new DTO<List<Conversation>>()
 				{
-					Data = result,
+					Data = orderedList,
 					Success = true
 				};
 			}

@@ -5,14 +5,12 @@ import useRequest from '../hooks/useRequest';
 import useAuth from "../hooks/useAuth";
 import LazyLoad from 'react-lazyload';
 import { formatDate } from "../helpers/dateHelper";
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, Redirect } from 'react-router-dom';
 import Carousel, { Dots } from '@brainhubeu/react-carousel';
 import '@brainhubeu/react-carousel/lib/style.css';
 import Axios from "axios";
 import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
-import AddIcon from '@material-ui/icons/Add';
 import { FilePicker } from "react-file-picker";
-import ImageUploader from 'react-images-upload';
 import SendIcon from '@material-ui/icons/Send';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import {
@@ -21,7 +19,6 @@ import {
     CardMedia,
     CardHeader,
     Card,
-    Badge,
     Tooltip,
     TextField,
     CardContent,
@@ -238,6 +235,7 @@ export default function AddPost() {
     // Return our markup:
     return (
         <Box className={classes.box}>
+            {newPostId && <Redirect to={`/post/${newPostId}`} />}
             <Grid className={classes.grid} container spacing={3}>
                 <Grid item xs={8} className={`${classes.contentGrid} ${classes.spaceGrid}`}>
                     <Card className={classes.card}>
@@ -278,30 +276,27 @@ export default function AddPost() {
                                     variant="outlined"
                                 />
                                 <div>
-                                    {contentFile && contentFile.length > 0 ?
-                                        <FilePicker
-                                            extensions={["jpeg", "mov", "mp4", "jpg", "img", "png", "wmv", "avi"]}
-                                            onChange={handleContentFileChange}
-                                            className={classes.fileUpload}
-                                        >
-                                            <Tooltip title='Add Picture or Video'>
-                                                <IconButton color="inherit" className={classes.filePickerButton}>
-                                                    <AddPhotoAlternateIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </FilePicker>
-                                        :
+                                    {contentFile ?
                                         <Tooltip title='Remove File'>
                                             <IconButton
-                                                color="inherit"
-                                                className={classes.filePickerButton}
+                                                className={classes.iconButtons}
                                                 onClick={removeFile}>
                                                 <HighlightOffIcon />
                                             </IconButton>
-                                        </Tooltip>}
+                                        </Tooltip>
+                                        :
+                                        <FilePicker
+                                            extensions={["jpeg", "mov", "mp4", "jpg", "img", "png", "wmv", "avi"]}
+                                            onChange={handleContentFileChange}
+                                        >
+                                            <Tooltip title='Add Picture or Video'>
+                                                <IconButton className={classes.iconButtons}>
+                                                    <AddPhotoAlternateIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </FilePicker>}
                                     <Tooltip title='Post'>
                                         <IconButton
-                                            className={classes.uploadButton}
                                             onClick={uploadPost}
                                             color='primary'>
                                             <SendIcon />

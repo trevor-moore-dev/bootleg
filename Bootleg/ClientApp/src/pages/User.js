@@ -158,7 +158,7 @@ export default function User() {
     // Create our CSS classes and also setting the state data initially:
     const classes = useStyles();
     const { id } = useParams();
-    const { logout, getUserId, getToken } = useAuth();
+    const { getUserId, getToken } = useAuth();
     const userId = getUserId();
     const [uploads, setUploads] = useState([]);
     const { get, post } = useRequest();
@@ -167,7 +167,6 @@ export default function User() {
     const userToken = getToken();
     const [editAccount, setEditAccount] = useState(false);
     const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
     const [username, setUsername] = useState("");
     const [profilePicUri, setProfilePicUri] = useState("");
     const [bio, setBio] = useState("");
@@ -206,7 +205,6 @@ export default function User() {
             // Set the corresponding state upon success:
             if (response.success) {
                 setEmail(response.data.item1.email ? response.data.item1.email : '');
-                setPhone(response.data.item1.phone ? response.data.item1.phone : '');
                 setUsername(response.data.item1.username ? response.data.item1.username : '');
                 setProfilePicUri(response.data.item1.profilePicUri ? response.data.item1.profilePicUri : '');
                 setBio(response.data.item1.bio ? response.data.item1.bio : '');
@@ -226,9 +224,6 @@ export default function User() {
     // State handler methods on change:
     const handleEmailChange = e => {
         setEmail(e.target.value);
-    };
-    const handlePhoneChange = e => {
-        setPhone(e.target.value);
     };
     const handleUsernameChange = e => {
         setUsername(e.target.value);
@@ -259,7 +254,6 @@ export default function User() {
         // Upon success set the state data:
         if (response.data.success) {
             setEmail(response.data.data.email ? response.data.data.email : '');
-            setPhone(response.data.data.phone ? response.data.data.phone : '');
             setUsername(response.data.data.username ? response.data.data.username : '');
             setProfilePicUri(response.data.data.profilePicUri ? response.data.data.profilePicUri : '');
             setBio(response.data.data.bio ? response.data.data.bio : '');
@@ -280,9 +274,6 @@ export default function User() {
         }
         if (email) {
             formData.append('email', email);
-        }
-        if (phone) {
-            formData.append('phone', phone);
         }
         if (bio) {
             formData.append('bio', bio);
@@ -374,7 +365,6 @@ export default function User() {
                             </div>}
                         {editAccount ? <TextField value={bio} onChange={handleBioChange} className={classes.info} variant="filled" /> : <div className={classes.info}>{bio}</div>}
                         {editAccount ? <TextField value={email} onChange={handleEmailChange} className={classes.info} variant="filled" /> : <div className={classes.info}>{email}</div>}
-                        {editAccount ? <TextField value={phone} onChange={handlePhoneChange} className={classes.info} variant="filled" /> : <div className={classes.info}>{phone}</div>}
                         {editAccount &&
                             <div className={classes.actionsContainer}>
                                 <Tooltip title='Cancel'>

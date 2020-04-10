@@ -51,8 +51,6 @@ export default function Login() {
 	// Create our state properties with the useState Hooks API:
 	const [email, setEmail] = useState("");
 	const [emailValidationError, setEmailValidationError] = useState("");
-	const [phone, setPhone] = useState("");
-	const [phoneValidationError, setPhoneValidationError] = useState("");
 	const [username, setUsername] = useState("");
 	const [usernameValidationError, setUsernameValidationError] = useState("");
 	const [password, setPassword] = useState("");
@@ -74,17 +72,6 @@ export default function Login() {
 		// If the target has a value, set the validation to be blank:
 		if (e.target.value) {
 			setEmailValidationError("");
-			setPhoneValidationError("");
-		}
-	};
-	// Function for handling when the phone input is changed:
-	const handlePhoneChange = e => {
-		// Update the state to the target value:
-		setPhone(e.target.value);
-		// If the target has a value, set the validation to be blank:
-		if (e.target.value) {
-			setEmailValidationError("");
-			setPhoneValidationError("");
 		}
 	};
 	// Function for handling when the username input is changed:
@@ -156,10 +143,9 @@ export default function Login() {
 			setPasswordValidationError("The Password field must have a minimum of 8 characters, and a max of 25.");
 			isValid = false;
 		}
-		// If phone and email is blank set phone and email validation and isValid to false:
-		if (phone === "" && email === "") {
-			setEmailValidationError("The Email field OR Phone field is required.");
-			setPhoneValidationError("The Email field OR Phone field is required.");
+		// If email is blank set email validation and isValid to false:
+		if (email === "") {
+			setEmailValidationError("The Email field is required.");
 			isValid = false;
 		}
 		// If isValid is true:
@@ -168,7 +154,6 @@ export default function Login() {
 			const response = await post(config.AUTHENTICATION_REGISTER_USER_POST, {
 				Data: {
 					Email: email ? email : null,
-					Phone: phone ? phone : null,
 					Username: username,
 					Password: password
 				}
@@ -280,6 +265,63 @@ export default function Login() {
 					<Card className={classes.card}>
 						<CardContent>
 							<Box display="flex" flexDirection="column">
+								<Typography variant="h6" align="center">Sign Up</Typography>
+								<TextField
+									label="Email"
+									type="email"
+									value={email}
+									onChange={handleEmailChange}
+									margin="normal"
+									variant="outlined"
+								/>
+								<div style={{ color: "red", marginTop: "5px" }}>
+									{emailValidationError}
+								</div>
+								<TextField
+									label="Username"
+									value={username}
+									onChange={handleUsernameChange}
+									margin="normal"
+									variant="outlined"
+								/>
+								<div style={{ color: "red", marginTop: "5px" }}>
+									{usernameValidationError}
+								</div>
+								<TextField
+									label="Password"
+									type="password"
+									value={password}
+									onChange={handlePasswordChange}
+									margin="normal"
+									variant="outlined"
+								/>
+								<div style={{ color: "red", marginTop: "5px" }}>
+									{passwordValidationError}
+								</div>
+								<Button
+									variant="contained"
+									onClick={handleRegisterSubmit}
+									disabled={submitting}
+								>
+									Sign Up
+								</Button>
+								<br />
+								<Divider variant="middle" />
+								<br />
+								<div align="center">
+									<GoogleLogin
+										clientId={config.GOOGLE_CLIENT_ID}
+										buttonText="Google Login"
+										onSuccess={responseGoogle}
+										onFailure={responseGoogle}
+									/>
+								</div>
+							</Box>
+						</CardContent>
+					</Card>
+					<Card className={classes.card}>
+						<CardContent>
+							<Box display="flex" flexDirection="column">
 								<Typography variant="h6" align="center">Login</Typography>
 								<TextField
 									autoFocus
@@ -303,7 +345,6 @@ export default function Login() {
 								<div style={{ color: "red", marginTop: "5px" }}>
 									{loginPasswordValidationError}
 								</div>
-
 								<Button
 									variant="contained"
 									onClick={handleLoginSubmit}
@@ -311,76 +352,6 @@ export default function Login() {
 								>
 									Login
 								</Button>
-							</Box>
-						</CardContent>
-					</Card>
-					<Card className={classes.card}>
-						<CardContent>
-							<Box display="flex" flexDirection="column">
-								<Typography variant="h6" align="center">Sign Up</Typography>
-								<TextField
-									label="Email"
-									type="email"
-									value={email}
-									onChange={handleEmailChange}
-									margin="normal"
-									variant="outlined"
-								/>
-								<div style={{ color: "red", marginTop: "5px" }}>
-									{emailValidationError}
-								</div>
-								<TextField
-									label="Phone"
-									value={phone}
-									onChange={handlePhoneChange}
-									margin="normal"
-									variant="outlined"
-								/>
-								<div style={{ color: "red", marginTop: "5px" }}>
-									{phoneValidationError}
-								</div>
-								<TextField
-									label="Username"
-									value={username}
-									onChange={handleUsernameChange}
-									margin="normal"
-									variant="outlined"
-								/>
-								<div style={{ color: "red", marginTop: "5px" }}>
-									{usernameValidationError}
-								</div>
-								<TextField
-									label="Password"
-									type="password"
-									value={password}
-									onChange={handlePasswordChange}
-									margin="normal"
-									variant="outlined"
-								/>
-								<div style={{ color: "red", marginTop: "5px" }}>
-									{passwordValidationError}
-								</div>
-
-								<Button
-									variant="contained"
-									onClick={handleRegisterSubmit}
-									disabled={submitting}
-								>
-									Sign Up
-								</Button>
-
-								<br />
-								<Divider variant="middle" />
-								<br />
-
-								<div align="center">
-									<GoogleLogin
-										clientId={config.GOOGLE_CLIENT_ID}
-										buttonText="Google Login"
-										onSuccess={responseGoogle}
-										onFailure={responseGoogle}
-									/>
-								</div>
 							</Box>
 						</CardContent>
 					</Card>
@@ -401,7 +372,6 @@ export default function Login() {
 						{errors["Data.Username"] ? [errors["Data.Username"], <br />] : ""}
 						{errors["Data.Password"] ? [errors["Data.Password"], <br />] : ""}
 						{errors["Data.Email"] ? [errors["Data.Email"], <br />] : ""}
-						{errors["Data.Phone"] ? [errors["Data.Phone"], <br />] : ""}
 						{errors["*"] ? [errors["*"], <br />] : ""}
 					</div>
 				</DialogTitle>
