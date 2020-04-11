@@ -313,16 +313,21 @@ export default function Post() {
                         <CardContent className={classes.mobileOnly}>
                             {comments && comments.length > 0 ? comments.map(comment =>
                                 <Card key={comment.id} className={classes.commentCard}>
-                                    <CardHeader
-                                        avatar={
-                                            <LazyLoad>
-                                                <Avatar className={classes.commentAvatar} src={comment.userProfilePicUri} />
-                                            </LazyLoad>
-                                        }
-                                        title={comment.userName + ' - ' + formatDate(comment.datePostedUTC)}
-                                        subheader={comment.contentBody}
-                                        className={classes.contentText}
-                                    />
+                                    <Link
+                                        className={classes.link}
+                                        component={RouterLink}
+                                        to={`/user/${comment.userId}`}>
+                                        <CardHeader
+                                            avatar={
+                                                <LazyLoad>
+                                                    <Avatar className={classes.commentAvatar} src={comment.userProfilePicUri} />
+                                                </LazyLoad>
+                                            }
+                                            title={comment.userName + ' - ' + formatDate(comment.datePostedUTC)}
+                                            subheader={comment.contentBody}
+                                            className={classes.contentText}
+                                        />
+                                    </Link>
                                 </Card>
                             ) : (
                                     <div className={classes.text}>No comments yet...</div>
@@ -335,14 +340,19 @@ export default function Post() {
                         <CardContent className={classes.commentContent}>
                             {comments && comments.length > 0 ? comments.map(comment =>
                                 <Card key={comment.id} className={classes.commentCard}>
-                                    <CardHeader
-                                        avatar={
-                                            <Avatar className={classes.commentAvatar} src={comment.userProfilePicUri} />
-                                        }
-                                        title={comment.userName + ' - ' + formatDate(comment.datePostedUTC)}
-                                        subheader={comment.contentBody}
-                                        className={classes.contentText}
-                                    />
+                                    <Link
+                                        className={classes.link}
+                                        component={RouterLink}
+                                        to={`/user/${comment.userId}`}>
+                                        <CardHeader
+                                            avatar={
+                                                <Avatar className={classes.commentAvatar} src={comment.userProfilePicUri} />
+                                            }
+                                            title={comment.userName + ' - ' + formatDate(comment.datePostedUTC)}
+                                            subheader={comment.contentBody}
+                                            className={classes.contentText}
+                                        />
+                                    </Link>
                                 </Card>
                             ) : (
                                     <div className={classes.text}>No comments yet...</div>
