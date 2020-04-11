@@ -64,6 +64,11 @@ export const lightTheme = createMuiTheme({
         color: "rgb(60,60,60)"
       }
     },
+    MuiBottomNavigationAction: {
+      root: {
+        minWidth: '0'
+      }
+    },
     MuiCard: {
       root: {
         backgroundColor: "rgb(255,255,255)"
@@ -206,6 +211,11 @@ export const darkTheme = createMuiTheme({
     MuiPaper: {
       root: {
         backgroundColor: "#363537"
+      }
+    },
+    MuiBottomNavigationAction: {
+      root: {
+        minWidth: '0'
       }
     },
     MuiToolbar: {
