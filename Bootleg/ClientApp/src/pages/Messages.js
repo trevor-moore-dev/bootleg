@@ -158,6 +158,10 @@ const useStyles = makeStyles(theme => ({
         textAlign: 'center',
         margin: 'auto',
         color: theme.lightText,
+        display: 'block',
+        [theme.breakpoints.up('md')]: {
+            display: 'none',
+        },
     },
     lightText: {
         color: theme.text

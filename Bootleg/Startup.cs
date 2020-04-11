@@ -128,9 +128,8 @@ namespace Bootleg
 				options.MinimumSameSitePolicy = SameSiteMode.None;
 			});
 			// Inject dependencies here:
-			// Inject our PredictionEnginePool:
-			services.AddPredictionEnginePool<PredictionInput, PredictionOutput>()
-				.FromFile(modelName: "MLModel", filePath: Configuration["MLModels:SentimentMLModelFilePath"], watchForChanges: true);
+			// Add our PredictionEnginePool:
+			//services.AddPredictionEnginePool<PredictionInput, PredictionOutput>().FromFile(modelName: "MLModel", filePath: Configuration["MLModels:SentimentMLModelFilePath"], watchForChanges: true);
 			// Add SignalR for web sockets:
 			services.AddSignalR();
 			// Change development environment here (connection string to db or anything else necessary):
@@ -218,14 +217,14 @@ namespace Bootleg
 			app.UseSpaStaticFiles();
 			app.UseCors();
 			app.UseRouting();
+			app.UseCookiePolicy();
 			app.UseAuthentication();
 			app.UseAuthorization();
-			app.UseCookiePolicy();
-			app.UseStaticFiles(new StaticFileOptions
-			{
-				FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Images")),
-				RequestPath = "/Resources/Images"
-			});
+			//app.UseStaticFiles(new StaticFileOptions
+			//{
+				//FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources", "Images")),
+				//RequestPath = "/Resources/Images"
+			//});
 			// Specify to use endpoints on our app with route pattern:
 			app.UseEndpoints(endpoints =>
 			{
