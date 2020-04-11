@@ -246,15 +246,14 @@ namespace Bootleg.Services.Business.Interfaces
 					var salt = SecurityHelper.GenerateSalt();
 					// Hash the user's entered password using the salt:
 					var securePassword = SecurityHelper.EncryptPassword(user.Password, salt);
-					var profilePicHolder = ImageHelper.GetServerImagePath($"generic-profile-picture-{new Random().Next(1, 6)}.jpg");
 					// Set new User's password and salt values:
-					user.ProfilePicUri = profilePicHolder;
+					user.ProfilePicUri = "https://bootlegstorageaccount.blob.core.windows.net/bootleg-blob-storage-container-127g38ajd39324/Bootleg6.1.png";
 					user.Password = securePassword;
 					user.Salt = salt;
 					// Add User to the database:
 					await _userDAO.Add(user);
 					// Generate JWT to login the user:
-					var jwt = TokenHelper.GenerateToken(user.Username ?? user.Email, AppSettingsModel.AppSettings.JwtSecret, user.Id, profilePicHolder);
+					var jwt = TokenHelper.GenerateToken(user.Username ?? user.Email, AppSettingsModel.AppSettings.JwtSecret, user.Id, "https://bootlegstorageaccount.blob.core.windows.net/bootleg-blob-storage-container-127g38ajd39324/Bootleg6.1.png");
 					// Add the JWT to a cookie:
 					CookieHelper.AddCookie(httpContext.Response, "Authorization-Token", jwt);
 					// Return successful with the JWT:
