@@ -17,7 +17,7 @@ https://www.bootleg.dev
 https://github.com/TrevorMooreGCU/bootleg
 
 ## Promotion:
-
+https://www.notion.so/bootleg-d2b4bfd21b5f43e0abb5f268fb02cb93
 
 ## Demo Screencast:
 
