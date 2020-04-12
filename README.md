@@ -11,10 +11,10 @@ The cloud of choice was Azure for both hosting and blob storage, and MongoDB Atl
 Future versions of this webapp include a native iOS version built with Xamarin.
 
 ## See the project LIVE:
-www.bootleg.dev
+https://www.bootleg.dev
 
 ## GitHub:
-
+https://github.com/TrevorMooreGCU/bootleg
 
 ## Promotion:
 
