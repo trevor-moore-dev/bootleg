@@ -4,6 +4,8 @@
 // 12/9/2019
 // This is my own work.
 
+using System.ComponentModel;
+
 namespace Bootleg.Models
 {
 	/// <summary>
@@ -11,6 +13,10 @@ namespace Bootleg.Models
 	/// </summary>
 	public class TokenModel
 	{
+		/// <summary>
+		/// String that will the token id of requests.
+		/// </summary>
+		[Description("String that will the token id of requests.")]
 		public string TokenId { get; set; }
 	}
 }

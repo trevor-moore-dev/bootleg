@@ -63,5 +63,11 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <param name="user">User who is leaving.</param>
 		/// <returns>DTO containing the updated Conversation.</returns>
 		Task<DTO<Conversation>> LeaveConversation(Conversation conversation, User user);
+		/// <summary>
+		/// Method for deleting old profile pic of User and uploading a new one for their profile pic.
+		/// </summary>
+		/// <param name="user">User of the current user.</param>
+		/// <returns>bool value.</returns>
+		Task<DTO<bool>> UpdateUserProfilePic(User user);
 	}
 }

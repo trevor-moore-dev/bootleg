@@ -78,5 +78,11 @@ namespace Bootleg.Services.Business.Interfaces
 		/// <param name="contentId">The contentId of the post that is being disliked.</param>
 		/// <returns>DTO bool indicating success/failure.</returns>
 		Task<DTO<bool>> UndislikePost(string contentId);
+		/// <summary>
+		/// Method for deleting old profile pic of User and uploading a new one for their profile pic.
+		/// </summary>
+		/// <param name="user">User of the current user.</param>
+		/// <returns>bool value.</returns>
+		Task<DTO<bool>> UpdateUserProfilePic(User user);
 	}
 }

@@ -383,5 +383,54 @@ namespace Bootleg.Services.Business
 				throw e;
 			}
 		}
+		/// <summary>
+		/// Method for deleting old profile pic of User and uploading a new one for their profile pic.
+		/// </summary>
+		/// <param name="user">User of the current user.</param>
+		/// <returns>bool value.</returns>
+		public async Task<DTO<bool>> UpdateUserProfilePic(User user)
+		{
+			// Surround with try/catch:
+			try
+			{
+				// Get all content:
+				var result = await GetLiterallyAllContent();
+				var contentList = result.Data;
+				// Loop through it and update the profile pic for each post and comment of the user:
+				foreach (var content in contentList)
+				{
+					// If the content was posted by the current user, update the profile pic:
+					if (content.UserId.Equals(user.Id))
+					{
+						content.UserProfilePicUri = user.ProfilePicUri;
+						await _contentDAO.Update(content.Id, content);
+					}
+					// Grab the comments of the content that the user may have posted:
+					var comments = content.Comments?.Where(x => x.UserId.Equals(user.Id));
+					// If the user has comments on the post, update the profile pic on the comments:
+					if (comments?.Any() == true)
+					{
+						foreach (var comment in comments)
+						{
+							comment.UserProfilePicUri = user.ProfilePicUri;
+							await _contentDAO.Update(content.Id, content);
+						}
+					}
+				}
+				// Return successful DAO:
+				return new DTO<bool>()
+				{
+					Success = true
+				};
+			}
+			// Catch any exceptions:
+			catch (Exception e)
+			{
+				// Log the exception:
+				LoggerHelper.Log(e);
+				// Throw the exception:
+				throw e;
+			}
+		}
 	}
 }

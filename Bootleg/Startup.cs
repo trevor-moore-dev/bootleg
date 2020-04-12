@@ -23,6 +23,7 @@ using System.IO;
 using SecretSanta2._0.Services.Hubs;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Reflection;
 
 // Trevor Moore
 // CST-451
@@ -103,6 +104,10 @@ namespace Bootleg
 						Url = new Uri("https://opensource.org/licenses/MIT"),
 					}
 				});
+				// Set the comments path for the Swagger JSON and UI.
+				var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+				var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+				c.IncludeXmlComments(xmlPath);
 			});
 			// Add Authentication and a JWT Bearer that will use our secret key for decrypting tokens:
 			services.AddAuthentication()

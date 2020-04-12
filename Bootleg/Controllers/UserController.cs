@@ -17,6 +17,7 @@ namespace Bootleg.Controllers
     /// <summary>
     /// User Controller for handling everything related to user interactions - following, unfollowing, viewing profiles, etc.
     /// </summary>
+    [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -25,18 +26,21 @@ namespace Bootleg.Controllers
         private readonly IContentService _contentService;
         private readonly IUserService _userService;
         private readonly IBlobService _blobService;
+        private readonly IConversationService _conversationService;
         /// <summary>
         /// Constructor for where all our dependencies will get injected:
         /// </summary>
         /// <param name="_contentService">Content service.</param>
         /// <param name="_userService">User service.</param>
         /// <param name="_blobService">Blob service.</param>
-        public UserController(IContentService _contentService, IUserService _userService, IBlobService _blobService)
+        /// <param name="_conversationService">Conversation service.</param>
+        public UserController(IContentService _contentService, IUserService _userService, IBlobService _blobService, IConversationService _conversationService)
         {
             // Set our instances of our services.
             this._contentService = _contentService;
             this._userService = _userService;
             this._blobService = _blobService;
+            this._conversationService = _conversationService;
         }
         /// <summary>
         /// Method for Getting a User object.
@@ -209,6 +213,8 @@ namespace Bootleg.Controllers
                 var user = await _userService.GetUser(Request.Form["userId"]);
                 // Update the user profile pic if needed:
                 var currentUser = await _blobService.UpdateUserProfilePic(user.Data, Request);
+                await _conversationService.UpdateUserProfilePic(currentUser);
+                await _contentService.UpdateUserProfilePic(currentUser);
                 // Update and return the user data:
                 return await _userService.UpdateUserProfile(currentUser, Request, HttpContext);
             }

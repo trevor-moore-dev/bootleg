@@ -19,6 +19,7 @@ namespace Bootleg.Controllers
     /// <summary>
     /// Content API controller for everything related to content/posts on the site.
     /// </summary>
+    [Produces("application/json")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]

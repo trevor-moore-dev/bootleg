@@ -256,5 +256,61 @@ namespace Bootleg.Services.Business
 				throw e;
 			}
 		}
+		/// <summary>
+		/// Method for deleting old profile pic of User and uploading a new one for their profile pic.
+		/// </summary>
+		/// <param name="user">User of the current user.</param>
+		/// <returns>bool value.</returns>
+		public async Task<DTO<bool>> UpdateUserProfilePic(User user)
+		{
+			// Surround with try/catch:
+			try
+			{
+				// Get the Conversations of the user:
+				var result = await GetAllConversations(user.Id);
+				var conversationList = result.Data;
+				// Loop through it and update the profile pic for each conversation:
+				foreach (var convo in conversationList)
+				{
+					// Grab the user in the convo:
+					var convoUser = convo.Users?.Where(x => x.Id.Equals(user.Id));
+					// If it has the user:
+					if (convoUser?.Any() == true)
+					{
+						// Loop through the users and update the pics (should only ever be one really):
+						foreach (var guy in convoUser)
+						{
+							guy.ProfilePicUri = user.ProfilePicUri;
+							await _conversationDAO.Update(convo.Id, convo);
+						}
+					}
+					// Grab the messages in the convo:
+					var convoMessages = convo.Messages?.Where(x => x.UserId.Equals(user.Id));
+					// If it has the user:
+					if (convoMessages?.Any() == true)
+					{
+						// Loop through the messages and update the pics:
+						foreach (var message in convoMessages)
+						{
+							message.ProfilePicUri = user.ProfilePicUri;
+							await _conversationDAO.Update(convo.Id, convo);
+						}
+					}
+				}
+				// Return successful DAO:
+				return new DTO<bool>()
+				{
+					Success = true
+				};
+			}
+			// Catch any exceptions:
+			catch (Exception e)
+			{
+				// Log the exception:
+				LoggerHelper.Log(e);
+				// Throw the exception:
+				throw e;
+			}
+		}
 	}
 }

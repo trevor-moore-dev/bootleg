@@ -20,6 +20,7 @@ namespace Bootleg.Controllers
     /// <summary>
     /// Authentication API controller for handling login, registration, and Google Oauth.
     /// </summary>
+    [Produces("application/json")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 	[ApiController]
     [Route("api/[controller]")]

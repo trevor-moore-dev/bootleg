@@ -19,6 +19,7 @@ namespace Bootleg.Controllers
     /// <summary>
     /// Messaging controller for handling all direct messaging on the app - primarily handling posting messages. The ConversationHub handles the delivery of real-time messages via SignalR websocket connections.
     /// </summary>
+    [Produces("application/json")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
