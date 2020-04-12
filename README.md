@@ -20,7 +20,7 @@ https://github.com/TrevorMooreGCU/bootleg
 https://www.notion.so/bootleg-d2b4bfd21b5f43e0abb5f268fb02cb93
 
 ## Demo Screencast:
-
+https://www.loom.com/share/e29c6719d4a448dbbf1ad2cf2dc6b40e
 
 ## Swagger Documentation:
 https://bootleg.azurewebsites.net/swagger/index.html
